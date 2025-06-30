@@ -21,4 +21,4 @@ WORKDIR /app
 COPY --from=build /out .
 
 EXPOSE 80
-ENTRYPOINT ["dotnet", "landingpage.dll"]
+ENTRYPOINT ["dotnet", "app.acd.dll"]
