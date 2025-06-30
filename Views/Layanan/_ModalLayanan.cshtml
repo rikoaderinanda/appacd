@@ -1,0 +1,185 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+</style>
+
+<div class="modal fade" id="ModalLayanan" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Layanan - <span id="modalNamaLayanan"></span></h5>
+                <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close"><i
+                        class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- App Body Start -->
+                <div class="app-body pb-30 mb-30">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0" id="search-addon">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0" placeholder="Cari layanan..."
+                                        aria-label="Cari layanan" aria-describedby="search-addon" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="home-cart mt-2"></div>
+                                <div class="cart-list">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <ul class="recommend-items ps-0">
+                                                <li>
+                                                    <div class="rc-item d-flex align-items-center">
+                                                        <div class="rc-item-left d-flex">
+                                                            <div class="rc-item-img position-relative border br-8">
+                                                                <img class="w-100 br-8" src="img/items/img-11.jpg"
+                                                                    alt="">
+                                                                <span class="save-icon fs-6" title="save"></span>
+                                                            </div>
+                                                            <div class="rc-item-content ms-3">
+                                                                <h6 class="fw-4 fs-9 p-color mb-1 ellipsis">Cuci AC 0.5
+                                                                    - 2 PK
+                                                                </h6>
+                                                                <span class="b-color d-block fs-6 fw-5">Rp85.000</span>
+                                                                <span class="item-weight-count">
+                                                                    <span
+                                                                        class="text-decoration-line-through text-muted me-2">Rp
+                                                                        100.000</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="rc-item-right ms-auto">
+                                                            <ul class="cart-actions ps-0">
+                                                                <li>
+                                                                    <div class="cart-counter">
+                                                                        <div class="cart-plus-minus">
+                                                                            <input type="text" value="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="rc-item d-flex align-items-center">
+                                                        <div class="rc-item-left d-flex">
+                                                            <div class="rc-item-img position-relative border br-8">
+                                                                <img class="w-100 br-8" src="img/items/img-11.jpg"
+                                                                    alt="">
+                                                                <span class="save-icon fs-6" title="save"></span>
+                                                            </div>
+                                                            <div class="rc-item-content ms-3">
+                                                                <h6 class="fw-4 fs-9 p-color mb-1 ellipsis">Cuci AC
+                                                                    Inverter 0.5 - 2 PK
+                                                                </h6>
+                                                                <span class="b-color d-block fs-6 fw-5">Rp85.000</span>
+                                                                <span class="item-weight-count">
+                                                                    <span
+                                                                        class="text-decoration-line-through text-muted me-2">Rp
+                                                                        100.000</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="rc-item-right ms-auto">
+                                                            <ul class="cart-actions ps-0">
+                                                                <li>
+                                                                    <div class="cart-counter">
+                                                                        <div class="cart-plus-minus">
+                                                                            <input type="text" value="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="rc-item d-flex align-items-center">
+                                                        <div class="rc-item-left d-flex">
+                                                            <div class="rc-item-img position-relative border br-8">
+                                                                <img class="w-100 br-8" src="img/items/img-11.jpg"
+                                                                    alt="">
+                                                                <span class="save-icon fs-6" title="save"></span>
+                                                            </div>
+                                                            <div class="rc-item-content ms-3">
+                                                                <h6 class="fw-4 fs-9 p-color mb-1 ellipsis">Cuci Besar
+                                                                    (Overhaul)
+                                                                </h6>
+                                                                <span class="b-color d-block fs-6 fw-5">Rp85.000</span>
+                                                                <span class="item-weight-count">
+                                                                    <span
+                                                                        class="text-decoration-line-through text-muted me-2">Rp
+                                                                        100.000</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="rc-item-right ms-auto">
+                                                            <ul class="cart-actions ps-0">
+                                                                <li>
+                                                                    <div class="cart-counter">
+                                                                        <div class="cart-plus-minus">
+                                                                            <input type="text" value="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+                <div class="container p-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <button data-bs-dismiss="modal" aria-label="Close" class="save-btn w-100 fw-4 h_40 br-8">
+                                Batal
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button data-bs-dismiss="modal" aria-label="Close"
+                                class="main-btn btn-hover w-100 fw-4 h_40 br-8">
+                                Tambahkan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer End -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const myModal = document.getElementById('ModalLayanan');
+    myModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const nama = button.getAttribute('data-namalayanan');
+
+        // Masukkan ke dalam modal
+        document.getElementById('modalNamaLayanan').textContent = nama;
+    });
+</script>

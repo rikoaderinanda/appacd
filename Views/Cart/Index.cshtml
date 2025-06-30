@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Status";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "1";
+    ViewData["HeaderName"] = "Keranjang - Pesanan Anda";
+}
+
+<!-- App Body Start -->
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+        <div class="position-relative">
+            <input class="form-input input-shadow ps-5 mb-30" type="text" placeholder="Kamu lagi butuh jasa apa?">
+            <i class="bi bi-search search-icon-lg"></i>
+        </div>
+        @{
+            // Contoh data pesanan yang masih diproses (dummy data)
+            var orders = new[]
+            {
+                new {
+                Id = "ORD-1001",
+                Total = 250000,
+                Details = new[] {
+                new { NamaJasa = "Cuci AC", Qty = 2, Harga = 75000 },
+                new { NamaJasa = "Service AC", Qty = 1, Harga = 100000 }
+                }
+                },
+                new {
+                Id = "ORD-1002",
+                Total = 175000,
+                Details = new[] {
+                new { NamaJasa = "Cuci AC", Qty = 1, Harga = 75000 },
+                new { NamaJasa = "Bongkar AC", Qty = 1, Harga = 100000 }
+                }
+                },
+                };
+        }
+
+        @foreach (var order in orders)
+        {
+            <div class="card mb-3 position-relative shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start position-relative">
+                        <div>
+                            <h5 class="card-title mb-1 fw-bold">ID Pesanan: <span class="text-primary">@order.Id</span></h5>
+                            <p class="card-text mb-2">Total Pesanan: <span class="fw-semibold text-success">Rp
+                                    @order.Total.ToString("N0")</span></p>
+
+                            <div class="mt-3">
+                                <strong>Detail Order:</strong>
+                                <ul class="mb-0">
+                                    @foreach (var detail in order.Details)
+                                    {
+                                        <li>
+                                            @detail.NamaJasa &times; @detail.Qty
+                                            <span class="text-muted">(@("Rp " + detail.Harga.ToString("N0")))</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Tombol dipindah ke pojok kanan bawah -->
+                        <a href="@Url.Action("Index", "Pembayaran", new { id = order.Id })"
+                            class="btn btn-outline-primary btn-sm" title="Lihat Detail Status"
+                            style="position: absolute; right: 16px; bottom: 16px; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-arrow-right" style="font-size: 1.3rem;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- App Body End -->

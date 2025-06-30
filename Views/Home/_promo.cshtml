@@ -1,0 +1,51 @@
+<div class="col-12">
+    <div class="mt-30">
+        <div class="main-title text-left d-flex align-items-center mb-3">
+            <h5 class="mb-0 fw-5 b-color">Promo untuk mu</h5>
+            <a href="app-categories.html" class="fs-7 ms-auto p-color text-hover">View All</a>
+        </div>
+        <div class="items-group">
+            <div class="owl-carousel offer-slider owl-theme">
+                <div class="item">
+                    <a href="#" class="offer-banner-item">
+                        <img class="w-100 br-10" src="img/offers/offer-1.png" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="#" class="offer-banner-item">
+                        <img class="w-100 br-10" src="img/offers/offer-1.png" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="#" class="offer-banner-item">
+                        <img class="w-100 br-10" src="img/offers/offer-1.png" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="#" class="offer-banner-item">
+                        <img class="w-100 br-10" src="img/offers/offer-1.png" alt="">
+                    </a>
+                </div>
+            </div>
+            @section Scripts {
+                <script>
+                    $(document).ready(function () {
+                        $('.offer-slider').owlCarousel({
+                            loop: true,
+                            margin: 10,
+                            nav: true,
+                            autoplay: true,
+                            autoplayTimeout: 3000,
+                            autoplayHoverPause: true,
+                            responsive: {
+                                0: { items: 1 },
+                                600: { items: 2 },
+                                1000: { items: 3 }
+                            }
+                        });
+                    });
+                </script>
+            }
+        </div>
+    </div>
+</div>

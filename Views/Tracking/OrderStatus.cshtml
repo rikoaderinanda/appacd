@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Status Pesanan";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Status Pesanan ID : 112321";
+}
+
+<!-- App Body Start -->
+<div class="app-body pb-30">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="home-cart mt-4">
+                    <div class="delivery-dts">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="recommend-items ps-0">
+                                    <div class="rc-item d-flex align-items-center pb-3 justify-content-center">
+                                        <div class="rc-item-left d-flex align-items-center">
+                                            <div class="rc-item-img position-relative border br-8 d-flex align-items-center justify-content-center bg-white shadow-sm"
+                                                style="width:64px; height:64px;">
+                                                <img src="~/images/order-status.png" alt="Order Status"
+                                                    class="img-fluid" style="max-width:42px; max-height:42px;" />
+                                            </div>
+                                            <div class="ms-3">
+                                                <span class="text-secondary fs-6 fw-semibold d-block mb-1"></span>
+                                                Pesanan Anda sedang diproses
+                                                </span>
+                                                <span class="text-muted fs-7"></span>
+                                                Kami sedang mencari teknisi terbaik untuk Anda. Mohon tunggu sebentar.
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="Scriptcontent mt-4 px-2">
+                                        <div class="step">
+                                            <div>
+                                                <div class="circle done"><i class="bi bi-check-lg"></i></div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Pesanan Dikonfirmasi</div>
+                                                <div class="caption">Pesanan Anda telah diterima.</div>
+                                            </div>
+                                        </div>
+                                        <div class="step step-active">
+                                            <div>
+                                                <div class="circle">2</div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Pesanan Diproses</div>
+                                                <div class="caption">Pesanan Anda sedang dipersiapkan.</div>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div>
+                                                <div class="circle">3</div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Teknisi</div>
+                                                <div class="caption">
+                                                    Pesanan Anda telah diterima Teknisi dan akan
+                                                    berkunjung sesuai Pesanan Anda.
+                                                </div>
+                                                <a href="app-rate-your-order.html"
+                                                    class="ch-btn py-1 px-2 br-5 b-color fs-7 fw-4 text-hover ms-auto">
+                                                    <i class="bi bi-person me-1"></i>
+                                                    Lihat Profil Teknisi
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div>
+                                                <div class="circle">4</div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Teknisi Berangkat Berkunjung</div>
+                                                <div class="caption">
+                                                    Pesanan Anda diterima Teknisi dan akan dijadwalkan
+                                                    sesuai Pesanan Anda.
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div>
+                                                <div class="circle">5</div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Sedang Proses Reparasi</div>
+                                                <div class="caption">Pesanan Anda diterima Teknisi dan akan dijadwalkan
+                                                    sesuai Pesanan Anda.</div>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div>
+                                                <div class="circle">6</div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Reparasi telah selesai</div>
+                                                <div class="caption">Pesanan Anda diterima Teknisi dan akan dijadwalkan
+                                                    sesuai Pesanan Anda.</div>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div>
+                                                <div class="circle">7</div>
+                                            </div>
+                                            <div>
+                                                <div class="title">Beri Ulasan</div>
+                                                <div class="caption mb-2">Bagikan pengalaman Anda dan bantu kami
+                                                    meningkatkan layanan.</div>
+                                                <a href="app-rate-your-order.html"
+                                                    class="ch-btn py-1 px-2 br-5 b-color fs-7 fw-4 text-hover ms-auto"><i
+                                                        class="bi bi-star me-1"></i>Beri Penilaian</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- App Body End -->
+<!-- Footer -->
+<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    <div class="container p-0">
+        <div class="row align-items-center">
+            <div class="col">
+                <a href="@Url.Action("Index", "Home")" class="main-btn btn-hover w-100 fw-4 h_40 br-8">Halaman Utama</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->

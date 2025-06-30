@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Status";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "1";
+    ViewData["HeaderName"] = "Tracking Status Pesanan";
+}
+
+<!-- App Body Start -->
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+
+        @{
+            // Contoh data pesanan yang masih diproses (dummy data)
+            var orders = new[]
+            {
+                new { Id = "ORD-1001", Total = 250000, Status = "Sedang diproses" },
+                new { Id = "ORD-1002", Total = 175000, Status = "Menunggu konfirmasi" },
+                };
+        }
+
+        @foreach (var order in orders)
+        {
+            <div class="card mb-3 position-relative shadow-sm border-0">
+                <div class="card-body position-relative">
+                    <div>
+                        <h5 class="card-title mb-1 fw-bold">ID Pesanan: <span class="text-primary">@order.Id</span></h5>
+                        <p class="card-text mb-2">Total Pesanan: <span class="fw-semibold text-success">Rp
+                                @order.Total.ToString("N0")</span></p>
+                        <span class="badge bg-warning text-dark">@order.Status</span>
+                    </div>
+                    <a href="@Url.Action("OrderStatus", "Tracking", new { id = order.Id })"
+                        class="btn btn-outline-primary btn-sm" title="Lihat Detail Status"
+                        style="border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; position: absolute; right: 16px; bottom: 16px;">
+                        <i class="bi bi-arrow-right" style="font-size: 1.3rem;"></i>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!-- App Body End -->

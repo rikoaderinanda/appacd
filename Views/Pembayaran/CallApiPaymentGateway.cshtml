@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Redirecting to Payment Gateway";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Payment Gateway";
+
+}
+
+<div style="text-align:center; margin-top:50px;">
+    <h2>Mohon Tunggu...</h2>
+    <p>Anda akan diarahkan ke halaman Payment Gateway untuk melanjutkan pembayaran.</p>
+    <div class="spinner-border" role="status" style="margin-top:20px;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+
+<!-- Footer -->
+<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    <div class="container p-0">
+        <div class="row">
+            <div class="col">
+                <a href="@Url.Action("Status", "Pembayaran")" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
+                        class="bi bi-credit-card me-2"></i>
+                    Pembayaran Sukses
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
+
+<script>
+    // Ganti URL berikut dengan URL payment gateway yang sesuai
+    setTimeout(function () {
+        window.location.href = '@ViewBag.PaymentGatewayUrl';
+    }, 3000); // Redirect setelah 3 detik
+</script>

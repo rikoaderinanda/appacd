@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Customer Info";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Detail Kontak & Lokasi";
+}
+
+<div class="container mt-4 mb-30">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title mb-0">Formulir Informasi Pelanggan</h4>
+            <hr class="" style="border-top: 2px dashed #bbb;">
+            <form>
+                <div class="mb-3">
+                    <label for="nama" class="form-label">Nama</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="nama" name="nama"
+                            placeholder="Masukkan nama lengkap" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="contoh@email.com"
+                            required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="whatsapp" class="form-label">Nomor WhatsApp</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-whatsapp"></i></span>
+                        <input type="tel" class="form-control" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx"
+                            required>
+                    </div>
+                </div>
+                <hr class="my-4" style="border-top: 2px dashed #bbb;">
+                <div class="mb-3">
+                    <label for="catatan" class="form-label">Catatan</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-card-text"></i></span>
+                        <textarea class="form-control" id="catatan" name="catatan" rows="2"
+                            placeholder="Catatan tambahan"></textarea>
+                    </div>
+                </div>
+
+                <hr class="my-4" style="border-top: 2px dashed #bbb;">
+                <div class="mb-3">
+                    <label for="lokasi" class="form-label">Lokasi</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-geo-alt"></i></span>
+                        <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Masukkan lokasi">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="alamat" class="form-label">Alamat Lengkap</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-house"></i></span>
+                        <textarea class="form-control" id="alamat" name="alamat" rows="3"
+                            placeholder="Masukkan alamat lengkap"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    <div class="container p-0">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="cart-total text-start">
+                    <div class="total-text b-color fw-5 fs-6">Estimasi Harga :</div>
+                    <div class="total-text b-color fw-5 fs-6">Rp 20.000</div>
+                </div>
+            </div>
+            <div class="col">
+                <a href="@Url.Action("Index", "Pembayaran")"
+                    class="main-btn btn-hover w-100 fw-4 h_40 br-8">Lanjutkan</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->

@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Pembayaran";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Konfirmasi Pesanan";
+
+}
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <img src="~/img/Layanan/cekOrderan.png" alt="Konfirmasi Pesanan" style="max-width: 180px;" class="mb-0" />
+        <h2 class="fw-bold">Konfirmasi Pesanan</h2>
+        <p class="text-muted">Silakan cek kembali detail pesanan Anda sebelum melakukan pembayaran.</p>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            Informasi Customer
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Nama</dt>
+                <dd class="col-sm-8">Riko Ade Rinanda</dd>
+
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">rikoaderinanda@gmail.com</dd>
+
+                <dt class="col-sm-4">No. Telepon</dt>
+                <dd class="col-sm-8">+62816 1723 3847</dd>
+
+                <dt class="col-sm-4">Alamat</dt>
+                <dd class="col-sm-8">......</dd>
+
+                <dt class="col-sm-4">Waktu Kunjungan</dt>
+                <dd class="col-sm-8">......</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            Detail Layanan
+        </div>
+        <div class="card-body">
+            <p><strong>Layanan:</strong> Cuci AC</p>
+            <ul class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Cuci AC 1 unit (1 PK)</strong><br />
+                        <small>Pembersihan dan pengecekan unit AC.</small>
+                    </div>
+                    <span class="text-end">
+                        <span class="badge bg-primary rounded-pill me-2">1 x</span>
+                        <span class="d-block"><small>Harga Satuan: Rp 20.000</small>
+                        </span>
+                        <span class="d-block"><small>Total:</small>
+                            Rp 20.000
+                        </span>
+                    </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Isi Freon AC</strong><br />
+                        <small>Penambahan freon untuk AC 1 PK.</small>
+                    </div>
+                    <span class="text-end">
+                        <span class="badge bg-primary rounded-pill me-2">1 x</span>
+                        <span class="d-block"><small>Harga Satuan: Rp 20.000</small>
+                        </span>
+                        <span class="d-block"><small>Total:</small>
+                            Rp 20.000
+                        </span>
+                    </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Service AC</strong><br />
+                        <small>Pengecekan dan perbaikan ringan AC.</small>
+                    </div>
+                    <span class="text-end">
+                        <span class="badge bg-primary rounded-pill me-2">1 x</span>
+                        <span class="d-block"><small>Harga Satuan: Rp 20.000</small>
+                        </span>
+                        <span class="d-block"><small>Total:</small>
+                            Rp 20.000
+                        </span>
+                    </span>
+                </li>
+            </ul>
+            <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3">
+                <span class="fw-bold fs-5">Total Harga</span>
+                <span class="fw-bold fs-5 text-success">Rp 100.000</span>
+            </div>
+            <p><strong>Catatan:</strong> Pastikan unit AC dalam kondisi mati sebelum teknisi datang.</p>
+
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    <div class="container p-0">
+        <div class="row">
+            <div class="col">
+                <a href="@Url.Action("Index", "Home")" class="save-btn w-100 fw-4 h_40 br-8">
+                    <i class="bi bi-heart me-2"></i>
+                    Simpan Dulu</a>
+            </div>
+            <div class="col">
+                <a href="@Url.Action("CallApiPaymentGateway", "Pembayaran")"
+                    class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i class="bi bi-credit-card me-2"></i>Bayar</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
