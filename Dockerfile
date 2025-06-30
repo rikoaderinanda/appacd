@@ -2,17 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # Set working directory
-WORKDIR /app
+WORKDIR /src
 
 # Copy csproj and restore
-COPY appacd.csproj ./
+COPY appacd/appacd.csproj ./appacd/
+WORKDIR /src/appacd
 RUN dotnet restore
 
-# Copy rest of the code
-COPY . ./
+# Copy the rest of the app
+COPY appacd/. .
 
 # Publish the app
-RUN dotnet publish -c Release -o /out
+RUN dotnet publish -c Release -o /app
 
 # Step 2: Runtime Stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
