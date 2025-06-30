@@ -5,6 +5,17 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        if (ctx.File.Name == "manifest.json" || ctx.File.Name == "sw.js")
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache");
+        }
+    }
+});
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
