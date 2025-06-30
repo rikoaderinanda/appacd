@@ -1,8 +1,9 @@
 bin/
 obj/
+*.md
 .git/
-.vs/
+.gitignore
+Dockerfile
 *.user
 *.suo
-Dockerfile
-.dockerignore
+.vscode/
