@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using app.acd.Models;
+using appacd.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace app.acd.Controllers;
+namespace appacd.Controllers;
 
 public class TrackingController : Controller
 {

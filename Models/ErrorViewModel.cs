@@ -1,4 +1,4 @@
-namespace app.acd.Models;
+namespace appacd.Models;
 
 public class ErrorViewModel
 {

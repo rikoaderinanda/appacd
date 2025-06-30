@@ -7,113 +7,113 @@ build_property.InvariantGlobalization =
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
-build_property.RootNamespace = app.acd
-build_property.RootNamespace = app.acd
-build_property.ProjectDir = D:\Repository\ACD\app.acd\
+build_property.RootNamespace = appacd
+build_property.RootNamespace = appacd
+build_property.ProjectDir = D:\Repository\ACD\appacd\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Repository\ACD\app.acd
+build_property.MSBuildProjectDirectory = D:\Repository\ACD\appacd
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Repository/ACD/app.acd/Views/Cart/Index.cshtml]
+[D:/Repository/ACD/appacd/Views/Cart/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/CustomerInfo/Index.cshtml]
+[D:/Repository/ACD/appacd/Views/CustomerInfo/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJJbmZvXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/Index.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/manageaddress.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/manageaddress.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxtYW5hZ2VhZGRyZXNzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/Privacy.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/Profile.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcm9maWxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/_formProfile.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/_formProfile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxfZm9ybVByb2ZpbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/_HeaderName.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/_HeaderName.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxfSGVhZGVyTmFtZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/_layanan.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/_layanan.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxfbGF5YW5hbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/_ModalAddressManage.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/_ModalAddressManage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxfTW9kYWxBZGRyZXNzTWFuYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Home/_promo.cshtml]
+[D:/Repository/ACD/appacd/Views/Home/_promo.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxfcHJvbW8uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Layanan/Index.cshtml]
+[D:/Repository/ACD/appacd/Views/Layanan/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGF5YW5hblxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Layanan/_ModalLayanan.cshtml]
+[D:/Repository/ACD/appacd/Views/Layanan/_ModalLayanan.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGF5YW5hblxfTW9kYWxMYXlhbmFuLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Pembayaran/CallApiPaymentGateway.cshtml]
+[D:/Repository/ACD/appacd/Views/Pembayaran/CallApiPaymentGateway.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVtYmF5YXJhblxDYWxsQXBpUGF5bWVudEdhdGV3YXkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Pembayaran/Index.cshtml]
+[D:/Repository/ACD/appacd/Views/Pembayaran/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVtYmF5YXJhblxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Pembayaran/Status.cshtml]
+[D:/Repository/ACD/appacd/Views/Pembayaran/Status.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVtYmF5YXJhblxTdGF0dXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Shared/Error.cshtml]
+[D:/Repository/ACD/appacd/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Shared/_Footer.cshtml]
+[D:/Repository/ACD/appacd/Views/Shared/_Footer.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Gb290ZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Shared/_Header.cshtml]
+[D:/Repository/ACD/appacd/Views/Shared/_Header.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9IZWFkZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/Repository/ACD/appacd/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Tracking/Index.cshtml]
+[D:/Repository/ACD/appacd/Views/Tracking/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhY2tpbmdcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Tracking/OrderStatus.cshtml]
+[D:/Repository/ACD/appacd/Views/Tracking/OrderStatus.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhY2tpbmdcT3JkZXJTdGF0dXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/_ViewImports.cshtml]
+[D:/Repository/ACD/appacd/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/_ViewStart.cshtml]
+[D:/Repository/ACD/appacd/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Repository/ACD/app.acd/Views/Shared/_Layout.cshtml]
+[D:/Repository/ACD/appacd/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = b-k8igl1lgtl
+build_metadata.AdditionalFiles.CssScope = b-7lsodjh9ge

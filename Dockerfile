@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copy csproj and restore
-COPY app.acd.csproj ./
+COPY appacd.csproj ./
 RUN dotnet restore
 
 # Copy rest of the code
@@ -21,4 +21,4 @@ WORKDIR /app
 COPY --from=build /out .
 
 EXPOSE 80
-ENTRYPOINT ["dotnet", "app.acd.dll"]
+ENTRYPOINT ["dotnet", "appacd.dll"]

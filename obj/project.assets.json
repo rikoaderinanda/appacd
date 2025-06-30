@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Repository\\ACD\\app.acd\\app.acd.csproj",
-      "projectName": "app.acd",
-      "projectPath": "D:\\Repository\\ACD\\app.acd\\app.acd.csproj",
+      "projectUniqueName": "D:\\Repository\\ACD\\appacd\\appacd.csproj",
+      "projectName": "appacd",
+      "projectPath": "D:\\Repository\\ACD\\appacd\\appacd.csproj",
       "packagesPath": "C:\\Users\\cho\\.nuget\\packages\\",
-      "outputPath": "D:\\Repository\\ACD\\app.acd\\obj\\",
+      "outputPath": "D:\\Repository\\ACD\\appacd\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\cho\\AppData\\Roaming\\NuGet\\NuGet.Config",
