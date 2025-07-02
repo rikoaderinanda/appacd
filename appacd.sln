@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appacd", "appacd.csproj", "{AB6066A7-9E21-36E7-28C2-9C154B06B31A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appacd", "appacd.csproj", "{3DB5861D-F66C-9423-F5DF-C36AE6765A3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,15 +10,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB6066A7-9E21-36E7-28C2-9C154B06B31A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB6066A7-9E21-36E7-28C2-9C154B06B31A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB6066A7-9E21-36E7-28C2-9C154B06B31A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB6066A7-9E21-36E7-28C2-9C154B06B31A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DB5861D-F66C-9423-F5DF-C36AE6765A3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DB5861D-F66C-9423-F5DF-C36AE6765A3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DB5861D-F66C-9423-F5DF-C36AE6765A3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DB5861D-F66C-9423-F5DF-C36AE6765A3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D725473D-2648-4B4E-BB6B-97E2514A4A21}
+		SolutionGuid = {A1754E24-CF27-47D2-9563-E8DE74C656DF}
 	EndGlobalSection
 EndGlobal
