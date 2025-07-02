@@ -1,44 +1,25 @@
+@model IEnumerable<Layanan>
+@* List untuk Layanan *@
 <div class="col-12">
   <div class="home-categories mt-30">
     <div class="main-title text-left d-flex align-items-center mb-3">
       <h5 class="mb-0 fw-5 b-color">Layanan</h5>
-      <a href="app-categories.html" class="fs-7 ms-auto p-color text-hover">View All</a>
+      <a href="" class="fs-7 ms-auto p-color text-hover">View All</a>
     </div>
     <div class="category-group">
       <div class="owl-carousel category-slider owl-theme">
-        <div class="item">
-          <a href="@Url.Action("Index", "Layanan")/AC" class="cate-item">
-            <div class="cate-img">
-              <img src="~/img/Reparasi/acicon.png" alt="" />
-            </div>
-            <p class="mb-0 fs-8 fw-5 b-color ellipsis">AC</p>
-          </a>
-        </div>
-        <div class="item">
-          <a href="@Url.Action("Index", "Layanan")/Kulkas" class="cate-item">
-            <div class="cate-img">
-              <img src="~/img/Reparasi/acicon.png" alt="" />
-            </div>
-            <p class="mb-0 fs-8 fw-5 b-color ellipsis">Kulkas</p>
-          </a>
-        </div>
-        <div class="item">
-          <a href="@Url.Action("Index", "Layanan")/Mesin Cuci" class="cate-item">
-            <div class="cate-img">
-              <img src="~/img/Reparasi/acicon.png" alt="" />
-            </div>
-            <p class="mb-0 fs-8 fw-5 b-color ellipsis">Mesin Cuci</p>
-          </a>
-        </div>
-        <di class="item">
-          <a href="@Url.Action("Index", "Layanan")/TV" class="cate-item">
-            <div class="cate-img">
-              <img src="~/img/Reparasi/acicon.png" alt="" />
-            </div>
-            <p class="mb-0 fs-8 fw-5 b-color ellipsis">TV</p>
-          </a>
+        @foreach (var item in Model)
+        {
+          <div class="item">
+            <a href="@Url.Action("Index", "Layanan")/@item.Nama_Layanan" class="cate-item">
+              <div class="cate-img">
+                <img src="~/img/Reparasi/acicon.png" alt="" />
+              </div>
+              <p class="mb-0 fs-8 fw-5 b-color ellipsis">@item.Nama_Layanan</p>
+            </a>
+          </div>
+        }
       </div>
     </div>
   </div>
-</div>
 </div>

@@ -1,21 +1,25 @@
 using System.Diagnostics;
 using appacd.Models;
+using appacd.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace appacd.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly ILayananRepository _repo;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ILayananRepository repo)
     {
         _logger = logger;
+        _repo = repo;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var data = await _repo.GetAllAsync();
+        return View(data);
     }
 
     public IActionResult Profile()
