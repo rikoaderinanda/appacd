@@ -22,6 +22,8 @@ public class HomeController : Controller
         return View(data);
     }
 
+    
+
     public IActionResult Profile()
     {
         return View();
