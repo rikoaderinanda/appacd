@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="home-categories mt-30">
     <div class="main-title d-flex align-items-center mb-3">
-      <h5 class="mb-0 fw-bold">Layanan</h5>
+      <h5 class="mb-0">Layanan</h5>
       <a href="@Url.Action("Index", "Layanan")" class="ms-auto text-decoration-none text-secondary small">Lihat
         Semua</a>
     </div>
@@ -64,49 +64,14 @@
           '<div class="cate-img mb-2">' +
           '<img src="/img/Reparasi/acicon.png" class="img-fluid rounded-circle shadow-sm" loading="lazy" />' +
           '</div>' +
-          '<p class="mb-0 small fw-semibold text-dark text-truncate">' + item.nama_Layanan + '</p>' +
+          '<p class="mb-0 small text-dark text-truncate">' + item.nama_Layanan + '</p>' +
           '</a>' +
           '</div>';
       }).join('');
       $('#layananCarousel').html(html);
-      initCarousel("layananCarousel",4);
-      lazyAnimateItems();
+        initCarousel("layananCarousel",5);
+        lazyAnimateItems("layananCarousel");
     });
 
-    function initCarousel(Element,Qty) {
-      var $slider = $('#'+Element+'');
-      if ($slider.hasClass('owl-loaded')) {
-        $slider.trigger('destroy.owl.carousel');
-      }
-      $slider.owlCarousel({
-        loop: $slider.find('.item').length > 10,
-        margin: 16,
-        nav: false,
-        dots: true,
-        responsive: {
-          0: { items: Qty },
-          600: { items: Qty },
-          1000: { items: Qty }
-        }
-      });
-    }
-
-    function lazyAnimateItems() {
-      var items = document.querySelectorAll('#layananCarousel .fade-in');
-      if ('IntersectionObserver' in window) {
-        var observer = new IntersectionObserver(function (entries, obs) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
-              obs.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.1 });
-        items.forEach(function (item) { observer.observe(item); });
-      } else {
-        // fallback
-        items.forEach(function (item) { item.classList.add('visible'); });
-      }
-    }
   });
 </script>

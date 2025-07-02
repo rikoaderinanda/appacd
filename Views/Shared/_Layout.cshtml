@@ -46,18 +46,20 @@
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     @* <script src="~/vendor/OwlCarousel/owl.carousel.js" asp-append-version="true"></script> *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
-        asp-append-version="true"></script>
+            asp-append-version="true"></script>
     <script src="~/vendor/bootstrap-select/js/bootstrap-select.min.js" asp-append-version="true"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" asp-append-version="true"></script>
     <script src="~/js/custom.js" asp-append-version="true"></script>
+    <script src="~/js/Globalfunction.js" asp-append-version="true"></script>
 
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log("Service Worker registered"))
-            .catch(err => console.error("Service Worker registration failed", err));
+                .then(() => console.log("Service Worker registered"))
+                .catch(err => console.error("Service Worker registration failed", err));
         }
     </script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
