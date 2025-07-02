@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
@@ -13,6 +14,7 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     return new Npgsql.NpgsqlConnection(connectionString);
 });
 builder.Services.AddScoped<ILayananRepository, LayananRepository>();
+
 
 var app = builder.Build();
 

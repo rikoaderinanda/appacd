@@ -8,7 +8,7 @@ namespace appacd.Services
 {
     public interface ILayananRepository
     {
-        Task<IEnumerable<Layanan>> GetAllAsync();
+        Task<IEnumerable<dynamic>> GetAllAsync();
     }
     public class LayananRepository : ILayananRepository
     {
@@ -19,7 +19,7 @@ namespace appacd.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<Layanan>> GetAllAsync()
+        public async Task<IEnumerable<dynamic>> GetAllAsync()
         {
             var sql = "SELECT * FROM listlayanan ORDER BY created_at DESC";
             return await _db.QueryAsync<Layanan>(sql);
