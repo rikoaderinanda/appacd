@@ -13,218 +13,20 @@
         <div class="row">
             <div class="col-12">
                 <div class="item-dts mt-4">
-                    <div class="item-imgs mt-4">
-                        <div class="owl-carousel imgItem-slider owl-theme" id="promoSlider">
-                            <div class="item">
-                                <div class="item-card p-2 br-10 border">
-                                    <div class="item-img p-2">
-                                        <img class="br-8" src="~/img/offers/offer-1.png" alt="Promo AC">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="item-card p-2 br-10 border">
-                                    <div class="item-img p-2">
-                                        <img class="br-8" src="~/img/offers/offer-1.png" alt="Promo AC">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="item-card p-2 br-10 border">
-                                    <div class="item-img p-2">
-                                        <img class="br-8" src="~/img/offers/offer-1.png" alt="Promo AC">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <div class="item-card p-2 br-10 border">
-                                    <div class="item-img p-2">
-                                        <img class="br-8" src="~/img/offers/offer-1.png" alt="Promo AC">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        @section Scripts {
-                            <script>
-                                $(document).ready(function () {
-                                    $('#promoSlider').owlCarousel({
-                                        items: 4,
-                                        loop: true,
-                                        margin: 10,
-                                        autoplay: true,
-                                        autoplayTimeout: 100,
-                                        autoplayHoverPause: true,
-                                        dots: true,
-                                        nav: false
-                                    });
-                                });
-                            </script>
-                        }
-                    </div>
-                    <div class="accordion p-1" id="aboutItemGroup">
-                        <h5 class="mb-0 fw-6 b-color mt-4 mb-2">Informasi</h5>
-                        <div class="custom-accordion-item about-accordion-item">
-                            <h2 class="custom-accordion-header" id="heading1">
-                                <button class="custom-accordion-button fw-4 collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#about1" aria-expanded="true"
-                                    aria-controls="about1">
-                                    Tentang Layanan Service AC ACD
-                                </button>
-                            </h2>
-                            <div id="about1" class="accordion-collapse collapse" aria-labelledby="heading1"
-                                data-bs-parent="#aboutItemGroup">
-                                <div class="accordion-body p-0">
-                                    <p>
-                                        Solusi terbaik untuk Anda yang membutuhkan jasa pengecekan hingga perbaikan AC.
-                                        Dengan layanan home service ini, Anda dapat memesan kapan saja sesuai dengan
-                                        kebutuhan.
-                                        Pekerjaan yang dapat dilakukan oleh mitra ACD adalah pengecekan AC, cuci AC
-                                        (pengecekan & pembersihan unit indoor & outdoor), vacuum & flushing AC
-                                        (pembersihan saluran pipa), tambah freon, isi freon, bongkar & pasang AC, dan
-                                        banyak lagi. Apapun merk dan jenis ACnya, bisa diperbaiki segera!
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="custom-accordion-item about-accordion-item">
-                            <h2 class="custom-accordion-header" id="heading2">
-                                <button class="custom-accordion-button fw-4 collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#about2" aria-expanded="true"
-                                    aria-controls="about2">
-                                    Cara Memesan Jasa
-                                </button>
-                            </h2>
-                            <div id="about2" class="accordion-collapse collapse" aria-labelledby="heading2"
-                                data-bs-parent="#aboutItemGroup">
-                                <div class="accordion-body p-0">
-                                    <p>
-                                        1. Isi form dengan detail, kemudian buat permintaan jasa.
-                                        2. Mitra ACD akan menghubungi Anda untuk mengonfirmasi pemesanan jasa.
-                                        3. Setelah terkonfirmasi, mitra ACD akan datang ke alamat Anda dan melakukan
-                                        pekerjaan.
-                                        4. Mitra ACD akan memberikan kuitansi, kemudian Anda dapat melakukan
-                                        pembayaran secara langsung.*
-                                        *Tersedia juga metode pembayaran melalui OVO yang bisa dilakukan saat pengisian
-                                        form di awal.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="custom-accordion-item about-accordion-item">
-                            <h2 class="custom-accordion-header" id="heading3">
-                                <button class="custom-accordion-button fw-4 collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#about3" aria-expanded="true"
-                                    aria-controls="about3">
-                                    Garansi Hangus Jika Invoice Tidak Sesuai
-                                </button>
-                            </h2>
-                            <div id="about3" class="accordion-collapse collapse" aria-labelledby="heading3"
-                                data-bs-parent="#aboutItemGroup">
-                                <div class="accordion-body p-0">
-                                    <p>
-                                        Pastikan kwitansi/invoice yang diterbitkan dari ACD sesuai dengan pengerjaan
-                                        sesungguhnya di tempat Anda:
-                                        Invoice akan dikirimkan via Email / Whatsapp.
-                                        Jika tidak sesuai, garansi akan hangus.
-                                        Jika ada pekerjaan tambahan ketika invoice sudah terbit, harus dilaporkan ke
-                                        hello@ACD.com.
-                                        Selengkapnya ada di bagian syarat dan ketentuan
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="custom-accordion-item about-accordion-item">
-                            <h2 class="custom-accordion-header" id="heading4">
-                                <button class="custom-accordion-button fw-4 collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#about4" aria-expanded="true"
-                                    aria-controls="about4">
-                                    Service Gratis Jika Invoice Tidak Sesuai
-                                </button>
-                            </h2>
-                            <div id="about4" class="accordion-collapse collapse" aria-labelledby="heading4"
-                                data-bs-parent="#aboutItemGroup">
-                                <div class="accordion-body p-0">
-                                    <p>
-                                        Apabila Anda menerima perbedaan invoice antara pengerjaan service di lapangan
-                                        dengan transaksi yang dilaporkan oleh Penyedia Jasa, silakan laporkan perbedaan
-                                        invoice di aplikasi ACD.
-                                        Dengan melaporkan perbedaan nilai invoice, ACD akan memberikan voucher
-                                        maksimal Rp250,000 senilai invoice pekerjaan Anda.
-                                        Voucher tersebut akan dikirimkan melalui email atau WhatsApp Official ACD,
-                                        disertai informasi detail cara klaim voucher dan pemakaiannya.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
+                    @await Html.PartialAsync("_PromoLayanan")
+                    @await Html.PartialAsync("_InfoLayanan")
                 </div>
             </div>
+
             <div class="col-12">
                 <div class="mt-30">
                     <div class="main-title text-left d-flex align-items-center mb-3">
-                        <h5 class="mb-0 fw-6 b-color">Keluhan / masalah AC *</h5>
+                        <h5 class="mb-0 fw-6 b-color">Keluhan / masalah *</h5>
                     </div>
-                    <div class="items-group">
-                        <div class="form-group">
-                            <div class="row g-2">
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>Service Rutin</span>
-                                    <input class="form-check-input ms-2" type="checkbox" id="keluhan1" name="KeluhanAC"
-                                        value="Service Rutin">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>AC Tidak Dingin</span>
-                                    <input class="form-check-input ms-2" type="checkbox" id="keluhan1" name="KeluhanAC"
-                                        value="AC Tidak Dingin">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>AC Bocor</span>
-                                    <input class="form-check-input ms-2" type="checkbox" id="keluhan2" name="KeluhanAC"
-                                        value="AC Bocor">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>AC Berisik</span>
-                                    <input class="form-check-input ms-2" type="checkbox" id="keluhan3" name="KeluhanAC"
-                                        value="AC Berisik">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>AC Mati Total</span>
-                                    <input class="form-check-input ms-2" type="checkbox" id="keluhan4" name="KeluhanAC"
-                                        value="AC Mati Total">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>Bongkar dan pasang AC</span>
-                                    <input class="form-check-input ms-2" type="checkbox" id="keluhan4" name="KeluhanAC"
-                                        value="Bongkar dan pasang AC">
-                                </div>
-                                <div x-data="{ lainnya: false }" class="col-12 d-flex flex-column p-0">
-                                    <div
-                                        class="d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                        <span>Keluhan Lainnya</span>
-                                        <input class="form-check-input ms-2" type="checkbox" id="keluhan5"
-                                            name="KeluhanAC" value="Keluhan Lainnya" x-model="lainnya">
-                                    </div>
-                                    <template x-if="lainnya">
-                                        <textarea class="form-control mt-2" name="CatatanKeluhanLainnya"
-                                            placeholder="Tulis catatan keluhan lainnya di sini..."></textarea>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    @await Html.PartialAsync("_KeluhanMasalah")
                     <div class="alert alert-warning mt-3" role="alert">
                         * Garansi tidak berlaku untuk layanan cuci AC & jasa pengecekan
                     </div>
-
                 </div>
             </div>
             <div class="col-12">
@@ -232,59 +34,7 @@
                     <div class="main-title text-left d-flex align-items-center mb-3">
                         <h5 class="mb-0 fw-6 b-color">Layanan yang Anda Butuhkan</h5>
                     </div>
-                    <div class="items-group">
-                        <div class="list-group">
-                            <div
-                                class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <img src="~/img/Layanan/cuciac.png" alt="" class="rounded-circle me-3"
-                                        style="width:40px;height:40px;object-fit:cover;">
-                                    <span>Cuci</span>
-                                </div>
-
-                                <a class="btn btn-outline-primary btn-sm rounded-circle" href="#ModalLayanan"
-                                    data-bs-toggle="modal" data-namalayanan="Cuci AC">
-                                    <i class="bi bi-plus"></i>
-                                </a>
-                            </div>
-                            <div
-                                class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <img src="~/img/Layanan/cuciac.png" alt="" class="rounded-circle me-3"
-                                        style="width:40px;height:40px;object-fit:cover;">
-                                    <span>Perbaikan</span>
-                                </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle"
-                                    href="#ModalLayanan" data-bs-toggle="modal" data-namalayanan="Perbaikan AC">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                            <div
-                                class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <img src="~/img/Layanan/cuciac.png" alt="" class="rounded-circle me-3"
-                                        style="width:40px;height:40px;object-fit:cover;">
-                                    <span>Freon</span>
-                                </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle"
-                                    href="#ModalLayanan" data-bs-toggle="modal" data-namalayanan="Freon AC">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                            <div
-                                class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
-                                <div class="d-flex align-items-center">
-                                    <img src="~/img/Layanan/cuciac.png" alt="" class="rounded-circle me-3"
-                                        style="width:40px;height:40px;object-fit:cover;">
-                                    <span>Instalasi</span>
-                                </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle"
-                                    href="#ModalLayanan" data-bs-toggle="modal" data-namalayanan="Instalasi AC">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    @await Html.PartialAsync("_JasaLayanan")
                 </div>
             </div>
             <div class="col-12">
@@ -292,33 +42,7 @@
                     <div class="main-title text-left d-flex align-items-center mb-3">
                         <h5 class="mb-0 fw-6 b-color">Jenis properti Anda? *</h5>
                     </div>
-                    <div class="items-group">
-                        <div class="form-group">
-                            <div class="row g-2">
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>Rumah</span>
-                                    <span>Rp 0<span>
-                                            <input class="form-check-input ms-2" type="radio" id="properti1"
-                                                name="JenisProperti" value="Rumah">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>Apartemen</span>
-                                    <span>Rp20.000<span></span>
-                                        <input class="form-check-input ms-2" type="radio" id="properti2"
-                                            name="JenisProperti" value="Apartemen">
-                                </div>
-                                <div
-                                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                                    <span>Kantor</span>
-                                    <span>Rp 0<span></span>
-                                        <input class="form-check-input ms-2" type="radio" id="properti3"
-                                            name="JenisProperti" value="Kantor">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @await Html.PartialAsync("_JenisProperti")
                     <div class="alert alert-warning mt-3" role="alert">
                         Bagi customer yang melakukan pemesanan untuk unit apartment, mohon mempersiapkan surat izin
                         untuk mitra ACD dari pihak gedung sebelum waktu pengerjaan dilakukan.

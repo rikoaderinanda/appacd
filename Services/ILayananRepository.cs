@@ -9,6 +9,12 @@ namespace appacd.Services
     public interface ILayananRepository
     {
         Task<IEnumerable<dynamic>> GetAllAsync();
+        Task<IEnumerable<dynamic>> GetLayananById(string Id);
+        Task<IEnumerable<dynamic>> InfoLayananAsync(string Id);
+        Task<IEnumerable<dynamic>> KeluhanMasalahAsync(string Id);
+        Task<IEnumerable<dynamic>> JasaLayananAsync(string Id);
+        Task<IEnumerable<dynamic>> JenisPropertiAsync(string Id);
+
     }
     public class LayananRepository : ILayananRepository
     {
@@ -22,7 +28,36 @@ namespace appacd.Services
         public async Task<IEnumerable<dynamic>> GetAllAsync()
         {
             var sql = "SELECT * FROM listlayanan ORDER BY created_at DESC";
-            return await _db.QueryAsync<Layanan>(sql);
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
+        public async Task<IEnumerable<dynamic>> GetLayananById(string Id)
+        {
+            var sql = "SELECT * FROM listlayanan where id="+Id+" ORDER BY created_at DESC";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
+        public async Task<IEnumerable<dynamic>> InfoLayananAsync(string Id)
+        {
+            var sql = "SELECT * FROM infolayanan where id_layanan = "+Id+" ORDER BY urutan asc";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
+        public async Task<IEnumerable<dynamic>> KeluhanMasalahAsync(string Id)
+        {
+            var sql = "SELECT * FROM keluhanmasalah where idlayanan = "+Id+" ORDER BY id DESC";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+        public async Task<IEnumerable<dynamic>> JasaLayananAsync(string Id)
+        {
+            var sql = "SELECT * FROM jasalayanan where id_layanan ="+Id+" ORDER BY id DESC";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
+        public async Task<IEnumerable<dynamic>> JenisPropertiAsync(string Id)
+        {
+            var sql = "SELECT * FROM jenis_properti where id_layanan = "+Id+" ORDER BY id DESC";
+            return await _db.QueryAsync<dynamic>(sql);
         }
     }
 }

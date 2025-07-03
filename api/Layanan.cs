@@ -21,11 +21,44 @@ namespace appacd.api
             _layananRepository = layananRepository;
         }
 
-        [HttpGet]
-        [ActionName("GetLayanan")]
+        [HttpGet("GetLayanan")]
         public async Task<ActionResult<IEnumerable<dynamic>>> GetAll()
         {
             var layananList = await _layananRepository.GetAllAsync();
+            return Ok(layananList);
+        }
+
+        [HttpGet("GetLayananById")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetLayananById(string Id)
+        {
+            var layananList = await _layananRepository.GetLayananById(Id);
+            return Ok(layananList);
+        }
+
+        [HttpGet("InfoLayanan")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> InfoLayanan(string Id)
+        {
+            var layananList = await _layananRepository.InfoLayananAsync(Id);
+            return Ok(layananList);
+        }
+
+        [HttpGet("KeluhanMasalah")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> KeluhanMasalah(string Id)
+        {
+            var layananList = await _layananRepository.KeluhanMasalahAsync(Id);
+            return Ok(layananList);
+        }
+
+        [HttpGet("JasaLayanan")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> JasaLayanan(string Id)
+        {
+            var layananList = await _layananRepository.JasaLayananAsync(Id);
+            return Ok(layananList);
+        }
+        [HttpGet("JenisProperti")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> JenisProperti(string Id)
+        {
+            var layananList = await _layananRepository.JenisPropertiAsync(Id);
             return Ok(layananList);
         }
     }

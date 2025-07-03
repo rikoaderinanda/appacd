@@ -1,0 +1,58 @@
+<div class="items-group">
+    <div class="form-group">
+        <div class="row g-2">
+
+            <!-- Loading skeletons -->
+            
+            <div id="ItemKeluhanMasalah">
+                @for (int i = 0; i < 2; i++)
+                {
+                    <div class="col-12 mb-2">
+                        <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
+                        <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
+                        <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
+                    </div>
+                }
+                
+            </div>
+            <div x-data="{ lainnya: false }" class="col-12 d-flex flex-column p-0" style="margin-left:5px;">
+                <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2 mr-3" style="margin-top:-5px;">
+                    <span>Keluhan Lainnya</span>
+                    <input class="form-check-input ms-2" type="checkbox" id="keluhan5"
+                           name="KeluhanAC" value="Keluhan Lainnya" x-model="lainnya">
+                </div>
+                <template x-if="lainnya">
+                    <textarea class="form-control mt-2" name="CatatanKeluhanLainnya"
+                              placeholder="Tulis catatan keluhan lainnya di sini..."></textarea>
+                </template>
+            </div>
+                
+        </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+      console.error('jQuery is not loaded.');
+      return;
+    }
+    var $ = window.jQuery;
+      $.getJSON('/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]', function (data) {
+          var html = $.map(data, function (item) {
+              var scr = "";
+              if (item.typeinput == "checkbox") {
+                  scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+                            <span>${item.keluhan}</span>
+                            <input class="form-check-input ms-2" type="${item.typeinput}" id="" name="" value="">
+                        </div>`;
+              }
+              return scr;
+          }).join('');
+
+          $('#ItemKeluhanMasalah').html(html);
+          lazyAnimateItems("ItemKeluhanMasalah");
+    });
+
+  });
+</script>

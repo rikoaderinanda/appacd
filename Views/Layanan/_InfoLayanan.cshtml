@@ -1,0 +1,70 @@
+﻿<div class="accordion p-1" id="ItemInfoLayanan">
+    <h5 class="mb-0 fw-6 b-color mt-4 mb-2">Informasi</h5>
+    <div id="accordionSkeletons" class="mb-3">
+        @for (int i = 0; i < 2; i++)
+        {
+            <div class="custom-accordion-item about-accordion-item mb-2">
+                <div class="custom-accordion-header">
+                    <div class="skeleton skeleton-title" style="height: 24px; width: 60%; margin-bottom: 8px;"></div>
+                </div>
+                <div class="accordion-body p-0">
+                    <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
+                    <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
+                    <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
+                </div>
+            </div>
+        }
+    </div>
+        
+</div>
+
+<style>
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+        background-size: 400% 100%;
+        animation: skeleton-loading 1.4s ease infinite;
+        border-radius: 4px;
+    }
+
+    @@keyframes skeleton-loading {
+        0% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0 50%;
+        }
+    }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+      console.error('jQuery is not loaded.');
+      return;
+    }
+    var $ = window.jQuery;
+      $.getJSON('/api/Layanan/InfoLayanan?Id=@ViewData["Id"]', function (data) {
+      var html = $.map(data, function (item) {
+          return '<div class="custom-accordion-item about-accordion-item">' +
+              '<h2 class="custom-accordion-header" id="heading' + item.id + '">' +
+            '<button class="custom-accordion-button fw-4 collapsed" type="button" ' +
+            'data-bs-toggle="collapse" data-bs-target="#about' + item.id + '" aria-expanded="true" ' +
+            'aria-controls="about' + item.id + '">' + item.Title +
+                '</button>' +
+            '</h2>' +
+              '<div id="about' + item.id + '" class="accordion-collapse collapse" aria-labelledby="heading' + item.id + '" ' +
+              'data-bs-parent="#aboutItemGroup' + item.id + '">' +
+                '<div class="accordion-body p-0">' +
+                    '<p>' +
+                        item.Content +
+                    '</p>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+      }).join('');
+        $('#accordionSkeletons').html(html);
+        lazyAnimateItems("accordionSkeletons");
+    });
+
+  });
+</script>

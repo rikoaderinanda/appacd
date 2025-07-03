@@ -1,28 +1,38 @@
 using System.Diagnostics;
 using appacd.Models;
 using Microsoft.AspNetCore.Mvc;
+using appacd.Services;
 
-namespace appacd.Controllers;
-
-public class LayananController : Controller
+namespace appacd.Controllers
 {
-    private readonly ILogger<LayananController> _logger;
-
-    public LayananController(ILogger<LayananController> logger)
+    public class LayananController : Controller
     {
-        _logger = logger;
-    }
+        private readonly ILogger<LayananController> _logger;
+        private readonly ILayananRepository _layananRepository;
 
-    [Route("Layanan/{NamaLayanan}")]
-    public IActionResult Index(string NamaLayanan)
-    {
-        ViewData["NamaLayanan"] = NamaLayanan;
-        return View();
-    }
+        public LayananController(ILogger<LayananController> logger, ILayananRepository layananRepository)
+        {
+            _logger = logger;
+            _layananRepository = layananRepository;
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        [Route("Layanan/{id}")]
+        public async Task<IActionResult> Index(string id)
+        {
+            var layanan = await _layananRepository.GetLayananById(id);
+            foreach(var d in layanan)
+            {
+                ViewData["NamaLayanan"] = d.nama_layanan;
+            }
+            // ViewData["NamaLayanan"] = layanan?.nama_layanan ?? "Layanan Tidak Ditemukan";
+            ViewData["Id"] = id;
+            return View(layanan);
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
 }

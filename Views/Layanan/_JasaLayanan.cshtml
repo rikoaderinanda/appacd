@@ -1,0 +1,50 @@
+<div class="items-group">
+<!-- Loading skeletons -->
+       
+    <div class="list-group" id="listJasaLayanan">
+        @for (int i = 0; i < 2; i++)
+        {
+            <div class="col-12 mb-2">
+                <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
+                <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
+                <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+      console.error('jQuery is not loaded.');
+      return;
+    }
+    var $ = window.jQuery;
+      $.getJSON('/api/Layanan/JasaLayanan?Id=@ViewData["Id"]', function (data) {
+          var html = $.map(data, function (item) {
+              var scr = "";
+              scr = `
+                <div
+                    class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
+                    <div class="d-flex align-items-center">
+                        <img src="~/img/Layanan/cuciac.png" alt="" class="rounded-circle me-3"
+                            style="width:40px;height:40px;object-fit:cover;">
+                        <span>${item.nama_jasa}</span>
+                </div>
+
+                <a class="btn btn-outline-primary btn-sm rounded-circle" href="#ModalLayanan"
+                    data-bs-toggle="modal" data-namalayanan="${item.nama_jasa}">
+                    <i class="bi bi-plus"></i>
+                </a>
+                </div>
+              `;
+              return scr;
+          }).join('');
+
+          $('#listJasaLayanan').html(html);
+          lazyAnimateItems("listJasaLayanan");
+    });
+
+  });
+</script>

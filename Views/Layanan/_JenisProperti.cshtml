@@ -1,0 +1,64 @@
+<div class="items-group">
+    <div class="form-group">
+        <div class="row g-2" id="listJenisProperti">
+            @for (int i = 0; i < 2; i++)
+            {
+                <div class="col-12 mb-2">
+                    <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
+                    <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
+                </div>
+            }
+            <div
+                class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                <span>Rumah</span>
+                <span>Rp 0<span>
+                        <input class="form-check-input ms-2" type="radio" id="properti1"
+                            name="JenisProperti" value="Rumah">
+            </div>
+            <div
+                class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                <span>Apartemen</span>
+                <span>Rp21.000<span></span>
+                    <input class="form-check-input ms-2" type="radio" id="properti2"
+                        name="JenisProperti" value="Apartemen">
+            </div>
+            <div
+                class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                <span>Kantor</span>
+                <span>Rp 0<span></span>
+                    <input class="form-check-input ms-2" type="radio" id="properti3"
+                        name="JenisProperti" value="Kantor">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+      console.error('jQuery is not loaded.');
+      return;
+    }
+    var $ = window.jQuery;
+      $.getJSON('/api/Layanan/JenisProperti?Id=@ViewData["Id"]', function (data) {
+          var html = $.map(data, function (item) {
+              var scr = "";
+              scr = `
+                <div
+                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                    <span>${item.nama_jenis}</span>
+                    <span>${item.harga}<span>
+                            <input class="form-check-input ms-2" type="radio" id="properti1"
+                                name="JenisProperti" value="${item.nama_jenis}">
+                </div>
+              `;
+              return scr;
+          }).join('');
+
+          $('#listJenisProperti').html(html);
+          lazyAnimateItems("listJenisProperti");
+    });
+
+  });
+</script>

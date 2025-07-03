@@ -37,19 +37,6 @@
   </div>
 </div>
 
-<style>
-  .fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s, transform 0.6s;
-  }
-
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-</style>
-
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.jQuery === 'undefined') {
@@ -57,19 +44,23 @@
       return;
     }
     var $ = window.jQuery;
-    $.getJSON('/api/Layanan', function (data) {
+    $.getJSON('/api/Layanan/GetLayanan', function (data) {
       var html = $.map(data, function (item) {
-        return '<div class="item fade-in">' +
-          '<a href="/layanan/' + encodeURIComponent(item.nama_Layanan) + '" class="cate-item text-center">' +
-          '<div class="cate-img mb-2">' +
-          '<img src="/img/Reparasi/acicon.png" class="img-fluid rounded-circle shadow-sm" loading="lazy" />' +
-          '</div>' +
-          '<p class="mb-0 small text-dark text-truncate">' + item.nama_Layanan + '</p>' +
-          '</a>' +
-          '</div>';
+        var scr = "";
+        scr = `
+          <div class="item fade-in">
+            <a href="/layanan/${encodeURIComponent(item.id)}" class="cate-item text-center">
+              <div class="cate-img mb-2">
+                <img src="${item.img_layanan}" class="img-fluid" loading="lazy" />
+              </div>
+              <p class="mb-0 small text-dark text-truncate">${item.nama_layanan}</p>
+            </a>
+          </div>
+        `;
+        return scr;
       }).join('');
       $('#layananCarousel').html(html);
-        initCarousel("layananCarousel",5);
+        initCarousel("layananCarousel",4);
         lazyAnimateItems("layananCarousel");
     });
 
