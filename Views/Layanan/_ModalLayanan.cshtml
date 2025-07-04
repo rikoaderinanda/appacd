@@ -41,29 +41,6 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <ul class="recommend-items ps-0" id="listJasaLayananDetail">
-                                                <!-- Loading Skeleton Start -->
-                                                <li class="skeleton mb-30">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="skeleton-img bg-secondary rounded me-3 ml-3" style="width:56px;height:56px;"></div>
-                                                        <div class="flex-grow-1">
-                                                            <div class="skeleton-line bg-secondary mb-2 rounded" style="width:60%;height:14px;"></div>
-                                                            <div class="skeleton-line bg-secondary mb-1 rounded" style="width:40%;height:12px;"></div>
-                                                            <div class="skeleton-line bg-secondary rounded" style="width:30%;height:10px;"></div>
-                                                        </div>
-                                                    </div>
-                                                    <style>
-                                                        .skeleton-img,
-                                                        .skeleton-line {
-                                                            animation: skeleton-loading 1.2s infinite linear alternate;
-                                                            opacity: 0.7;
-                                                        }
-                                                        @@keyframes skeleton-loading {
-                                                            0% { background-color: #e0e0e0; }
-                                                            100% { background-color: #f5f5f5; }
-                                                        }
-                                                    </style>
-                                                </li>
-                                                <!-- Loading Skeleton End -->
                                             </ul>
                                         </div>
                                     </div>
@@ -165,6 +142,17 @@
         </div>
     </div>
 </div>
+<style>
+    .skeleton-img,
+    .skeleton-line {
+        animation: skeleton-loading 1.2s infinite linear alternate;
+        opacity: 0.7;
+    }
+    @@keyframes skeleton-loading {
+        0% { background-color: #e0e0e0; }
+        100% { background-color: #f5f5f5; }
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -183,55 +171,69 @@
             var id_layanan = button.data('id_layanan');
             var id_jasa = button.data('id');
             $('#modalNamaLayanan').text(nama);
-            $.getJSON('/api/Layanan/JasaLayananDetail?Id='+id_jasa+'', function (data) 
-            {
-                if (!data || data.length === 0) {
-                    $('#listJasaLayananDetail').html('<li class="text-center text-muted py-4">Data layanan tidak tersedia.</li>');
-                    return;
-                }
-                var html = $.map(data, function (item) {
-                    var scr = "";
-                    scr = `
-                        <li data-nama="${item.nama_detail_jasa}" data-harga="${item.harga_satuan}" data-id="${item.id}" class="list-group-item">
-                            <div class="rc-item d-flex align-items-center">
-                                <div class="rc-item-left d-flex">
-                                    <div class="rc-item-img position-relative border br-8">
-                                        <img class="w-100 br-8" src="img/items/img-11.jpg"
-                                            alt="">
-                                        <span class="save-icon fs-6" title="save"></span>
-                                    </div>
-                                    <div class="rc-item-content ms-3">
-                                        <h6 class="fw-4 fs-9 p-color mb-1 ellipsis">${item.nama_detail_jasa}
-                                        </h6>
-                                        <span class="b-color d-block fs-6 fw-5">${Number(item.harga_satuan).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</span>
-                                        <span class="item-weight-count">
-                                            <span
-                                                class="text-decoration-line-through text-muted me-2">
-                                                ${Number(item.harga_satuan).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="rc-item-right ms-auto">
-                                    <ul class="cart-actions ps-0">
-                                        <li>
-                                            <div class="cart-counter">
-                                                <div class="cart-plus-minus">
-                                                    <input type="text" value="${(Storage.get('keranjang')?.find(k => k.id == item.id)?.jumlah || 0)}">
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
+
+            // Show skeleton while loading
+            $('#listJasaLayananDetail').html(`
+                <li class="skeleton mb-30">
+                    <div class="d-flex align-items-center">
+                        <div class="skeleton-img bg-secondary rounded me-3 ml-3" style="width:56px;height:56px;"></div>
+                        <div class="flex-grow-1">
+                            <div class="skeleton-line bg-secondary mb-2 rounded" style="width:60%;height:14px;"></div>
+                            <div class="skeleton-line bg-secondary mb-1 rounded" style="width:40%;height:12px;"></div>
+                            <div class="skeleton-line bg-secondary rounded" style="width:30%;height:10px;"></div>
+                        </div>
+                    </div>
+                </li>
+            `);
+
+            $.getJSON('/api/Layanan/JasaLayananDetail?Id=' + id_jasa + '', function (data) {
+            if (!data || data.length === 0) {
+                $('#listJasaLayananDetail').html('<li class="text-center text-muted py-4">Data layanan tidak tersedia.</li>');
+                return;
+            }
+            var html = $.map(data, function (item) {
+                var scr = "";
+                scr = `
+                <li data-nama="${item.nama_detail_jasa}" data-harga="${item.harga_satuan}" data-id="${item.id}" class="list-group-item">
+                    <div class="rc-item d-flex align-items-center">
+                    <div class="rc-item-left d-flex">
+                        <div class="rc-item-img position-relative border br-8">
+                        <img class="w-100 br-8" src="img/items/img-11.jpg"
+                            alt="">
+                        <span class="save-icon fs-6" title="save"></span>
+                        </div>
+                        <div class="rc-item-content ms-3">
+                        <h6 class="fw-4 fs-9 p-color mb-1 ellipsis">${item.nama_detail_jasa}
+                        </h6>
+                        <span class="b-color d-block fs-6 fw-5">${Number(item.harga_satuan).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</span>
+                        <span class="item-weight-count">
+                            <span
+                            class="text-decoration-line-through text-muted me-2">
+                            ${Number(item.harga_satuan).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+                            </span>
+                        </span>
+                        </div>
+                    </div>
+                    <div class="rc-item-right ms-auto">
+                        <ul class="cart-actions ps-0">
+                        <li>
+                            <div class="cart-counter">
+                            <div class="cart-plus-minus">
+                                <input type="text" value="${(Storage.get('keranjang')?.find(k => k.id == item.id)?.jumlah || 0)}">
+                            </div>
                             </div>
                         </li>
-                    `;
-                    return scr;
-                }).join('');
+                        </ul>
+                    </div>
+                    </div>
+                </li>
+                `;
+                return scr;
+            }).join('');
 
-                $('#listJasaLayananDetail').html(html);
-                initCartPlusMinus();
-                lazyAnimateItems("listJasaLayananDetail");
+            $('#listJasaLayananDetail').html(html);
+            initCartPlusMinus();
+            lazyAnimateItems("listJasaLayananDetail");
             });
         });
 

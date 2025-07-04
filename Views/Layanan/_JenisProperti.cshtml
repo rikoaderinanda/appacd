@@ -8,27 +8,7 @@
                     <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
                 </div>
             }
-            <div
-                class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                <span>Rumah</span>
-                <span>Rp 0<span>
-                        <input class="form-check-input ms-2" type="radio" id="properti1"
-                            name="JenisProperti" value="Rumah">
-            </div>
-            <div
-                class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                <span>Apartemen</span>
-                <span>Rp21.000<span></span>
-                    <input class="form-check-input ms-2" type="radio" id="properti2"
-                        name="JenisProperti" value="Apartemen">
-            </div>
-            <div
-                class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                <span>Kantor</span>
-                <span>Rp 0<span></span>
-                    <input class="form-check-input ms-2" type="radio" id="properti3"
-                        name="JenisProperti" value="Kantor">
-            </div>
+            
         </div>
     </div>
 </div>
@@ -45,14 +25,13 @@
           var html = $.map(data, function (item) {
               var scr = "";
               scr = `
-                <div
-                    class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                <div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
                     <span>${item.nama_jenis}</span>
                     <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
-                        <input class="form-check-input ms-2" type="radio" id="properti1"
-                            name="JenisProperti" value="${item.nama_jenis}">
+                        <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
+                            name="JenisProperti" value="${item.nama_jenis}:${item.harga}">
                     </span></span>
-                    </div>
+                </div>
               `;
               return scr;
           }).join('');
@@ -60,6 +39,18 @@
           $('#listJenisProperti').html(html);
           lazyAnimateItems("listJenisProperti");
     });
-
+    $(document).on('change', 'input[name="JenisProperti"]', function () {
+        const jenisProperti = $(this).val();
+        const [nama, harga] = jenisProperti.split(':');
+        var j = [];
+        j.push({
+            nama_jenis: nama,
+            harga: Number(harga.replace(/\./g, '')) // Menghapus titik untuk mengonversi ke angka
+        });
+        
+        // Simpan ke localStorage
+        Storage.set('jenis_properti', j);
+        $('#totalHargaPesanan').text('Rp ' + CalculateTotal().toLocaleString() || '0');
+    });
   });
 </script>

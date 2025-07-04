@@ -44,7 +44,7 @@
               if (item.typeinput == "checkbox") {
                   scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
                             <span>${item.keluhan}</span>
-                            <input class="form-check-input ms-2" type="${item.typeinput}" id="" name="" value="">
+                            <input class="form-check-input ms-2" type="${item.typeinput}" id="Keluhan${item.id}" name="" value="">
                         </div>`;
               }
               return scr;
@@ -53,6 +53,43 @@
           $('#ItemKeluhanMasalah').html(html);
           lazyAnimateItems("ItemKeluhanMasalah");
     });
+    
+    $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
+            updateKeluhanLocalStorage();
+    });
 
+    // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
+    $('#keluhan5').on('change', function () {
+        updateKeluhanLocalStorage();
+    });
+
+    $(document).on('input', 'textarea[name="CatatanKeluhanLainnya"]', function () {
+        if ($('#keluhan5').is(':checked')) {
+            updateKeluhanLocalStorage();
+        }
+    });
+    function updateKeluhanLocalStorage() {
+        var keluhanTerpilih = [];
+
+        // Ambil semua checkbox yang dicentang
+        $('#ItemKeluhanMasalah input[type="checkbox"]').each(function () {
+            if ($(this).is(':checked')) {
+                var keluhan = $(this).closest('.d-flex').find('span').text().trim();
+                keluhanTerpilih.push(keluhan);
+            }
+        });
+
+        // Tambahkan keluhan lainnya jika dicentang
+        if ($('#keluhan5').is(':checked')) {
+            var catatan = $('textarea[name="CatatanKeluhanLainnya"]').val();
+            if (catatan && catatan.trim() !== '') {
+                keluhanTerpilih.push('Lainnya: ' + catatan.trim());
+            }
+        }
+
+        // Simpan ke localStorage
+        Storage.set('keluhan', keluhanTerpilih);
+        console.log('Keluhan diupdate:', keluhanTerpilih);
+    }
   });
 </script>
