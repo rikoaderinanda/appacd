@@ -60,9 +60,11 @@
         return scr;
       }).join('');
       $('#layananCarousel').html(html);
-        initCarousel("layananCarousel",4);
-        lazyAnimateItems("layananCarousel");
+      initCarousel("layananCarousel",4);
+      lazyAnimateItems("layananCarousel");
     });
+
+    Storage.clear('keranjang'); // Clear keranjang on page load
 
   });
 </script>

@@ -89,15 +89,17 @@
                             <script>
                                 document.addEventListener('DOMContentLoaded', function () {
                                     $('#btnTambahLayanan').off('click').on('click', function () {
-                                        var hasil = [];
+                                        var keranjang = [];
                                         $('#listJasaLayananDetail li').each(function () {
                                             var $li = $(this);
+                                            var id = $li.data('id');
                                             var nama = $li.find('.rc-item-content h6').text().trim();
                                             var jumlah = parseInt($li.find('.cart-plus-minus input').val()) || 0;
                                             var hargaText = $li.find('.rc-item-content .b-color').text().trim();
                                             var harga = parseFloat(hargaText.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
                                             if (jumlah > 0 && nama !="") {
-                                                hasil.push({
+                                                keranjang.push({
+                                                    id: id,
                                                     nama: nama,
                                                     jumlah: jumlah,
                                                     harga: harga,
@@ -105,14 +107,26 @@
                                                 });
                                             }
                                         });
-                                        console.log(hasil);
-                                        if (hasil.length > 0) {
-                                            // Simpan hasil ke localStorage atau kirim ke server
-                                            localStorage.setItem('hasilLayanan', JSON.stringify(hasil));
-                                            // Tutup modal
-                                            var hasil = localStorage.getItem('hasilLayanan');
-                                            document.getElementById('hasilLayananDisplay').textContent = hasil ? hasil : '(Belum ada data)';
-                                        } 
+
+                                        
+                                        if (keranjang.length > 0) {
+                                            var DataKeranjang = Storage.get('keranjang') || [];
+                                            keranjang.forEach(
+                                            newItem => 
+                                            {
+                                                const index = DataKeranjang.findIndex(item => item.nama === newItem.nama);
+                                                if (index > -1) {
+                                                    DataKeranjang[index].jumlah += newItem.jumlah;
+                                                } else {
+                                                    DataKeranjang.push(newItem);
+                                                }
+                                            });
+                                            Storage.set('keranjang', DataKeranjang);
+                                        }
+
+                                        var dataKeranjang = Storage.get('keranjang') || [];
+                                        console.log(dataKeranjang);
+                                        renderKeranjangGrid();
                                         $('#ModalLayanan').modal('hide');
                                     });
                                 });
@@ -152,7 +166,7 @@
                 var html = $.map(data, function (item) {
                     var scr = "";
                     scr = `
-                        <li data-nama="${item.nama_detail_jasa}" data-harga="${item.harga_satuan}">
+                        <li data-nama="${item.nama_detail_jasa}" data-harga="${item.harga_satuan}" data-id="${item.id}" class="list-group-item">
                             <div class="rc-item d-flex align-items-center">
                                 <div class="rc-item-left d-flex">
                                     <div class="rc-item-img position-relative border br-8">

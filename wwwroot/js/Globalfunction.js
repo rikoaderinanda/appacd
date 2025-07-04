@@ -1,4 +1,19 @@
-﻿
+﻿const Storage = {
+    set(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    },
+    get(key) {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : null;
+    },
+    remove(key) {
+        localStorage.removeItem(key);
+    },
+    clear() {
+        localStorage.clear();
+    }
+};
+
 function initCarousel(Element, Qty) {
             var $slider = $('#' + Element + '');
             if ($slider.hasClass('owl-loaded')) {
@@ -15,7 +30,7 @@ function initCarousel(Element, Qty) {
                     1000: { items: Qty }
                 }
             });
-        }
+}
 
 function lazyAnimateItems(Element) {
     var items = document.querySelectorAll('#' + Element + ' .fade-in');

@@ -13,33 +13,25 @@
     </div>
 
     <div class="mt-3">
-      <h6>Hasil Layanan dari LocalStorage:</h6>
-      <pre id="hasilLayananDisplay" class="bg-light p-2 rounded" style="min-height:40px;"></pre>
-    </div>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        function tampilkanHasilLayanan() {
-          var hasil = localStorage.getItem('hasilLayanan');
-          document.getElementById('hasilLayananDisplay').textContent = hasil ? hasil : '(Belum ada data)';
-        }
-        tampilkanHasilLayanan();
-
-        // Update tampilan jika localStorage berubah (termasuk tab lain)
-        window.addEventListener('storage', function (e) {
-          if (e.key === 'hasilLayanan') {
-        tampilkanHasilLayanan();
-          }
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="mb-0">Hasil Layanan dari <span class="text-primary">LocalStorage</span></h6>
+        <button class="btn btn-danger btn-sm" id="clearKeranjangBtn" type="button" title="Kosongkan Keranjang">
+          <i class="bi bi-trash"></i> Clear All
+        </button>
+      </div>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          $('#clearKeranjangBtn').on('click', function () {
+            Storage.set('keranjang', []);
+            renderKeranjangGrid();
+          });
         });
-
-        // Update tampilan jika event custom dipicu (misal setelah modal)
-        document.addEventListener('hasilLayananUpdated', tampilkanHasilLayanan);
-
-        // Optional: update juga jika halaman kembali dari cache (browsing back/forward)
-        window.addEventListener('pageshow', tampilkanHasilLayanan);
-      });
-    </script>
-  
+      </script>
+      <div id="keranjangGrid" class="mt-2"></div>
+      <script>
+        
+      </script>
+    </div>
 
 </div>
 
@@ -51,6 +43,8 @@
         return;
       }
       var $ = window.jQuery;
+      const keranjang = Storage.get('keranjang');
+      renderKeranjangGrid();
       $.getJSON('/api/Layanan/JasaLayanan?Id=@ViewData["Id"]', function (data) 
       {
           var html = $.map(data, function (item) {
@@ -79,5 +73,57 @@
           $('#listJasaLayanan').html(html);
           lazyAnimateItems("listJasaLayanan");
       });
+    
+
+      $(document).on('click', '.btn-delete-item', function () {
+        var id = $(this).data('id');
+        console.log('Hapus item dengan ID:', id);
+        var keranjang = Storage.get('keranjang') || [];
+        keranjang = keranjang.filter(function(item) {
+          return item.id !== id;
+        });
+        Storage.set('keranjang', keranjang);
+        renderKeranjangGrid();
+        
+      });
   });
+
+  function renderKeranjangGrid() {
+    var keranjang = Storage.get('keranjang') || [];
+    var $grid = $('#keranjangGrid');
+    if (keranjang.length === 0) {
+      $grid.html('<div class="alert alert-info">Keranjang kosong.</div>');
+      return;
+    }
+    var html = `
+      <ul class="list-group">
+        ${keranjang.map(function(item) {
+          return `
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+              <div class="me-3 bg-light rounded-circle d-flex justify-content-center align-items-center" style="width:40px; height:40px;">
+                <i class="bi bi-box-seam text-primary"></i>
+              </div>
+              <div>
+                <div class="fw-semibold">${item.nama || '-'}</div>
+                <div class="small text-muted">ID: <span class="fw-normal">${item.id || '-'}</span></div>
+                <div class="small text-muted">Qty: <span class="badge bg-secondary">${item.jumlah || 1}</span></div>
+              </div>
+              </div>
+              <div class="text-end">
+              <div class="text-primary fw-bold">Rp ${((item.harga || 1) * (item.jumlah || 1)).toLocaleString()}</div>
+              <div class="small text-muted">harga satuan: <span class="fw-semibold">Rp ${(item.harga || 1).toLocaleString()}</span></div>
+                <button class="btn btn-sm btn-danger ms-2 btn-delete-item" data-id="${item.id}" title="Hapus">
+                <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </li>
+          `;
+        }).join('')}
+      </ul>
+    `;
+    $grid.html(html);
+  }
+
+  
 </script>
