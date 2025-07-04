@@ -48,10 +48,11 @@
                 <div
                     class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
                     <span>${item.nama_jenis}</span>
-                    <span>${item.harga}<span>
-                            <input class="form-check-input ms-2" type="radio" id="properti1"
-                                name="JenisProperti" value="${item.nama_jenis}">
-                </div>
+                    <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
+                        <input class="form-check-input ms-2" type="radio" id="properti1"
+                            name="JenisProperti" value="${item.nama_jenis}">
+                    </span></span>
+                    </div>
               `;
               return scr;
           }).join('');

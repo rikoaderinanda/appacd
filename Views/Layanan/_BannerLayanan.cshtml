@@ -1,0 +1,59 @@
+﻿<div class="item-imgs mt-4">
+    <div class="owl-carousel imgItem-slider owl-theme" id="bannerLayanan">
+        @* Loading skeletons for carousel items *@
+        @for (int i = 0; i < 4; i++)
+        {
+            <div class="item">
+                <div class="item-card p-0 br-10 border">
+                    <div class="item-img p-0">
+                        <div class="skeleton-img br-8" 
+                        style="width:100%;height:120px;background:#e0e0e0;animation:pulse 1.5s infinite;"></div>
+                    </div>
+                </div>
+            </div>
+        }
+        <style>
+            @@keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+            .skeleton-img {
+                display: block;
+            }
+        </style>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+        }
+        var $ = window.jQuery;
+        $.getJSON('/api/Layanan/BannerLayanan?Id=@ViewData["Id"]', function (data) {
+        //console.log(data);
+        var html = $.map(data, function (item) {
+            var scr = "";
+            scr = `
+            <div class="item">
+                <div class="item-card p-0 br-8 border">
+                    <div class="item-img p-0"
+                        style="width:100%;height:120px;background:#e0e0e0;animation:pulse 1.5s infinite;"
+                        >
+                        <img
+                            class="br-8" src="${item.img_banner}" alt="${item.nama_banner}">
+                    </div>
+                </div>
+            </div>
+            `;
+            return scr;
+        }).join('');
+            $('#bannerLayanan').html(html);
+            initCarousel("bannerLayanan",1);
+            lazyAnimateItems("bannerLayanan");
+        });
+
+    });
+    </script>
