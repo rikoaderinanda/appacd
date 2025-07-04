@@ -84,7 +84,22 @@
                         </div>
                         <div class="col">
                             <button type="button" id="btnTambahLayanan" class="main-btn btn-hover w-100 fw-4 h_40 br-8">
-                                Tambahkan
+                                <span id="btnTambahLayananText">Tambahkan</span>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        var dataKeranjang = Storage.get('keranjang') || [];
+                                        var btnText = document.getElementById('btnTambahLayananText');
+                                        if (btnText) {
+                                            btnText.textContent = dataKeranjang.length === 0 ? 'Tambahkan' : 'Simpan';
+                                        }
+                                        $('#ModalLayanan').on('show.bs.modal', function () {
+                                            var dataKeranjang = Storage.get('keranjang') || [];
+                                            if (btnText) {
+                                                btnText.textContent = dataKeranjang.length === 0 ? 'Tambahkan' : 'Simpan';
+                                            }
+                                        });
+                                    });
+                                </script>
                             </button>
                             <script>
                                 document.addEventListener('DOMContentLoaded', function () {
@@ -106,23 +121,34 @@
                                                     total: jumlah * harga
                                                 });
                                             }
+                                            if (jumlah === 0) {
+                                                var DataKeranjang = Storage.get('keranjang') || [];
+                                                var index = DataKeranjang.findIndex(item => item.id === id);
+                                                if (index > -1) {
+                                                    DataKeranjang.splice(index, 1);
+                                                    Storage.set('keranjang', DataKeranjang);
+                                                }
+                                            }
                                         });
 
                                         
                                         if (keranjang.length > 0) {
                                             var DataKeranjang = Storage.get('keranjang') || [];
                                             keranjang.forEach(
-                                            newItem => 
-                                            {
-                                                const index = DataKeranjang.findIndex(item => item.nama === newItem.nama);
-                                                if (index > -1) {
-                                                    DataKeranjang[index].jumlah += newItem.jumlah;
-                                                } else {
-                                                    DataKeranjang.push(newItem);
+                                                newItem => 
+                                                {
+                                                    const index = DataKeranjang.findIndex(item => item.id === newItem.id);
+                                                    if (index > -1) {
+                                                        DataKeranjang[index].jumlah = newItem.jumlah;
+                                                    } else {
+                                                        DataKeranjang.push(newItem);
+                                                    }
+                                                
                                                 }
-                                            });
+                                            );
                                             Storage.set('keranjang', DataKeranjang);
                                         }
+
 
                                         var dataKeranjang = Storage.get('keranjang') || [];
                                         console.log(dataKeranjang);
@@ -191,7 +217,7 @@
                                         <li>
                                             <div class="cart-counter">
                                                 <div class="cart-plus-minus">
-                                                    <input type="text" value="0">
+                                                    <input type="text" value="${(Storage.get('keranjang')?.find(k => k.id == item.id)?.jumlah || 0)}">
                                                 </div>
                                             </div>
                                         </li>

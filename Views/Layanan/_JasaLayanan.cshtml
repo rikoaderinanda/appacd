@@ -99,23 +99,25 @@
       <ul class="list-group">
         ${keranjang.map(function(item) {
           return `
-            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3 position-relative">
+              <span class="position-absolute top-0 start-0 badge rounded-pill text-dark mt-2 ms-2 shadow-sm" style="font-size: 0.75rem;">
+              ID: <span class="fw-normal">${item.id || '-'}</span>
+              </span>
               <div class="d-flex align-items-center">
               <div class="me-3 bg-light rounded-circle d-flex justify-content-center align-items-center" style="width:40px; height:40px;">
                 <i class="bi bi-box-seam text-primary"></i>
               </div>
               <div>
                 <div class="fw-semibold">${item.nama || '-'}</div>
-                <div class="small text-muted">ID: <span class="fw-normal">${item.id || '-'}</span></div>
                 <div class="small text-muted">Qty: <span class="badge bg-secondary">${item.jumlah || 1}</span></div>
               </div>
               </div>
               <div class="text-end">
               <div class="text-primary fw-bold">Rp ${((item.harga || 1) * (item.jumlah || 1)).toLocaleString()}</div>
               <div class="small text-muted">harga satuan: <span class="fw-semibold">Rp ${(item.harga || 1).toLocaleString()}</span></div>
-                <button class="btn btn-sm btn-danger ms-2 btn-delete-item" data-id="${item.id}" title="Hapus">
+              <button class="btn btn-sm btn-danger ms-2 btn-delete-item" data-id="${item.id}" title="Hapus">
                 <i class="bi bi-trash"></i>
-                </button>
+              </button>
               </div>
             </li>
           `;
