@@ -84,3 +84,20 @@
     </div>
 </div>
 <!-- Footer End -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        var $ = window.jQuery;
+        var keranjang = Storage.get('keranjang') || [];
+        var JenisProperti = Storage.get('jenis_properti') || [];
+        var Keluhan = Storage.get('keluhan') || [];
+
+        console.log(keranjang);
+        console.log(JenisProperti);
+        console.log(Keluhan);
+    });
+</script>

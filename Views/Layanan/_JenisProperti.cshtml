@@ -21,6 +21,9 @@
       return;
     }
     var $ = window.jQuery;
+
+    
+
       $.getJSON('/api/Layanan/JenisProperti?Id=@ViewData["Id"]', function (data) {
           var html = $.map(data, function (item) {
               var scr = "";
@@ -38,6 +41,12 @@
 
           $('#listJenisProperti').html(html);
           lazyAnimateItems("listJenisProperti");
+        var jenisProperti = Storage.get('jenis_properti') || [];
+
+        if (jenisProperti.length > 0) {
+            // Set radio button yang sesuai dengan jenis properti yang disimpan
+            $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + '"]').prop('checked', true);
+        }
     });
     $(document).on('change', 'input[name="JenisProperti"]', function () {
         const jenisProperti = $(this).val();

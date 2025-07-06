@@ -6,7 +6,6 @@
 }
 
 <!-- App Body Start -->
-
 <div class="app-body pb-30">
     @await Html.PartialAsync("_ModalLayanan")
     <div class="container">
@@ -67,8 +66,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
+        
     </div>
 </div>
 <!-- App Body End -->
@@ -86,10 +85,64 @@
                 </div>
             </div>
             <div class="col">
-                <a href="@Url.Action("Index", "CustomerInfo")"
-                    class="main-btn btn-hover w-100 fw-4 h_40 br-8">Lanjutkan</a>
+                <button id="btnLanjutOrder" class="main-btn btn-hover w-100 fw-4 h_40 br-8">Lanjutkan</button>
             </div>
         </div>
     </div>
 </div>
 <!-- Footer End -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        var $ = window.jQuery;
+
+        // Inisialisasi keranjang
+        renderKeranjangGrid();
+
+        
+        // Event listener untuk tombol lanjut order
+        $('#btnLanjutOrder').on('click', function () {
+            // Validasi apakah jenis properti sudah dipilih
+            var keranjang = Storage.get('keranjang') || [];
+            var JenisProperti = Storage.get('jenis_properti') || [];
+            var Keluhan = Storage.get('keluhan') || [];
+
+            if (keranjang.length === 0) {
+                //alert('Silakan pilih layanan terlebih dahulu.');
+                showToast("Silakan pilih layanan terlebih dahulu.!", "myToast");
+                return;
+            }
+            if (JenisProperti.length === 0) {
+                showToast("Silakan pilih jenis properti Anda.", "myToast");
+                return;
+            }
+            if (Keluhan.length === 0) {
+                showToast("Silakan pilih keluhan atau masalah Anda.", "myToast");
+                return;
+            }
+            if($('#tanggalLayanan').val() === '') {
+                showToast("Silakan pilih tanggal layanan.", "myToast");
+                return;
+            }
+            if( $('#jamLayanan').val() === '') {
+                showToast("Silakan pilih jam layanan.", "myToast");
+                return;
+            }
+            window.location.href = '@Url.Action("Index", "CustomerInfo")';
+        });
+
+        // Event listener untuk input tanggal layanan
+        $('#tanggalLayanan').on('change', function () {
+            updateTanggalLayanan();
+        });
+
+        // Event listener untuk input jam layanan
+        $('#jamLayanan').on('change', function () {
+            updateJamLayanan();
+        });
+    });
+</Script>

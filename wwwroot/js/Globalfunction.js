@@ -1,4 +1,9 @@
-﻿const Storage = {
+﻿
+function toggleBottomSheet(Id) {
+    document.getElementById(Id).classList.toggle("show");
+}
+
+const Storage = {
     set(key, value) {
         localStorage.setItem(key, JSON.stringify(value));
     },
@@ -48,4 +53,17 @@ function lazyAnimateItems(Element) {
         // fallback
         items.forEach(function (item) { item.classList.add('visible'); });
     }
+}
+
+function showToast(message,Id) {
+    const toast = document.getElementById(Id);
+    if (!toast) {
+        console.error(`Elemen dengan id '${Id}' tidak ditemukan.`);
+        return;
+    }
+    toast.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
 }

@@ -1,6 +1,8 @@
 /*
     Tambahan CSS
 */
+
+
 .fade-in {
     opacity: 0;
     transform: translateY(20px);
@@ -12,7 +14,28 @@
         transform: translateY(0);
     }
 
-
+    .toast {
+      visibility: hidden;
+      min-width: 200px;
+      background-color: #323232;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.5s, bottom 0.5s;
+    }
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 300px;
+    }
+    
 /*
 Template Name: Kamalo - Online Grocery Supermarket Mobile Template
 Version: 1.0
@@ -1343,7 +1366,8 @@ p {
 }
 
 .close-btn:hover {
-    color: #5e5fa;
+    /* color: #5e5fa; */
+    color: #5e5 !important;
 }
 
 .address-check {

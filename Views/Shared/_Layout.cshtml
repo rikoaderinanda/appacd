@@ -38,6 +38,7 @@
     <div class="app-page">
         @await Html.PartialAsync("_Header")
         @RenderBody()
+        <div id="myToast" class="toast"></div>
         @await Html.PartialAsync("_Footer")
     </div>
 
@@ -60,6 +61,7 @@
                 )
                 .catch(err => console.error("Service Worker registration failed", err));
         }
+        
     </script>
 
 
