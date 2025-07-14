@@ -46,9 +46,9 @@
           var html = $.map(data, function (item) {
               var scr = "";
               if (item.typeinput == "checkbox") {
-                    var isChecked = Keluhan.some(function (storedItem) 
-                    {
-                        return storedItem.id == item.id; // gunakan == agar bisa cocok string dan angka
+                    var isChecked = false;
+                    var isChecked = Array.isArray(Keluhan) && Keluhan.some(function (storedItem) {
+                        return storedItem.id == item.id;
                     });
 
                     if(isChecked)
@@ -71,10 +71,11 @@
           }).join('');
 
           $('#ItemKeluhanMasalah').html(html);
-            var isChecked = Keluhan.some(function (storedItem) 
-            {
+            var isChecked = false;
+            var isChecked = Array.isArray(Keluhan) && Keluhan.some(function (storedItem) {
                 return storedItem.id == 99;
             });
+            
             if(isChecked)  {
                 let item = Keluhan.find(k => k.id === 99);
                 $("#keluhan5").prop("checked", true);

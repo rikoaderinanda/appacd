@@ -56,6 +56,7 @@ function lazyAnimateItems(Element) {
 }
 
 function formatRupiah(angka) {
+    if (typeof angka !== 'number' || isNaN(angka)) return 'Rp 0';
     return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
