@@ -55,15 +55,28 @@ function lazyAnimateItems(Element) {
     }
 }
 
-function showToast(message,Id) {
-    const toast = document.getElementById(Id);
-    if (!toast) {
-        console.error(`Elemen dengan id '${Id}' tidak ditemukan.`);
-        return;
-    }
-    toast.textContent = message;
-    toast.classList.add("show");
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3000);
+function formatRupiah(angka) {
+    return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function validasiForm() {
+    let isValid = true;
+
+    // Reset error
+    $(':input').removeClass('is-invalid');
+
+    // Cek tiap input required
+    $(':input[required]').each(function () {
+        let val = $(this).val().trim();
+
+        if (!val) {
+            $(this).addClass('is-invalid'); // Tambah class untuk trigger pesan error
+            isValid = false;
+        }
+        else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    return isValid;
 }

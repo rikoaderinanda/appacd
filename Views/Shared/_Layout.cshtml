@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - app.acd</title>
@@ -30,15 +29,13 @@
         asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/vendor/OwlCarousel/assets/owl.theme.default.min.css"
         asp-append-version="true">
-
-
 </head>
 
 <body class="fixed-bottom-bar">
     <div class="app-page">
         @await Html.PartialAsync("_Header")
         @RenderBody()
-        <div id="myToast" class="toast"></div>
+        
         @await Html.PartialAsync("_Footer")
     </div>
 
@@ -61,7 +58,6 @@
                 )
                 .catch(err => console.error("Service Worker registration failed", err));
         }
-        
     </script>
 
 

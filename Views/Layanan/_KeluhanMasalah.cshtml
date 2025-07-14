@@ -15,16 +15,18 @@
                 }
                 
             </div>
-            <div x-data="{ lainnya: false }" class="col-12 d-flex flex-column p-0" style="margin-left:5px;">
+            <div class="col-12 d-flex flex-column p-0 wrapper" style="margin-left:5px;">
                 <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2 mr-3" style="margin-top:-5px;">
                     <span>Keluhan Lainnya</span>
                     <input class="form-check-input ms-2" type="checkbox" id="keluhan5"
-                           name="KeluhanAC" value="Keluhan Lainnya" x-model="lainnya">
+                        name="KeluhanAC" value="Keluhan Lainnya">
                 </div>
-                <template x-if="lainnya">
-                    <textarea class="form-control mt-2" name="CatatanKeluhanLainnya"
-                              placeholder="Tulis catatan keluhan lainnya di sini..."></textarea>
-                </template>
+                
+                <!-- Ini textarea disembunyikan dulu -->
+                <textarea class="form-control mt-2" name="CatatanKeluhanLainnya"
+                        placeholder="Tulis catatan keluhan lainnya di sini..."
+                        id="catatanKeluhanLainnya"
+                        style="display: none;"></textarea>
             </div>
                 
         </div>
@@ -37,20 +39,48 @@
       console.error('jQuery is not loaded.');
       return;
     }
-    var $ = window.jQuery;
+      var $ = window.jQuery;
+      const Keluhan = Storage.get('keluhan');
+      console.log(Keluhan);
       $.getJSON('/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]', function (data) {
           var html = $.map(data, function (item) {
               var scr = "";
               if (item.typeinput == "checkbox") {
-                  scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
-                            <span>${item.keluhan}</span>
-                            <input class="form-check-input ms-2" type="${item.typeinput}" id="Keluhan${item.id}" name="" value="">
-                        </div>`;
+                    var isChecked = Keluhan.some(function (storedItem) 
+                    {
+                        return storedItem.id == item.id; // gunakan == agar bisa cocok string dan angka
+                    });
+
+                    if(isChecked)
+                    {
+                            scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+                                <span>${item.keluhan}</span>
+                                <input class="form-check-input ms-2" type="${item.typeinput}" id="Keluhan${item.id}" name="" value="${item.id}" checked>
+                            </div>`;
+                    }
+                    else
+                    {
+                        scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+                                <span>${item.keluhan}</span>
+                                <input class="form-check-input ms-2" type="${item.typeinput}" id="Keluhan${item.id}" name="" value="${item.id}">
+                            </div>`;
+                    }
+                  
               }
               return scr;
           }).join('');
 
           $('#ItemKeluhanMasalah').html(html);
+            var isChecked = Keluhan.some(function (storedItem) 
+            {
+                return storedItem.id == 99;
+            });
+            if(isChecked)  {
+                let item = Keluhan.find(k => k.id === 99);
+                $("#keluhan5").prop("checked", true);
+                $('[name="CatatanKeluhanLainnya"]').show();
+                $('[name="CatatanKeluhanLainnya"]').val(item.val);
+            }
           lazyAnimateItems("ItemKeluhanMasalah");
     });
     
@@ -60,9 +90,13 @@
 
     // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
     $('#keluhan5').on('change', function () {
-        updateKeluhanLocalStorage();
+      if ($(this).is(':checked')) {
+        $('#catatanKeluhanLainnya').show();
+      } else {
+        $('#catatanKeluhanLainnya').hide();
+      }
+      updateKeluhanLocalStorage();
     });
-
     $(document).on('input', 'textarea[name="CatatanKeluhanLainnya"]', function () {
         if ($('#keluhan5').is(':checked')) {
             updateKeluhanLocalStorage();
@@ -75,7 +109,13 @@
         $('#ItemKeluhanMasalah input[type="checkbox"]').each(function () {
             if ($(this).is(':checked')) {
                 var keluhan = $(this).closest('.d-flex').find('span').text().trim();
-                keluhanTerpilih.push(keluhan);
+                var id = $(this).val();
+                keluhanTerpilih.push(
+                    {
+                        "id":id,
+                        "val":keluhan
+                    }
+                );
             }
         });
 
@@ -83,7 +123,13 @@
         if ($('#keluhan5').is(':checked')) {
             var catatan = $('textarea[name="CatatanKeluhanLainnya"]').val();
             if (catatan && catatan.trim() !== '') {
-                keluhanTerpilih.push('Lainnya: ' + catatan.trim());
+                keluhanTerpilih.push(
+                    {
+                        "id":99,
+                        "val":catatan.trim()
+                    }
+                )
+                    
             }
         }
 

@@ -8,6 +8,7 @@
 <!-- App Body Start -->
 <div class="app-body pb-30">
     @await Html.PartialAsync("_ModalLayanan")
+    @await Html.PartialAsync("_Toast")
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -17,7 +18,7 @@
                 </div>
             </div>
 
-            <div class="col-12">
+            <div class="col-12" id="sessionKeluhan" tabindex="-1">
                 <div class="mt-30">
                     <div class="main-title text-left d-flex align-items-center mb-3">
                         <h5 class="mb-0 fw-6 b-color">Keluhan / masalah *</h5>
@@ -28,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12" id="sessionJasaLayanan" tabindex="-1">
                 <div class="mt-30">
                     <div class="main-title text-left d-flex align-items-center mb-3">
                         <h5 class="mb-0 fw-6 b-color">Layanan yang Anda Butuhkan</h5>
@@ -36,7 +37,7 @@
                     @await Html.PartialAsync("_JasaLayanan")
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12" id="sessionJenisProperti" tabindex="-1">
                 <div class="mt-30">
                     <div class="main-title text-left d-flex align-items-center mb-3">
                         <h5 class="mb-0 fw-6 b-color">Jenis properti Anda? *</h5>
@@ -49,7 +50,7 @@
 
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12" id="sessionWaktu" tabindex="-1">
                 <div class="mt-30 mb-30">
                     <div class="main-title text-left d-flex align-items-center mb-3">
                         <h5 class="mb-0 fw-6 b-color">Kapan Anda membutuhkan layanan? *</h5>
@@ -99,7 +100,18 @@
             return;
         }
         var $ = window.jQuery;
+        var dt = Storage.get("Data");
+        console.log(dt);
+        var TanggalKunjungan = Storage.get('TanggalKunjungan') || "";
+        var JamKunjungan = Storage.get('JamKunjungan') || "";
 
+        if(TanggalKunjungan!=""){
+            $("#tanggalLayanan").val(TanggalKunjungan);
+        }
+
+        if(JamKunjungan!=""){
+            $("#jamLayanan").val(JamKunjungan);
+        }
         // Inisialisasi keranjang
         renderKeranjangGrid();
 
@@ -110,33 +122,61 @@
             var keranjang = Storage.get('keranjang') || [];
             var JenisProperti = Storage.get('jenis_properti') || [];
             var Keluhan = Storage.get('keluhan') || [];
+            
+            if (Keluhan.length === 0) {
+                showToast("Silakan pilih keluhan atau masalah Anda.", "myToast");
+                $("#sessionKeluhan").focus();
+                return;
+            }
 
             if (keranjang.length === 0) {
                 //alert('Silakan pilih layanan terlebih dahulu.');
                 showToast("Silakan pilih layanan terlebih dahulu.!", "myToast");
+                $("#sessionJasaLayanan").focus();
                 return;
             }
             if (JenisProperti.length === 0) {
                 showToast("Silakan pilih jenis properti Anda.", "myToast");
+                $("#sessionJenisProperti").focus();
                 return;
             }
-            if (Keluhan.length === 0) {
-                showToast("Silakan pilih keluhan atau masalah Anda.", "myToast");
-                return;
-            }
+            
             if($('#tanggalLayanan').val() === '') {
                 showToast("Silakan pilih tanggal layanan.", "myToast");
+                $("#sessionWaktu").focus();
+                
+                $("#tanggalLayanan").focus();
                 return;
             }
             if( $('#jamLayanan').val() === '') {
                 showToast("Silakan pilih jam layanan.", "myToast");
+                $("#sessionWaktu").focus();
+                $("#jamLayanan").focus();
+
                 return;
             }
-            window.location.href = '@Url.Action("Index", "CustomerInfo")';
+
+            Storage.set('TanggalKunjungan', $('#tanggalLayanan').val());
+            Storage.set('JamKunjungan', $('#jamLayanan').val());
+            var TanggalKunjungan = Storage.get('TanggalKunjungan') || "";
+            var JamKunjungan = Storage.get('JamKunjungan') || "";
+            var Total = Storage.get('Total') ||0;
+
+            var data = {
+                    "Keranjang":keranjang,
+                    "JenisProperti":JenisProperti,
+                    "Keluhan":Keluhan,
+                    "TanggalKunjungan":TanggalKunjungan,
+                    "JamKunjungan":JamKunjungan,
+                    "Total":Total
+                };
+            Storage.set('Data',data);
+            window.location.href = '@Url.Action("Index","CustomerInfo")'; // redirect biasa
+            
         });
 
         // Event listener untuk input tanggal layanan
-        $('#tanggalLayanan').on('change', function () {
+        /*$('#tanggalLayanan').on('change', function () {
             updateTanggalLayanan();
         });
 
@@ -144,5 +184,7 @@
         $('#jamLayanan').on('change', function () {
             updateJamLayanan();
         });
+        */
     });
+
 </Script>

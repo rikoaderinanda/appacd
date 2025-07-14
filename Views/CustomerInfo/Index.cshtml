@@ -5,6 +5,7 @@
     ViewData["HeaderName"] = "Detail Kontak & Lokasi";
 }
 
+@await Html.PartialAsync("_ModalMapsAddress")
 <div class="container mt-4 mb-30">
     <div class="card shadow-sm">
         <div class="card-body">
@@ -17,6 +18,7 @@
                         <span class="input-group-text bg-white"><i class="bi bi-person"></i></span>
                         <input type="text" class="form-control" id="nama" name="nama"
                             placeholder="Masukkan nama lengkap" required>
+                            <div class="invalid-feedback">Nama wajib diisi.</div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -25,6 +27,7 @@
                         <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
                         <input type="email" class="form-control" id="email" name="email" placeholder="contoh@email.com"
                             required>
+                        <div class="invalid-feedback">email wajib diisi.</div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -33,6 +36,7 @@
                         <span class="input-group-text bg-white"><i class="bi bi-whatsapp"></i></span>
                         <input type="tel" class="form-control" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx"
                             required>
+                            <div class="invalid-feedback">whatsapp wajib diisi.</div>
                     </div>
                 </div>
                 <hr class="my-4" style="border-top: 2px dashed #bbb;">
@@ -41,15 +45,24 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-card-text"></i></span>
                         <textarea class="form-control" id="catatan" name="catatan" rows="2"
-                            placeholder="Catatan tambahan"></textarea>
+                            placeholder="Catatan tambahan" required></textarea>
+                        <div class="invalid-feedback">Catatan wajib diisi.</div>
                     </div>
+                    
                 </div>
 
                 <hr class="my-4" style="border-top: 2px dashed #bbb;">
                 <div class="mb-3">
                     <label for="lokasi" class="form-label">Lokasi</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white"><i class="bi bi-geo-alt"></i></span>
+                        <span class="input-group-text bg-white">
+                            <a 
+                                href="#ModalMapsAddres"
+                                data-bs-toggle="modal" 
+                            >
+                            <i class="bi bi-geo-alt"></i>
+                            </a>
+                        </span>
                         <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Masukkan lokasi">
                     </div>
                 </div>
@@ -73,12 +86,14 @@
             <div class="col">
                 <div class="cart-total text-start">
                     <div class="total-text b-color fw-5 fs-6">Estimasi Harga :</div>
-                    <div class="total-text b-color fw-5 fs-6">Rp 20.000</div>
+                    <div class="total-text b-color fw-5 fs-6"><span id="txtTotal"></span></div>
                 </div>
             </div>
             <div class="col">
-                <a href="@Url.Action("Index", "Pembayaran")"
-                    class="main-btn btn-hover w-100 fw-4 h_40 br-8">Lanjutkan</a>
+                <button
+                    id="btnLanjutPembayaran"
+                    onclick="LanjutPembayaran();"
+                    class="main-btn btn-hover w-100 fw-4 h_40 br-8">Lanjutkan</button>
             </div>
         </div>
     </div>
@@ -92,12 +107,38 @@
             return;
         }
         var $ = window.jQuery;
-        var keranjang = Storage.get('keranjang') || [];
-        var JenisProperti = Storage.get('jenis_properti') || [];
-        var Keluhan = Storage.get('keluhan') || [];
-
-        console.log(keranjang);
-        console.log(JenisProperti);
-        console.log(Keluhan);
+        var Data = Storage.get('Data') || [];
+        console.log(Data);
+        $("#txtTotal").text(formatRupiah(Data.Total)||"Rp 0");
     });
+
+    function LanjutPembayaran(){
+        let dataCustomer = {
+            "nama":$("#nama").val(),
+            "email":$("#email").val(),
+            "whatsapp":$("#whatsapp").val(),
+            "catatan":$("#catatan").val(),
+            "lokasi":$("#lokasi").val(),
+            "alamat":$("#alamat").val()
+        }
+        let firstEmpty = null;
+
+        for (const key in dataCustomer) {
+            let val = dataCustomer[key];
+            if (!val || val.trim() === "") {
+                firstEmpty = key;
+                break;
+            }
+        }
+
+        if (firstEmpty) {
+            if (validasiForm()) {
+                // Lanjutkan proses
+                console.log("Form valid, lanjut submit");
+            }
+            $(`#${firstEmpty}`).focus(); // arahkan fokus ke input yang kosong
+        } else {
+            console.log("Semua data terisi:", dataCustomer);
+        }
+    }
 </script>

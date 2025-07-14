@@ -59,7 +59,8 @@
                             style="width:40px;height:40px;object-fit:cover;">
                         <span>${item.nama_jasa}</span>  
                     </div>
-                    <a class="btn btn-outline-primary btn-sm rounded-circle" href="#ModalLayanan"
+                    <a class="btn btn-outline-primary btn-sm rounded-circle" 
+                        href="#ModalLayanan"
                         data-bs-toggle="modal" 
                         data-namalayanan="${item.nama_jasa}" 
                         data-id="${item.id}"
@@ -151,7 +152,7 @@
     total += JenisProperti.reduce(function(sum, item) {
       return sum + (item.harga || 0);
     }, 0);  
-    
+    Storage.set('Total',total);
     return total;
   }
 </script>

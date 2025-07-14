@@ -32,7 +32,7 @@
                     <span>${item.nama_jenis}</span>
                     <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
                         <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
-                            name="JenisProperti" value="${item.nama_jenis}:${item.harga}">
+                            name="JenisProperti" value="${item.nama_jenis}:${item.harga}:${item.id}">
                     </span></span>
                 </div>
               `;
@@ -45,16 +45,17 @@
 
         if (jenisProperti.length > 0) {
             // Set radio button yang sesuai dengan jenis properti yang disimpan
-            $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + '"]').prop('checked', true);
+            $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':'+jenisProperti[0].id+'"]').prop('checked', true);
         }
     });
     $(document).on('change', 'input[name="JenisProperti"]', function () {
         const jenisProperti = $(this).val();
-        const [nama, harga] = jenisProperti.split(':');
+        const [nama, harga, id] = jenisProperti.split(':');
         var j = [];
         j.push({
             nama_jenis: nama,
-            harga: Number(harga.replace(/\./g, '')) // Menghapus titik untuk mengonversi ke angka
+            harga: Number(harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
+            id: id
         });
         
         // Simpan ke localStorage
