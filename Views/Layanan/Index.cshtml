@@ -100,8 +100,7 @@
             return;
         }
         var $ = window.jQuery;
-        var dt = Storage.get("Data");
-        console.log(dt);
+
         var TanggalKunjungan = Storage.get('TanggalKunjungan') || "";
         var JamKunjungan = Storage.get('JamKunjungan') || "";
 
@@ -158,33 +157,11 @@
 
             Storage.set('TanggalKunjungan', $('#tanggalLayanan').val());
             Storage.set('JamKunjungan', $('#jamLayanan').val());
-            var TanggalKunjungan = Storage.get('TanggalKunjungan') || "";
-            var JamKunjungan = Storage.get('JamKunjungan') || "";
-            var Total = Storage.get('Total') ||0;
 
-            var data = {
-                    "Keranjang":keranjang,
-                    "JenisProperti":JenisProperti,
-                    "Keluhan":Keluhan,
-                    "TanggalKunjungan":TanggalKunjungan,
-                    "JamKunjungan":JamKunjungan,
-                    "Total":Total
-                };
-            Storage.set('Data',data);
+            Storage.set('id_layanan',@ViewData["IdLayanan"]);
             window.location.href = '@Url.Action("Index","CustomerInfo")'; // redirect biasa
             
         });
-
-        // Event listener untuk input tanggal layanan
-        /*$('#tanggalLayanan').on('change', function () {
-            updateTanggalLayanan();
-        });
-
-        // Event listener untuk input jam layanan
-        $('#jamLayanan').on('change', function () {
-            updateJamLayanan();
-        });
-        */
     });
 
 </Script>

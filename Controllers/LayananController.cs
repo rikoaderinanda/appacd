@@ -5,6 +5,7 @@ using appacd.Services;
 
 namespace appacd.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class LayananController : Controller
     {
         private readonly ILogger<LayananController> _logger;
@@ -20,9 +21,10 @@ namespace appacd.Controllers
         public async Task<IActionResult> Index(string id)
         {
             var layanan = await _layananRepository.GetLayananById(id);
-            foreach(var d in layanan)
+            foreach (var d in layanan)
             {
                 ViewData["NamaLayanan"] = d.nama_layanan;
+                ViewData["IdLayanan"] = d.id;
             }
             // ViewData["NamaLayanan"] = layanan?.nama_layanan ?? "Layanan Tidak Ditemukan";
             ViewData["Id"] = id;

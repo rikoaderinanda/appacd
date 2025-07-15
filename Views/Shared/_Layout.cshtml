@@ -29,6 +29,17 @@
         asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/vendor/OwlCarousel/assets/owl.theme.default.min.css"
         asp-append-version="true">
+    <!-- JavaScripts -->
+    <script src="~/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    @* <script src="~/vendor/OwlCarousel/owl.carousel.js" asp-append-version="true"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
+        asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-select/js/bootstrap-select.min.js" asp-append-version="true"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" asp-append-version="true"></script>
+    <script src="~/js/custom.js" asp-append-version="true"></script>
+    <script src="~/js/Globalfunction.js" asp-append-version="true"></script>
 </head>
 
 <body class="fixed-bottom-bar">
@@ -39,16 +50,7 @@
         @await Html.PartialAsync("_Footer")
     </div>
 
-    <!-- JavaScripts -->
-    <script src="~/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
-    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    @* <script src="~/vendor/OwlCarousel/owl.carousel.js" asp-append-version="true"></script> *@
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
-            asp-append-version="true"></script>
-    <script src="~/vendor/bootstrap-select/js/bootstrap-select.min.js" asp-append-version="true"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" asp-append-version="true"></script>
-    <script src="~/js/custom.js" asp-append-version="true"></script>
-    <script src="~/js/Globalfunction.js" asp-append-version="true"></script>
+    
 
     <script>
         if ('serviceWorker' in navigator) {

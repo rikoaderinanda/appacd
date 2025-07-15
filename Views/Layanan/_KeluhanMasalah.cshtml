@@ -34,76 +34,84 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.jQuery === 'undefined') {
       console.error('jQuery is not loaded.');
       return;
     }
-      var $ = window.jQuery;
-      const Keluhan = Storage.get('keluhan');
-      console.log(Keluhan);
-      $.getJSON('/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]', function (data) {
-          var html = $.map(data, function (item) {
-              var scr = "";
-              if (item.typeinput == "checkbox") {
-                    var isChecked = false;
-                    var isChecked = Array.isArray(Keluhan) && Keluhan.some(function (storedItem) {
-                        return storedItem.id == item.id;
-                    });
+        var $ = window.jQuery;
+        const Keluhan = Storage.get('keluhan');
+        console.log('Keluhan');
+        console.log(Keluhan);
+        callApi({
+            url: '/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]',
+            method: 'GET',
+            success: function (data) {
+                @* console.log('Data:', data); *@
+                var html = $.map(data, function (item) {
+                    var scr = "";
+                    if (item.typeinput == "checkbox") {
+                        var isChecked = false;
+                        var isChecked = Array.isArray(Keluhan) && Keluhan.some(function (storedItem) {
+                            return storedItem.id == item.id;
+                        });
 
-                    if(isChecked)
-                    {
+                        if (isChecked) {
                             scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
                                 <span>${item.keluhan}</span>
                                 <input class="form-check-input ms-2" type="${item.typeinput}" id="Keluhan${item.id}" name="" value="${item.id}" checked>
                             </div>`;
-                    }
-                    else
-                    {
-                        scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+                        }
+                        else {
+                            scr = `<div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-2">
                                 <span>${item.keluhan}</span>
                                 <input class="form-check-input ms-2" type="${item.typeinput}" id="Keluhan${item.id}" name="" value="${item.id}">
                             </div>`;
+                        }
+
                     }
-                  
-              }
-              return scr;
-          }).join('');
+                    return scr;
+                }).join('');
 
-          $('#ItemKeluhanMasalah').html(html);
-            var isChecked = false;
-            var isChecked = Array.isArray(Keluhan) && Keluhan.some(function (storedItem) {
-                return storedItem.id == 99;
-            });
-            
-            if(isChecked)  {
-                let item = Keluhan.find(k => k.id === 99);
-                $("#keluhan5").prop("checked", true);
-                $('[name="CatatanKeluhanLainnya"]').show();
-                $('[name="CatatanKeluhanLainnya"]').val(item.val);
+                $('#ItemKeluhanMasalah').html(html);
+                var isChecked = false;
+                var isChecked = Array.isArray(Keluhan) && Keluhan.some(function (storedItem) {
+                    return storedItem.id == 99;
+                });
+
+                if (isChecked) {
+                    const item = Keluhan.find(obj => obj.id === "99");
+                    const val = item ? item.val : null;
+                    $("#keluhan5").prop("checked", true);
+                    $('[name="CatatanKeluhanLainnya"]').show();
+                    $('[name="CatatanKeluhanLainnya"]').val(val);
+                }
+                lazyAnimateItems("ItemKeluhanMasalah");
+            },
+            error: function (err) {
+                alert('Error: ' + err);
             }
-          lazyAnimateItems("ItemKeluhanMasalah");
-    });
-    
-    $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
-            updateKeluhanLocalStorage();
-    });
+        });
 
-    // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
-    $('#keluhan5').on('change', function () {
-      if ($(this).is(':checked')) {
-        $('#catatanKeluhanLainnya').show();
-      } else {
-        $('#catatanKeluhanLainnya').hide();
-      }
-      updateKeluhanLocalStorage();
-    });
-    $(document).on('input', 'textarea[name="CatatanKeluhanLainnya"]', function () {
-        if ($('#keluhan5').is(':checked')) {
+        $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
             updateKeluhanLocalStorage();
-        }
-    });
-    function updateKeluhanLocalStorage() {
+        });
+
+        // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
+        $('#keluhan5').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#catatanKeluhanLainnya').show();
+            } else {
+                $('#catatanKeluhanLainnya').hide();
+            }
+            updateKeluhanLocalStorage();
+        });
+        $(document).on('input', 'textarea[name="CatatanKeluhanLainnya"]', function () {
+            if ($('#keluhan5').is(':checked')) {
+                updateKeluhanLocalStorage();
+            }
+        });
+        function updateKeluhanLocalStorage() {
         var keluhanTerpilih = [];
 
         // Ambil semua checkbox yang dicentang
@@ -138,5 +146,5 @@
         Storage.set('keluhan', keluhanTerpilih);
         console.log('Keluhan diupdate:', keluhanTerpilih);
     }
-  });
+    });
 </script>

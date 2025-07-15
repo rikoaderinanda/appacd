@@ -10,7 +10,7 @@
         opacity: 1;
     }
 </style>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlxNzln-Nc4phPnovK7_laoy7aueAe0Ik&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDkyCRfv1tFg7sdZPfIED_EbBTzlWBhgk&callback=initMap" async defer></script>
 
 <div class="modal fade" id="ModalMapsAddres" tabindex="-1" aria-labelledby="ModalMapsAddresLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen-sm-down">
@@ -29,8 +29,9 @@
                                 Lokasi Saya
                             </button>
                         </div>
-                        <input type="hidden" id="latitude">
-                        <input type="hidden" id="longitude">
+                        <input id="latitude">
+                        <input id="longitude">
+                        <div id="alamatMarker" class="mt-2 text-muted">Menentukan alamat...</div>
                     </div>
                 </div>
             </div>
@@ -41,17 +42,18 @@
 
 
 <script>
+    var $ = window.jQuery;
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
         console.error('jQuery is not loaded.');
         return;
         }
-        var $ = window.jQuery;
+        
         
     });
 </script>
 <script>
-  let map, marker;
+  let map, marker, geocoder;
 
   function initMap() {
     const fallbackPos = { lat: -6.9175, lng: 107.6191 };
@@ -67,7 +69,9 @@
       draggable: true,
     });
 
-    // Get current location
+    geocoder = new google.maps.Geocoder();
+    updateAddress(fallbackPos); // tampilkan default alamat
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function (position) {
@@ -79,6 +83,7 @@
           marker.setPosition(userPos);
           $('#latitude').val(userPos.lat);
           $('#longitude').val(userPos.lng);
+          updateAddress(userPos); // update alamat dari lokasi user
         },
         function () {
           console.warn("User menolak berbagi lokasi.");
@@ -90,6 +95,22 @@
       const pos = marker.getPosition();
       $('#latitude').val(pos.lat());
       $('#longitude').val(pos.lng());
+      updateAddress({ lat: pos.lat(), lng: pos.lng() }); // update saat geser
+    });
+  }
+
+  function updateAddress(latlng) {
+    $("#alamatMarker").text("Memuat alamat...");
+    geocoder.geocode({ location: latlng }, function (results, status) {
+      if (status === "OK") {
+        if (results[0]) {
+          $("#alamatMarker").text(results[0].formatted_address);
+        } else {
+          $("#alamatMarker").text("Alamat tidak ditemukan.");
+        }
+      } else {
+        $("#alamatMarker").text("Gagal mengambil alamat: " + status);
+      }
     });
   }
 </script>

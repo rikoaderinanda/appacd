@@ -40,55 +40,60 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-      if (typeof window.jQuery === 'undefined') {
-        console.error('jQuery is not loaded.');
-        return;
+    if (typeof window.jQuery === 'undefined') {
+      console.error('jQuery is not loaded.');
+      return;
+    }
+    var $ = window.jQuery;
+    const keranjang = Storage.get('keranjang');
+    renderKeranjangGrid();
+    callApi({
+      url: '/api/Layanan/JasaLayanan?Id=@ViewData["Id"]',
+      method: 'GET',
+      success: function (data) {
+        var html = $.map(data, function (item) {
+          var scr = "";
+          scr = `
+                  <div
+                      class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
+                      <div class="d-flex align-items-center">
+                          <img src="${item.img_jasa}" alt="" class="rounded-circle me-3"
+                              style="width:40px;height:40px;object-fit:cover;">
+                          <span>${item.nama_jasa}</span>  
+                      </div>
+                      <a class="btn btn-outline-primary btn-sm rounded-circle" 
+                          href="#ModalLayanan"
+                          data-bs-toggle="modal" 
+                          data-namalayanan="${item.nama_jasa}" 
+                          data-id="${item.id}"
+                      >
+                          <i class="bi bi-plus"></i>
+                      </a>
+                  </div>
+                  
+                `;
+          return scr;
+        }).join('');
+
+        $('#listJasaLayanan').html(html);
+        lazyAnimateItems("listJasaLayanan");
+      },
+      error: function (err) {
+        alert('Error: ' + err);
       }
-      var $ = window.jQuery;
-      const keranjang = Storage.get('keranjang');
+    });
+
+    $(document).on('click', '.btn-delete-item', function () {
+      var id = $(this).data('id');
+      console.log('Hapus item dengan ID:', id);
+      var keranjang = Storage.get('keranjang') || [];
+      keranjang = keranjang.filter(function (item) {
+        return item.id !== id;
+      });
+      Storage.set('keranjang', keranjang);
       renderKeranjangGrid();
-      $.getJSON('/api/Layanan/JasaLayanan?Id=@ViewData["Id"]', function (data) 
-      {
-          var html = $.map(data, function (item) {
-              var scr = "";
-              scr = `
-                <div
-                    class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
-                    <div class="d-flex align-items-center">
-                        <img src="${item.img_jasa}" alt="" class="rounded-circle me-3"
-                            style="width:40px;height:40px;object-fit:cover;">
-                        <span>${item.nama_jasa}</span>  
-                    </div>
-                    <a class="btn btn-outline-primary btn-sm rounded-circle" 
-                        href="#ModalLayanan"
-                        data-bs-toggle="modal" 
-                        data-namalayanan="${item.nama_jasa}" 
-                        data-id="${item.id}"
-                    >
-                        <i class="bi bi-plus"></i>
-                    </a>
-                </div>
-                
-              `;
-              return scr;
-          }).join('');
 
-          $('#listJasaLayanan').html(html);
-          lazyAnimateItems("listJasaLayanan");
-      });
-    
-
-      $(document).on('click', '.btn-delete-item', function () {
-        var id = $(this).data('id');
-        console.log('Hapus item dengan ID:', id);
-        var keranjang = Storage.get('keranjang') || [];
-        keranjang = keranjang.filter(function(item) {
-          return item.id !== id;
-        });
-        Storage.set('keranjang', keranjang);
-        renderKeranjangGrid();
-        
-      });
+    });
   });
 
   function renderKeranjangGrid() {

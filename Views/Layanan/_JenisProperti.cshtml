@@ -20,32 +20,37 @@
       console.error('jQuery is not loaded.');
       return;
     }
-    var $ = window.jQuery;
+        var $ = window.jQuery;
+        callApi({
+            url: '/api/Layanan/JenisProperti?Id=@ViewData["Id"]',
+            method: 'GET',
+            success: function (data) {
+                var html = $.map(data, function (item) {
+                    var scr = "";
+                    scr = `
+            <div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                <span>${item.nama_jenis}</span>
+                <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
+                    <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
+                        name="JenisProperti" value="${item.nama_jenis}:${item.harga}:${item.id}">
+                </span></span>
+            </div>
+            `;
+                    return scr;
+                }).join('');
 
-    
+                $('#listJenisProperti').html(html);
+                lazyAnimateItems("listJenisProperti");
+                var jenisProperti = Storage.get('jenis_properti') || [];
+                @* console.log(jenisProperti); *@
+                if (jenisProperti.length > 0) {
+                    // Set radio button yang sesuai dengan jenis properti yang disimpan
+                    $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':' + jenisProperti[0].id + '"]').prop('checked', true);
 
-      $.getJSON('/api/Layanan/JenisProperti?Id=@ViewData["Id"]', function (data) {
-          var html = $.map(data, function (item) {
-              var scr = "";
-              scr = `
-                <div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                    <span>${item.nama_jenis}</span>
-                    <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
-                        <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
-                            name="JenisProperti" value="${item.nama_jenis}:${item.harga}:${item.id}">
-                    </span></span>
-                </div>
-              `;
-              return scr;
-          }).join('');
-
-          $('#listJenisProperti').html(html);
-          lazyAnimateItems("listJenisProperti");
-        var jenisProperti = Storage.get('jenis_properti') || [];
-
-        if (jenisProperti.length > 0) {
-            // Set radio button yang sesuai dengan jenis properti yang disimpan
-            $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':'+jenisProperti[0].id+'"]').prop('checked', true);
+                }
+            },
+            error: function (err) {
+                alert('Error: ' + err);
         }
     });
     $(document).on('change', 'input[name="JenisProperti"]', function () {

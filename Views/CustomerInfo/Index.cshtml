@@ -9,7 +9,11 @@
 <div class="container mt-4 mb-30">
     <div class="card shadow-sm">
         <div class="card-body">
-            <h4 class="card-title mb-0">Formulir Informasi Pelanggan</h4>
+            <h4 class="card-title mb-0 text-center">
+                Informasi Pelanggan untuk dikunjungi
+
+            </h4>
+
             <hr class="" style="border-top: 2px dashed #bbb;">
             <form>
                 <div class="mb-3">
@@ -22,33 +26,13 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="contoh@email.com"
-                            required>
-                        <div class="invalid-feedback">email wajib diisi.</div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="whatsapp" class="form-label">Nomor WhatsApp</label>
+                    <label for="whatsapp" class="form-label">Nomor yang akan dihubungi Teknisi</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-whatsapp"></i></span>
                         <input type="tel" class="form-control" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx"
                             required>
                             <div class="invalid-feedback">whatsapp wajib diisi.</div>
                     </div>
-                </div>
-                <hr class="my-4" style="border-top: 2px dashed #bbb;">
-                <div class="mb-3">
-                    <label for="catatan" class="form-label">Catatan</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white"><i class="bi bi-card-text"></i></span>
-                        <textarea class="form-control" id="catatan" name="catatan" rows="2"
-                            placeholder="Catatan tambahan" required></textarea>
-                        <div class="invalid-feedback">Catatan wajib diisi.</div>
-                    </div>
-                    
                 </div>
 
                 <hr class="my-4" style="border-top: 2px dashed #bbb;">
@@ -63,7 +47,9 @@
                             <i class="bi bi-geo-alt"></i>
                             </a>
                         </span>
-                        <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Masukkan lokasi">
+                        <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Masukkan lokasi"
+                            required>
+                        <div class="invalid-feedback">lokasi wajib diisi.</div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -71,8 +57,21 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white"><i class="bi bi-house"></i></span>
                         <textarea class="form-control" id="alamat" name="alamat" rows="3"
-                            placeholder="Masukkan alamat lengkap"></textarea>
+                            placeholder="Masukkan alamat lengkap" required></textarea>
+                        <div class="invalid-feedback">Alamat wajib diisi</div>
                     </div>
+                </div>
+
+                <hr class="my-4" style="border-top: 2px dashed #bbb;">
+                <div class="mb-3">
+                    <label for="catatan" class="form-label">Catatan</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-card-text"></i></span>
+                        <textarea class="form-control" id="catatan" name="catatan" rows="2"
+                            placeholder="Catatan tambahan" required></textarea>
+                        <div class="invalid-feedback">Catatan wajib diisi.</div>
+                    </div>
+
                 </div>
             </form>
         </div>
@@ -107,15 +106,81 @@
             return;
         }
         var $ = window.jQuery;
-        var Data = Storage.get('Data') || [];
+        var Data = getStoragePemesanan();
         console.log(Data);
+        if (
+            Data.Keranjang == null ||
+            Data.JenisProperti == null ||
+            Data.Keluhan == null ||
+            Data.TanggalKunjungan == "" ||
+            Data.JamKunjungan == "" ||
+            Data.Total == null
+        ) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Session Order Expired',
+                text: 'Anda akan diarahkan kembali ke halaman utama.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '@Url.Action("Index", "Home")';
+            });
+        }
+        if (Data.Customer != null) {
+            $("#nama").val(Data.Customer.nama || "");
+            $("#whatsapp").val(Data.Customer.whatsapp || "");
+            $("#catatan").val(Data.Customer.catatan || "");
+            $("#lokasi").val(Data.Customer.lokasi || "");
+            $("#alamat").val(Data.Customer.alamat || "");
+        }
+
         $("#txtTotal").text(formatRupiah(Data.Total)||"Rp 0");
+        $('input[required], textarea[required]').on('input', function () {
+            if ($(this).val().trim() !== '') {
+                $(this).removeClass('is-invalid');
+            }
+        });
+        $("#whatsapp").on("keypress", function (e) {
+            let charCode = e.which ? e.which : e.keyCode;
+            // Cegah selain angka
+            if (charCode < 48 || charCode > 57) {
+                e.preventDefault();
+            }
+        });
+
+        // Validasi live saat user mengetik
+        $("#whatsapp").on("input", function () {
+            const val = $(this).val();
+            if (isValidWhatsapp(val)) {
+                $(this).removeClass("is-invalid");
+            } else {
+                $(this).addClass("is-invalid");
+                $(this).next('.invalid-feedback').text("Nomor WhatsApp tidak valid.");
+            }
+        });
     });
 
     function LanjutPembayaran(){
+        var Data = getStoragePemesanan();
+        if (
+            Data.Keranjang == null ||
+            Data.JenisProperti == null ||
+            Data.Keluhan == null ||
+            Data.TanggalKunjungan == "" ||
+            Data.JamKunjungan == "" ||
+            Data.Total == null
+        ) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Session Order Expired',
+                text: 'Anda akan diarahkan kembali ke halaman utama.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '@Url.Action("Index", "Home")';
+            });
+        }
+
         let dataCustomer = {
-            "nama":$("#nama").val(),
-            "email":$("#email").val(),
+            "nama": $("#nama").val(),
             "whatsapp":$("#whatsapp").val(),
             "catatan":$("#catatan").val(),
             "lokasi":$("#lokasi").val(),
@@ -131,14 +196,25 @@
             }
         }
 
-        if (firstEmpty) {
-            if (validasiForm()) {
-                // Lanjutkan proses
-                console.log("Form valid, lanjut submit");
+        if (validasiForm()) {
+            Storage.set('Customer', dataCustomer)
+            var Data = getStoragePemesanan();
+            console.log(Data);
+            const kosong = getEmptyFields(Data);
+            if (kosong.length) {
+                console.log("Field kosong ditemukan di:");
+                console.log(kosong);
+            } else {
+                console.log("Semua data terisi.");
+                //Storage.set('Data',Data);
+                window.location.href = '@Url.Action("Index", "Pembayaran")';
             }
-            $(`#${firstEmpty}`).focus(); // arahkan fokus ke input yang kosong
-        } else {
-            console.log("Semua data terisi:", dataCustomer);
         }
+        else {
+            if (firstEmpty) {
+                return $(`#${firstEmpty}`).focus();
+            }
+        }
+
     }
 </script>

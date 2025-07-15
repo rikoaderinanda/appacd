@@ -1,28 +1,61 @@
 @if (ViewData["Footer"] == "1")
 {
+    string cartSelected = "";
+    string HomeSelected = "";
+    string TrackingSelected = "";
+    string ProfileSelected = "";
+    if (ViewData["SelectedFooter"] == "Home")
+    {
+        HomeSelected = "selected";
+        cartSelected = "";
+        TrackingSelected = "";
+        ProfileSelected = "";
+    }
+    else if (ViewData["SelectedFooter"] == "Cart")
+    {
+        HomeSelected = "";
+        cartSelected = "selected";
+        TrackingSelected = "";
+        ProfileSelected = "";
+    }
+    else if (ViewData["SelectedFooter"] == "Tracking")
+    {
+        HomeSelected = "";
+        cartSelected = "";
+        TrackingSelected = "selected";
+        ProfileSelected = "";
+    }
+    else if (ViewData["SelectedFooter"] == "Profile")
+    {
+        HomeSelected = "";
+        cartSelected = "";
+        TrackingSelected = "";
+        ProfileSelected = "selected";
+    }
+
     <!-- Footer -->
     <div class="gobo-menu-footer gobo-shadow fixed-bottom px-2 py-3 text-center">
         <div class="container p-0">
             <div class="row">
-                <div class="col selected">
+                <div class="col @HomeSelected">
                     <a href="@Url.Action("Index", "Home")" class="small text-decoration-none position-relative">
                         <p class="h4 m-0"><i class="bi bi-house"></i></p>
                         Home
                     </a>
                 </div>
-                <div class="col">
+                <div class="col @cartSelected">
                     <a href="@Url.Action("Index", "Cart")" class="small text-decoration-none position-relative">
                         <p class="h4 m-0"><i class="bi bi-cart2"></i></p>
                         Keranjang
                     </a>
                 </div>
-                <div class="col">
+                <div class="col @TrackingSelected">
                     <a href="@Url.Action("Index", "Tracking")" class="small text-decoration-none position-relative">
                         <p class="h4 m-0"><i class="bi bi-bag-heart"></i></p>
                         Pesanan
                     </a>
                 </div>
-                <div class="col">
+                <div class="col @ProfileSelected">
                     <a href="@Url.Action("Profile", "Home")" class="small text-decoration-none position-relative">
                         <p class="h4 m-0"><i class="bi bi-person"></i></p>
                         Profile

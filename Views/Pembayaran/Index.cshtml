@@ -10,88 +10,63 @@
         <img src="~/img/Layanan/cekOrderan.png" alt="Konfirmasi Pesanan" style="max-width: 180px;" class="mb-0" />
         <h2 class="fw-bold">Konfirmasi Pesanan</h2>
         <p class="text-muted">Silakan cek kembali detail pesanan Anda sebelum melakukan pembayaran.</p>
+        <span id="IdPesanan"></span>
     </div>
-    <div class="card mb-4">
-        <div class="card-header">
-            Informasi Customer
-        </div>
+    <strong>Informasi Customer</strong>
+    <div class="card position-relative shadow-sm border-0">
+
+        <!-- Tombol Edit Stylish di pojok kanan atas -->
+        <button
+            class="btn btn-light border rounded-circle position-absolute d-flex align-items-center justify-content-center"
+            style="top: 10px; right: 10px; width: 36px; height: 36px;" onclick="editCustomer();" title="Edit Informasi">
+            <i class="bi bi-pencil-fill text-primary"></i>
+        </button>
+
+        <!-- Konten Card -->
         <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-4">Nama</dt>
-                <dd class="col-sm-8">Riko Ade Rinanda</dd>
-
-                <dt class="col-sm-4">Email</dt>
-                <dd class="col-sm-8">rikoaderinanda@gmail.com</dd>
-
-                <dt class="col-sm-4">No. Telepon</dt>
-                <dd class="col-sm-8">+62816 1723 3847</dd>
-
-                <dt class="col-sm-4">Alamat</dt>
-                <dd class="col-sm-8">......</dd>
-
-                <dt class="col-sm-4">Waktu Kunjungan</dt>
-                <dd class="col-sm-8">......</dd>
+            <dl class="row mb-0" id="Customer">
+                <!-- Data customer akan dimuat di sini -->
             </dl>
         </div>
     </div>
-    <div class="card mb-4">
-        <div class="card-header">
-            Detail Layanan
-        </div>
-        <div class="card-body">
-            <p><strong>Layanan:</strong> Cuci AC</p>
-            <ul class="list-group mb-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Cuci AC 1 unit (1 PK)</strong><br />
-                        <small>Pembersihan dan pengecekan unit AC.</small>
-                    </div>
-                    <span class="text-end">
-                        <span class="badge bg-primary rounded-pill me-2">1 x</span>
-                        <span class="d-block"><small>Harga Satuan: Rp 20.000</small>
-                        </span>
-                        <span class="d-block"><small>Total:</small>
-                            Rp 20.000
-                        </span>
-                    </span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Isi Freon AC</strong><br />
-                        <small>Penambahan freon untuk AC 1 PK.</small>
-                    </div>
-                    <span class="text-end">
-                        <span class="badge bg-primary rounded-pill me-2">1 x</span>
-                        <span class="d-block"><small>Harga Satuan: Rp 20.000</small>
-                        </span>
-                        <span class="d-block"><small>Total:</small>
-                            Rp 20.000
-                        </span>
-                    </span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Service AC</strong><br />
-                        <small>Pengecekan dan perbaikan ringan AC.</small>
-                    </div>
-                    <span class="text-end">
-                        <span class="badge bg-primary rounded-pill me-2">1 x</span>
-                        <span class="d-block"><small>Harga Satuan: Rp 20.000</small>
-                        </span>
-                        <span class="d-block"><small>Total:</small>
-                            Rp 20.000
-                        </span>
-                    </span>
-                </li>
-            </ul>
-            <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3">
-                <span class="fw-bold fs-5">Total Harga</span>
-                <span class="fw-bold fs-5 text-success">Rp 100.000</span>
-            </div>
-            <p><strong>Catatan:</strong> Pastikan unit AC dalam kondisi mati sebelum teknisi datang.</p>
-
-        </div>
+    <hr class="" style="border-top: 2px dashed #bbb;">
+    <div class="d-flex justify-content-between align-items-center mb-2 position-relative">
+        <strong>Informasi Pemesanan Jasa</strong>
+        <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center"
+            style="width: 36px; height: 36px;" onclick="editLayanan()" title="Edit Informasi">
+            <i class="bi bi-pencil-fill text-primary"></i>
+        </button>
     </div>
+    <hr class="" style="border-top: 2px dashed #bbb;">
+    <strong>Keluhan untuk direparasi</strong>
+    <ul class="list-group mb-3" id="Keluhan">
+    </ul>
+    <hr class="" style="border-top: 2px dashed #bbb;">
+    <strong>Jenis Properti</strong>
+    <ul class="list-group mb-3" id="Properti">
+    </ul>
+    <hr class="" style="border-top: 2px dashed #bbb;">
+    <strong>Layanan yang diinginkan</strong>
+
+    <ul class="list-group mb-3" id="ListLayanan">
+    </ul>
+    <ul class="list-group mb-3" id="">
+        <li class="list-group-item d-flex justify-content-between align-items-center py-2 position-relative">
+            <div class="d-flex align-items-center">
+                <div class="fw-semibold">Total Pembayaran</div>
+            </div>
+            <div class="text-end">
+                <div class="text-primary fw-bold">
+                    <div id="Total">
+                        <div>
+                        </div>
+                    </div>
+        </li>
+    </ul>
+
+    <p><strong>Catatan:</strong> Pastikan unit AC dalam kondisi mati sebelum teknisi datang.</p>
+
+
 </div>
 
 <!-- Footer -->
@@ -99,9 +74,10 @@
     <div class="container p-0">
         <div class="row">
             <div class="col">
-                <a href="@Url.Action("Index", "Home")" class="save-btn w-100 fw-4 h_40 br-8">
+                <button class="save-btn w-100 fw-4 h_40 br-8" onclick="SimpanDulu();">
                     <i class="bi bi-heart me-2"></i>
-                    Simpan Dulu</a>
+
+                    Simpan Dulu</button>
             </div>
             <div class="col">
                 <a href="@Url.Action("CallApiPaymentGateway", "Pembayaran")"
@@ -111,3 +87,198 @@
     </div>
 </div>
 <!-- Footer End -->
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var data = getStoragePemesanan();
+        if (
+            data.Keranjang == null ||
+            data.JenisProperti == null ||
+            data.Keluhan == null ||
+            data.TanggalKunjungan == "" ||
+            data.JamKunjungan == "" ||
+            data.Total == null ||
+            data.Customer == null
+        ) {
+            alert("session Order expired");
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+        console.log(data);
+
+        var customer = `
+            <dt class="col-sm-4">Nama</dt>
+            <dd class="col-sm-8">${data.Customer.nama}</dd>
+
+            <dt class="col-sm-4">Nomor yang akan dihubungi Teknisi</dt>
+            <dd class="col-sm-8">${data.Customer.whatsapp}</dd>
+
+            <dt class="col-sm-4">Alamat</dt>
+            <dd class="col-sm-8">${data.Customer.alamat}</dd>
+            <dt class="col-sm-4">Catatan Anda</dt>
+            <dd class="col-sm-8">${data.Customer.catatan}</dd>
+            <dt class="col-sm-4">Waktu Kunjungan</dt>
+            <dd class="col-sm-8">${data.TanggalKunjungan}  ${data.JamKunjungan}</dd>
+        `;
+        var layanan = $.map(data.Keranjang, function (item) {
+            var scr = "";
+            scr = `
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3 position-relative">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 bg-light rounded-circle d-flex justify-content-center align-items-center" style="width:40px; height:40px;">
+                            <i class="bi bi-check text-success"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">${item.nama || '-'}</div>
+                            <div class="small text-muted">Qty: <span class="badge bg-secondary">${item.jumlah || 1}</span></div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-primary fw-bold">
+                            Rp ${((item.harga || 1) * (item.jumlah || 1)).toLocaleString()}
+                        </div>
+                        <div class="small text-muted">
+                            harga satuan: <span class="fw-semibold">Rp ${(item.harga || 1).toLocaleString()}</span>
+                        </div>
+                    </div>
+                </li>
+            `;
+            return scr;
+        }).join('');
+
+        var properti = $.map(data.JenisProperti, function (item) {
+            var scr = "";
+            scr = `
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2 position-relative">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2 bg-light rounded-circle d-flex justify-content-center align-items-center" style="width:30px; height:30px;">
+                            <i class="bi bi-check text-success"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">${item.nama_jenis || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-primary fw-bold">
+                            ${formatRupiah(item.harga)}
+                        </div>
+                    </div>
+                </li>
+            `;
+            return scr;
+        }).join('');
+
+        var keluhan = $.map(data.Keluhan, function (item) {
+            var scr = "";
+            scr = `
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2 position-relative">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2 bg-light rounded-circle d-flex justify-content-center align-items-center" style="width:30px; height:30px;">
+                            <i class="bi bi-check text-success"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">${item.val || '-'}</div>
+                        </div>
+                    </div>
+                </li>
+            `;
+            return scr;
+        }).join('');
+
+        var Total = `${formatRupiah(data.Total)}`;
+
+        $('#Customer').html(customer);
+        $('#ListLayanan').html(layanan);
+        $('#Properti').html(properti);
+        $('#Keluhan').html(keluhan);
+        $('#Total').html(Total);
+        $("#IdPesanan").text("ACD -" + formatToSixDigits(data.Id || 0));
+
+    });
+
+    function SimpanDulu() {
+        var Data = getStoragePemesanan();
+        if (
+            Data.Keranjang == null ||
+            Data.JenisProperti == null ||
+            Data.Keluhan == null ||
+            Data.TanggalKunjungan == "" ||
+            Data.JamKunjungan == "" ||
+            Data.Total == null ||
+            Data.Customer == null ||
+            Data.id_layanan == null
+        ) {
+            alert("session Order expired");
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+
+        console.log(Data);
+
+        postApi({
+            url: "/api/Pemesanan/SimpanDulu",
+            data: Data,
+            onBeforeSend: function () {
+                $("#btnLanjutPembayaran").prop("disabled", true).text("Memproses...");
+            },
+            onSuccess: function (res) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pesanan mu berhasil disimpan dikeranjang',
+                    text: 'Anda akan diarahkan kembali ke halaman Keranjang pesanan.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '@Url.Action("Index", "Cart")';
+                });
+
+            },
+            onError: function (xhr, message) {
+                alert("Gagal: " + message);
+            },
+            onComplete: function () {
+                $("#btnLanjutPembayaran").prop("disabled", false).text("Lanjutkan");
+            }
+        });
+    }
+
+    function editCustomer() {
+        var data = getStoragePemesanan();
+        console.log(data.Customer);
+        if (data.Customer != null) {
+            window.location.href = '@Url.Action("Index", "CustomerInfo")';
+        }
+        else {
+            alert("session Order expired");
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+
+    }
+
+    function editLayanan() {
+        var data = getStoragePemesanan();
+        if (
+            data.Keranjang == null ||
+            data.JenisProperti == null ||
+            data.Keluhan == null ||
+            data.TanggalKunjungan == "" ||
+            data.JamKunjungan == "" ||
+            data.Total == null
+        ) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Session Order Expired',
+                text: 'Anda akan diarahkan kembali ke halaman utama.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '@Url.Action("Index", "Home")';
+            });
+        }
+        else {
+            window.location.href = '@Url.Action("Index", "Layanan")/' + data.id_layanan;
+        }
+
+    }
+</script>
