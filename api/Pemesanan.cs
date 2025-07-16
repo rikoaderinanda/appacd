@@ -108,13 +108,13 @@ namespace appacd.api
         [HttpGet("GetTrackingById")]
         public async Task<ActionResult<IEnumerable<dynamic>>> GetTrackingById(int Id)
         {
-            if (Id == null || Id <= 0)
+            if (Id <= 0)
             {
                 return BadRequest(new { message = "ID tidak valid." });
             }
             try
             {
-                var Resid = await _pemesananRepository.GetTrackingById(Id);
+                var Resid = await _pemesananRepository.GetPemesananById(Id.ToString());
                 return Ok(new { message = "load data success", data = Resid });
             }
             catch (Exception ex)

@@ -227,14 +227,6 @@
             },
             onSuccess: function (res) {
                 window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
-                @* Swal.fire({
-                    icon: 'success',
-                    title: '',
-                    text: 'Anda akan diarahkan ke halaman Pembayaran.',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    
-                }); *@
             },
             onError: function (xhr, message) {
                 alert("Gagal: " + message);

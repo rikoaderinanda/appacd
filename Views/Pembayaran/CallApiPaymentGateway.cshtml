@@ -19,10 +19,10 @@
     <div class="container p-0">
         <div class="row">
             <div class="col">
-                <a href="@Url.Action("Status", "Pembayaran")" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
+                <button onclick="PembayaranSukses();" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
                         class="bi bi-credit-card me-2"></i>
                     Pembayaran Sukses
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -30,8 +30,44 @@
 <!-- Footer End -->
 
 <script>
-    // Ganti URL berikut dengan URL payment gateway yang sesuai
-    setTimeout(function () {
-        window.location.href = '@ViewBag.PaymentGatewayUrl';
-    }, 3000); // Redirect setelah 3 detik
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+    });
+
+    function PembayaranSukses(){
+        var Data = getStoragePemesanan();
+        if (
+            Data.Keranjang == null ||
+            Data.JenisProperti == null ||
+            Data.Keluhan == null ||
+            Data.TanggalKunjungan == "" ||
+            Data.JamKunjungan == "" ||
+            Data.Total == null ||
+            Data.Customer == null ||
+            Data.id_layanan == null
+        ) {
+            alert("session Order expired");
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+        console.log(Data);
+        callApi({
+            url: '/api/Pemesanan/PembayaranSukses',
+            method: 'POST',
+            data: {
+                Id: Data.Id
+            },
+            success: function (res) {
+                window.location.href = '@Url.Action("Status", "Pembayaran")';
+            },
+            error: function (err) {
+                @* alert('Error: ' + err); *@
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+            }
+        });
+    }
 </script>
