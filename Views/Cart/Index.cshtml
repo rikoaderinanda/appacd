@@ -9,9 +9,15 @@
 <!-- App Body Start -->
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
-        <div class="position-relative">
-            <input class="form-input input-shadow ps-5 mb-30" type="text" placeholder="Kamu lagi butuh jasa apa?">
-            <i class="bi bi-search search-icon-lg"></i>
+        <div class="position-relative mb-4">
+            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
+                id="searchInput">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <button type="button"
+                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                onclick="LoadListCart()" title="Segarkan">
+                <i class="bi bi-arrow-clockwise text-primary"></i>
+            </button>
         </div>
         <div id="ListPemesanan"></div>
     </div>
@@ -35,7 +41,11 @@
             url: '/api/Pemesanan/GetPemesanan',
             method: 'GET',
             success: function (data) {
-                @* console.log('Data:', data); *@
+
+                if (!data) {
+                    $('#ListPemesanan').html('<p class="text-center text-muted py-4">Data layanan tidak tersedia.</p>');
+                }
+
                 var html = $.map(data, function (item) {
                     var dtPesanan = '';
                     item.Pesanan.forEach(p => {
@@ -48,6 +58,7 @@
                             `
                             ;
                     });
+
                     var dtProperti = '';
                     item.Properti.forEach(p => {
                         dtPesanan = dtPesanan +
@@ -59,6 +70,7 @@
                             `
                             ;
                     });
+
                     var scr = "";
                     scr = `
                         <div class="card mb-3 position-relative shadow-sm border-0">
@@ -113,10 +125,15 @@
                 $('#ListPemesanan').html(html);
             },
             error: function (err) {
-                alert('Error: ' + err);
-            }
+                $('#ListPemesanan').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+                @* alert('Error: ' + err); *@
+            },
+            onBeforeSend: function () {
+                $('#ListPemesanan').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
         });
     }
+
     function DetailPesanan(Id) {
         callApi({
             url: '/api/Pemesanan/GetPemesananById?id=' + Id,

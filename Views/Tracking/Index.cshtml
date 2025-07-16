@@ -9,34 +9,152 @@
 <!-- App Body Start -->
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
-
-        @{
-            // Contoh data pesanan yang masih diproses (dummy data)
-            var orders = new[]
-            {
-                new { Id = "ORD-1001", Total = 250000, Status = "Sedang diproses" },
-                new { Id = "ORD-1002", Total = 175000, Status = "Menunggu konfirmasi" },
-                };
-        }
-
-        @foreach (var order in orders)
-        {
-            <div class="card mb-3 position-relative shadow-sm border-0">
-                <div class="card-body position-relative">
-                    <div>
-                        <h5 class="card-title mb-1 fw-bold">ID Pesanan: <span class="text-primary">@order.Id</span></h5>
-                        <p class="card-text mb-2">Total Pesanan: <span class="fw-semibold text-success">Rp
-                                @order.Total.ToString("N0")</span></p>
-                        <span class="badge bg-warning text-dark">@order.Status</span>
-                    </div>
-                    <a href="@Url.Action("OrderStatus", "Tracking", new { id = order.Id })"
-                        class="btn btn-outline-primary btn-sm" title="Lihat Detail Status"
-                        style="border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; position: absolute; right: 16px; bottom: 16px;">
-                        <i class="bi bi-arrow-right" style="font-size: 1.3rem;"></i>
-                    </a>
-                </div>
-            </div>
-        }
+        <div class="position-relative mb-4">
+            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
+                id="searchInput">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <button type="button"
+                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                onclick="LoadListTracking()" title="Segarkan">
+                <i class="bi bi-arrow-clockwise text-primary"></i>
+            </button>
+        </div>
+        <div id="ListTacking"></div>
     </div>
 </div>
 <!-- App Body End -->
+
+<script>
+
+    var $;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        LoadListTracking();
+
+    });
+
+    function LoadListTracking() {
+        callApi({
+            url: '/api/Pemesanan/GetTracking',
+            method: 'GET',
+            success: function (data) {
+                if (!data) {
+                    $('#ListTacking').html('<p class="text-center text-muted py-4">Data layanan tidak tersedia.</p>');
+                }
+                var html = $.map(data, function (item) {
+                    var scr = "";
+                    var btnDelete = "";
+                    if (item.status_order == 1) {
+                        btnDelete = `
+                            <button 
+                                onclick="DeleteTracking(${item.id});"
+                                class="btn btn-outline-dark btn-sm"
+                                title="Hapus Pesanan"
+                                style="position: absolute; top: 10px; right: 54px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-pencil" style="font-size: 1.0rem;"></i>
+                            </button>`;
+                    }
+                    scr = `
+                    <div class="card mb-3 position-relative shadow-sm border-0">
+                        <div class="card-body position-relative">
+                            <div>
+                                <h5 class="card-title mb-1 fw-bold">
+                                    ID Pesanan: <span class="text-primary"></span> ACD-${formatToSixDigits(item.id)}
+                                </h5>
+                                <p class="card-text mb-2">
+                                    Total Pesanan: <span class="fw-semibold text-success">${formatRupiah(item.total)}</span>
+                                </p>
+                                <span class="badge ${item.status_tracking_color} text-dark">${item.status_tracking}</span>
+                            </div>
+                            <!-- Tombol Delete -->
+                            ${btnDelete}
+                            <!-- Tombol Detail -->
+                            <button 
+                                onclick="ShowTrackingById(${item.id});"
+                                class="btn btn-success btn-sm"
+                                title="Lihat Detail Status"
+                                style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                    return scr;
+                }).join('');
+                $('#ListTacking').html(html);
+            },
+            error: function (err) {
+                $('#ListTacking').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+            },
+            onBeforeSend: function () {
+                $('#ListTacking').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+            onComplete: function () {
+            }
+        });
+    }
+
+    function ShowTrackingById(Id) {
+        callApi({
+            url: `/api/Pemesanan/GetTrackingById?Id=${Id}`,
+            method: 'GET',
+            data: {},
+            success: function (data) {
+                var html = $.map(data, function (item) {
+                    if (item.status_order)
+                        return scr;
+                }).join('');
+                $('#ListTacking').html(html);
+            },
+            error: function (err) { },
+            onBeforeSend: function () { },
+            onComplete: function () { }
+        });
+    }
+
+    function DeleteTracking(Id) {
+        callApi({
+            url: '/api/Pemesanan/HapusTrackingById',
+            method: 'POST',
+            data: {
+                Id: Id
+            },
+            success: function (res) {
+                console.log(res);
+                res.data.forEach(item => {
+                    Storage.set('keranjang', item.Pesanan);
+                    Storage.set('keluhan', item.Keluhan);
+                    Storage.set('jenis_properti', item.Properti);
+                    Storage.set('TanggalKunjungan', item.tanggal_kunjungan);
+                    Storage.set('JamKunjungan', item.jam_kunjungan);
+                    Storage.set('Total', item.total);
+                    Storage.set('id_layanan', item.id_layanan)
+                    let dataCustomer = {
+                        "nama": item.nama,
+                        "whatsapp": item.whatsapp,
+                        "catatan": item.catatan,
+                        "lokasi": item.lokasi,
+                        "alamat": item.alamat
+                    }
+                    Storage.set('Customer', dataCustomer);
+                    Storage.set('IdPesanan', Id);
+                });
+
+                var result = getStoragePemesanan();
+                if (result != null) {
+                    window.location.href = '@Url.Action("Index", "Pembayaran")';
+                }
+
+            },
+            error: function (err) {
+                @* alert('Error: ' + err); *@
+                    Swal.fire('Gagal!', 'Pesanan gagal dihapus.', 'warning');
+                LoadListTracking();
+            }
+        });
+    }
+</script>

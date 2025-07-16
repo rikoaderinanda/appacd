@@ -55,6 +55,91 @@ namespace appacd.api
             }
         }
 
+        [HttpPost("Checkout")]
+        public async Task<IActionResult> Checkout([FromBody] PemesananDto dto)
+        {
+            if (dto == null || dto.Customer == null)
+                return BadRequest(new { message = "Data pemesanan tidak lengkap." });
+            try
+            {
+                var idPemesanan = await _pemesananRepository.SimpanAsync(dto);
+                if (idPemesanan > 0)
+                {
+                    var idres = await _pemesananRepository.CheckoutAsync(idPemesanan);
+                    return Ok(new { message = "Pemesanan berhasil disimpan", id = idres });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Data pemesanan tidak lengkap." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan pemesanan", error = ex.Message });
+            }
+        }
+
+        [HttpGet("GetTracking")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetTracking()
+        {
+            var res = await _pemesananRepository.GetTracking();
+            return Ok(res);
+        }
+
+        [HttpGet("GetTrackingById")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetTrackingById(int Id)
+        {
+            if (Id == null || Id <= 0)
+            {
+                return BadRequest(new { message = "ID tidak valid." });
+            }
+            try
+            {
+                var Resid = await _pemesananRepository.GetTrackingById(Id);
+                return Ok(new { message = "load data success", data = Resid });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menghapus pemesanan", error = ex.Message });
+            }
+
+        }
+
+        [HttpPost("HapusTrackingById")]
+        public async Task<IActionResult> HapusTrackingById([FromBody] HapusPemesananRequest request)
+        {
+            if (request == null || request.Id <= 0)
+            {
+                return BadRequest(new { message = "ID tidak valid." });
+            }
+
+            try
+            {
+                int resId = await _pemesananRepository.HapusTrackingById(request.Id);
+
+                if (resId <= 0)
+                {
+                    return BadRequest(new { message = "ID tidak ditemukan atau tidak dapat dihapus." });
+                }
+
+                var pemesanan = await _pemesananRepository.GetPemesananById(resId.ToString());
+
+                return Ok(new
+                {
+                    message = "Pemesanan berhasil dikembalikan ke keranjang.",
+                    data = pemesanan
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Terjadi kesalahan saat menghapus pemesanan.",
+                    error = ex.Message
+                });
+            }
+        }
+
         [HttpGet("GetPemesanan")]
         public async Task<ActionResult<IEnumerable<dynamic>>> GetPemesanan()
         {

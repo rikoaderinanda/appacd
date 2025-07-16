@@ -213,7 +213,9 @@ function callApi(options) {
         token = null,
         contentType = 'application/json',
         success = function () {},
-        error = function () {}
+        error = function () {},
+        onBeforeSend = function () {},
+        onComplete = function () {}
     } = options;
 
     $.ajax({
@@ -233,6 +235,13 @@ function callApi(options) {
                 xhr.responseJSON?.message || xhr.statusText || 'API Error';
             console.error('API Error:', errMsg);
             error(errMsg);
+        },
+        beforeSend: function () {
+            // console.log('Mengirim request ke:', url);
+            onBeforeSend();
+        },
+        complete: function () {
+            onComplete();
         }
     });
 }

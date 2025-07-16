@@ -3,6 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 namespace appacd.Models
 {
+    public class GeneralRequest
+    {
+        public int Id { get; set; }
+    }
     public class HapusPemesananRequest
     {
         public int Id { get; set; }

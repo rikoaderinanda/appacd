@@ -74,14 +74,16 @@
     <div class="container p-0">
         <div class="row">
             <div class="col">
-                <button class="save-btn w-100 fw-4 h_40 br-8" onclick="SimpanDulu();">
+                <button class="save-btn w-100 fw-4 h_40 br-8" onclick="SimpanDulu();" id="btnSimpanDulu">
                     <i class="bi bi-heart me-2"></i>
-
-                    Simpan Dulu</button>
+                    Simpan Dulu
+                </button>
             </div>
             <div class="col">
-                <a href="@Url.Action("CallApiPaymentGateway", "Pembayaran")"
-                    class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i class="bi bi-credit-card me-2"></i>Bayar</a>
+                <button class="main-btn btn-hover w-100 fw-4 h_40 br-8" onclick="Checkout();" id="btnCheckout">
+                    <i class="bi bi-credit-card me-2"></i>
+                    Bayar
+                </button>
             </div>
         </div>
     </div>
@@ -89,6 +91,7 @@
 <!-- Footer End -->
 <script>
     var $;
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -196,9 +199,51 @@
         $('#Properti').html(properti);
         $('#Keluhan').html(keluhan);
         $('#Total').html(Total);
-        $("#IdPesanan").text("ACD -" + formatToSixDigits(data.Id || 0));
+        $("#IdPesanan").text("Order ID : ACD -" + formatToSixDigits(data.Id || 0));
 
     });
+
+    function Checkout() {
+        var Data = getStoragePemesanan();
+        if (
+            Data.Keranjang == null ||
+            Data.JenisProperti == null ||
+            Data.Keluhan == null ||
+            Data.TanggalKunjungan == "" ||
+            Data.JamKunjungan == "" ||
+            Data.Total == null ||
+            Data.Customer == null ||
+            Data.id_layanan == null
+        ) {
+            alert("session Order expired");
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+        postApi({
+            url: "/api/Pemesanan/Checkout",
+            data: Data,
+            onBeforeSend: function () {
+                $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+                $("#btnCheckout").prop("disabled", true).text("Memproses...");
+            },
+            onSuccess: function (res) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '',
+                    text: 'Anda akan diarahkan kembali ke halaman Pembayaran.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
+                });
+            },
+            onError: function (xhr, message) {
+                alert("Gagal: " + message);
+            },
+            onComplete: function () {
+                $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+                $("#btnCheckout").prop("disabled", false).text("Bayar");
+            }
+        });
+    }
 
     function SimpanDulu() {
         var Data = getStoragePemesanan();
@@ -216,13 +261,15 @@
             window.location.href = '@Url.Action("Index", "Home")';
         }
 
-        console.log(Data);
+        @* console.log(Data); *@
 
         postApi({
             url: "/api/Pemesanan/SimpanDulu",
             data: Data,
             onBeforeSend: function () {
-                $("#btnLanjutPembayaran").prop("disabled", true).text("Memproses...");
+                $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+                $("#btnCheckout").prop("disabled", true).text("Memproses...");
+                    
             },
             onSuccess: function (res) {
                 Swal.fire({
@@ -239,7 +286,8 @@
                 alert("Gagal: " + message);
             },
             onComplete: function () {
-                $("#btnLanjutPembayaran").prop("disabled", false).text("Lanjutkan");
+                    $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+                    $("#btnCheckout").prop("disabled", false).text("Bayar");
             }
         });
     }

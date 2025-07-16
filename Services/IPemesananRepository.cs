@@ -9,6 +9,11 @@ namespace appacd.Services
 {
     public interface IPemesananRepository
     {
+        Task<int> HapusTrackingById(int id);
+        Task<IEnumerable<dynamic>> GetTrackingById(int Id);
+        Task<IEnumerable<dynamic>> GetTracking();
+        Task<int> CheckoutAsync(int Id);
+
         Task<int> SimpanAsync(PemesananDto dto);
         Task<int> HapusPemesananAsync(int id);
         Task<IEnumerable<dynamic>> GetPemesanan();
@@ -33,7 +38,7 @@ namespace appacd.Services
             Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
             {
-                Console.WriteLine("Raw JSON: " + jsonString);
+                // Console.WriteLine("Raw JSON: " + jsonString);
                 try
                 {
                     dynamic? obj = JsonConvert.DeserializeObject<dynamic>(jsonString);
@@ -58,7 +63,7 @@ namespace appacd.Services
             Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
             {
-                Console.WriteLine("Raw JSON: " + jsonString);
+                // Console.WriteLine("Raw JSON: " + jsonString);
                 try
                 {
                     dynamic? obj = JsonConvert.DeserializeObject<dynamic>(jsonString);
@@ -74,7 +79,6 @@ namespace appacd.Services
             }
             return finalResult;
         }
-
 
         public async Task<IEnumerable<dynamic>> GetPemesanan_Keranjang(string id)
         {
@@ -154,9 +158,63 @@ namespace appacd.Services
             }
         }
 
+        public async Task<int> CheckoutAsync(int Id)
+        {
+            var query = @"
+                            select sp_checkout_pemesanan(@Id);
+                        ";
+
+            var param = new
+            {
+                Id = Id
+            };
+
+            int pemesananId = await _db.ExecuteScalarAsync<int>(query, param);
+
+            return pemesananId;
+        }
+
+        public async Task<IEnumerable<dynamic>> GetTracking()
+        {
+            var sql = @"
+                select a.*,b.status_tracking,b.status_tracking_color from pemesanan a 
+                left join list_status_order b on b.id = a.status_order
+                where status_order > 0
+                order by status_order asc
+            ";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
+        public async Task<IEnumerable<dynamic>> GetTrackingById(int Id)
+        {
+            var sql = @"
+                select a.*,b.status_tracking,b.status_tracking_color from pemesanan a 
+                left join list_status_order b on b.id = a.status_order
+                where a.status_order > 0 and a.id = @Id
+            ";
+            var param = new
+            {
+                Id = Id
+            };
+
+            return await _db.QueryAsync<dynamic>(sql, param);
+        }
+
         public async Task<int> HapusPemesananAsync(int id)
         {
             var query = "SELECT sp_hapus_pemesanan(@Id)";
+            var param = new
+            {
+                Id = id
+            };
+
+            int resId = await _db.ExecuteScalarAsync<int>(query, param);
+            return resId;
+        }
+
+        public async Task<int> HapusTrackingById(int id)
+        {
+            var query = "SELECT sp_hapus_tracking_byid(@Id)";
             var param = new
             {
                 Id = id
