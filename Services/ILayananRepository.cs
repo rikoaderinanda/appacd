@@ -29,7 +29,7 @@ namespace appacd.Services
 
         public async Task<IEnumerable<dynamic>> GetAllAsync()
         {
-            var sql = "SELECT * FROM listlayanan ORDER BY created_at DESC";
+            var sql = "SELECT * FROM listlayanan ORDER BY id asc";
             return await _db.QueryAsync<dynamic>(sql);
         }
 
