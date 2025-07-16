@@ -2,7 +2,7 @@
     ViewData["Title"] = "Status Pesanan";
     ViewData["Header"] = "2";
     ViewData["Footer"] = "3";
-    ViewData["HeaderName"] = "Status Pesanan ID : 112321";
+    ViewData["HeaderName"] = "Status Pesanan";
 }
 
 <!-- App Body Start -->
@@ -23,97 +23,15 @@
                                                     class="img-fluid" style="max-width:42px; max-height:42px;" />
                                             </div>
                                             <div class="ms-3">
-                                                <span class="text-secondary fs-6 fw-semibold d-block mb-1"></span>
-                                                Pesanan Anda sedang diproses
-                                                </span>
-                                                <span class="text-muted fs-7"></span>
-                                                Kami sedang mencari teknisi terbaik untuk Anda. Mohon tunggu sebentar.
-                                                </span>
+                                                <strong id="idPesanan"></strong>
+                                                <span class="text-secondary fs-6 fw-semibold d-block mb-1"
+                                                    id="statusTitle"></span>
+                                                <span class="text-muted fs-7" id="statusDeskripsi"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="Scriptcontent mt-4 px-2">
-                                        <div class="step">
-                                            <div>
-                                                <div class="circle done"><i class="bi bi-check-lg"></i></div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Pesanan Dikonfirmasi</div>
-                                                <div class="caption">Pesanan Anda telah diterima.</div>
-                                            </div>
-                                        </div>
-                                        <div class="step step-active">
-                                            <div>
-                                                <div class="circle">2</div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Pesanan Diproses</div>
-                                                <div class="caption">Pesanan Anda sedang dipersiapkan.</div>
-                                            </div>
-                                        </div>
-                                        <div class="step">
-                                            <div>
-                                                <div class="circle">3</div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Teknisi</div>
-                                                <div class="caption">
-                                                    Pesanan Anda telah diterima Teknisi dan akan
-                                                    berkunjung sesuai Pesanan Anda.
-                                                </div>
-                                                <a href="app-rate-your-order.html"
-                                                    class="ch-btn py-1 px-2 br-5 b-color fs-7 fw-4 text-hover ms-auto">
-                                                    <i class="bi bi-person me-1"></i>
-                                                    Lihat Profil Teknisi
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="step">
-                                            <div>
-                                                <div class="circle">4</div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Teknisi Berangkat Berkunjung</div>
-                                                <div class="caption">
-                                                    Pesanan Anda diterima Teknisi dan akan dijadwalkan
-                                                    sesuai Pesanan Anda.
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div class="step">
-                                            <div>
-                                                <div class="circle">5</div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Sedang Proses Reparasi</div>
-                                                <div class="caption">Pesanan Anda diterima Teknisi dan akan dijadwalkan
-                                                    sesuai Pesanan Anda.</div>
-                                            </div>
-                                        </div>
-                                        <div class="step">
-                                            <div>
-                                                <div class="circle">6</div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Reparasi telah selesai</div>
-                                                <div class="caption">Pesanan Anda diterima Teknisi dan akan dijadwalkan
-                                                    sesuai Pesanan Anda.</div>
-                                            </div>
-                                        </div>
-                                        <div class="step">
-                                            <div>
-                                                <div class="circle">7</div>
-                                            </div>
-                                            <div>
-                                                <div class="title">Beri Ulasan</div>
-                                                <div class="caption mb-2">Bagikan pengalaman Anda dan bantu kami
-                                                    meningkatkan layanan.</div>
-                                                <a href="app-rate-your-order.html"
-                                                    class="ch-btn py-1 px-2 br-5 b-color fs-7 fw-4 text-hover ms-auto"><i
-                                                        class="bi bi-star me-1"></i>Beri Penilaian</a>
-                                            </div>
-                                        </div>
+                                        <div id="stepStatusOrder"></div>
                                     </div>
                                 </div>
                             </div>
@@ -136,3 +54,115 @@
     </div>
 </div>
 <!-- Footer End -->
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var Id = Storage.get('IdPesanan');
+        LoadStepStatus(Id);
+        $("#idPesanan").text("ACD-" + formatToSixDigits(Id));
+    });
+
+    function LoadStepStatus(Id) {
+        let status_order = "";
+        callApi({
+            url: `/api/Pemesanan/GetTrackingById?Id=${Id}`,
+            method: 'GET',
+            success: function (res) {
+                res.data.forEach(item => {
+                    status_order = item.status_order;
+                });
+                if (status_order != "") {
+                    listStatusOrder(status_order);
+                }
+            },
+            error: function (err) {
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+            },
+            onBeforeSend: function () {
+                $('#stepStatusOrder').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+            onComplete: function () {
+
+            }
+        });
+
+
+    }
+
+    function listStatusOrder(status_order) {
+        callApi({
+            url: '/api/Pemesanan/GetStepStatus',
+            method: 'GET',
+            success: function (res) {
+                @* console.log(res); *@
+                var html = $.map(res, function (item) {
+                    @* console.log(item); *@
+                    var scr = "";
+                    console.log(status_order);
+                    console.log(item.id);
+                    if (item.id < status_order) {
+
+                        scr = `
+                        <div class="step">
+                            <div>
+                                <div class="circle done bg-success"><i class="bi bi-check-lg"></i></div>
+                            </div>
+                            <div>
+                                <div class="title">${item.title_sudah}</div>
+                                <div class="caption">${item.deskripsi_sudah}</div>
+                            </div>
+                        </div>
+                        `;
+                    }
+                    else if (item.id == status_order) {
+                        scr = `
+                        <div class="step step-active">
+                            <div>
+                                <div class="circle"><i class="'bi-arrow-repeat spinner-border spinner-border-sm'"></i></div>
+                            </div>
+                            <div>
+                                <div class="title">${item.title}</div >
+                                <div class="caption">${item.deskripsi}</div>
+                            </div>
+                        </div>
+                        `;
+                        $("#statusTitle").text(item.title);
+                        $("#statusDeskripsi").text(item.deskripsi);
+                    }
+                    else {
+                        scr = `
+                        <div class="step step-active">
+                            <div>
+                                <div class="circle bg-dark">${item.id}</div>
+                            </div>
+                            <div>
+                                <div class="title">${item.title}</div>
+                            </div>
+                        </div>
+                        `;
+                    }
+
+
+
+                    return scr;
+                }).join('');
+
+                $('#stepStatusOrder').html(html);
+            },
+            error: function (err) {
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+            },
+            onBeforeSend: function () {
+                $('#stepStatusOrder').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+            onComplete: function () {
+            }
+        });
+    }
+</script>

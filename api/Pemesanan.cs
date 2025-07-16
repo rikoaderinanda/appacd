@@ -179,5 +179,13 @@ namespace appacd.api
             var layananList = await _pemesananRepository.GetPemesanan_Keranjang(id);
             return Ok(layananList);
         }
+
+        [HttpGet("GetStepStatus")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetStepStatus()
+        {
+            var res = await _pemesananRepository.GetStepStatus();
+            return Ok(res);
+        }
+
     }
 }

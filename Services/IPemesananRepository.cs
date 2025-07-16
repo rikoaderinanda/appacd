@@ -22,6 +22,8 @@ namespace appacd.Services
         Task<IEnumerable<dynamic>> GetPemesananById(string id);
         Task<IEnumerable<dynamic>> GetPemesanan_Keranjang(string id);
 
+        Task<IEnumerable<dynamic>> GetStepStatus();
+
     }
     public class PemesananRepository : IPemesananRepository
     {
@@ -237,5 +239,12 @@ namespace appacd.Services
             int resId = await _db.ExecuteScalarAsync<int>(query, param);
             return resId;
         }
+
+        public async Task<IEnumerable<dynamic>> GetStepStatus()
+        {
+            var sql = "SELECT * FROM list_status_order order by id asc";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
     }
 }

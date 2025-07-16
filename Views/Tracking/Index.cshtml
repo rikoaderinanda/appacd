@@ -69,12 +69,13 @@
                                 <p class="card-text mb-2">
                                     Total Pesanan: <span class="fw-semibold text-success">${formatRupiah(item.total)}</span>
                                 </p>
-                                <span class="badge ${item.status_tracking_color} text-dark">${item.status_tracking}</span>
+                                <span class="badge ${item.status_tracking_color} text-white">${item.status_tracking}</span>
                             </div>
                             <!-- Tombol Delete -->
                             ${btnDelete}
                             <!-- Tombol Detail -->
                             <button 
+                                id="BtnShow${item.id}"
                                 onclick="ShowTrackingById(${item.id},${item.status_order});"
                                 class="btn btn-success btn-sm"
                                 title="Lihat Detail Status"
@@ -99,12 +100,22 @@
     }
 
     function ShowTrackingById(Id, StatusOrder) {
+        Storage.set('IdPesanan', Id);
+        if (StatusOrder == 1) {
+            window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
+        }
+        else if (StatusOrder >= 2) {
+            Storage.set('StatusOrder', StatusOrder);
+            window.location.href = '@Url.Action("OrderStatus", "Tracking")';
+        }
+
+        @* const $BtnShow = $(`#BtnShow${Id}`);
         callApi({
             url: `/api/Pemesanan/GetTrackingById?Id=${Id}`,
             method: 'GET',
             data: {},
             success: function (res) {
-                console.log(res);
+                //console.log(res);
                 res.data.forEach(item => {
                     Storage.set('keranjang', item.Pesanan);
                     Storage.set('keluhan', item.Keluhan);
@@ -121,23 +132,29 @@
                         "alamat": item.alamat
                     }
                     Storage.set('Customer', dataCustomer);
-                    Storage.set('IdPesanan', Id);
+                    
                 });
 
                 var result = getStoragePemesanan();
                 if (result != null) {
-                    if (StatusOrder == 1) {
-                        window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
-                    }
-                    else if (StatusOrder == 2) {
-                        window.location.href = '@Url.Action("OrderStatus", "Tracking")';
-                    }
+                    
                 }
             },
             error: function (err) { },
-            onBeforeSend: function () { },
-            onComplete: function () { }
+            onBeforeSend: function () {
+                $BtnShow.prop('disabled', true);
+                $BtnShow.find('i')
+                    .removeClass('bi-arrow-right')
+                    .addClass('bi bi-arrow-repeat spinner-border spinner-border-sm');
+            },
+            onComplete: function () {
+                $BtnShow.prop('disabled', false);
+                $BtnShow.find('i')
+                    .removeClass('bi-arrow-repeat spinner-border spinner-border-sm')
+                    .addClass('bi bi-arrow-right');
+            }
         });
+         *@
     }
 
     function DeleteTracking(Id) {
