@@ -226,14 +226,15 @@
                 $("#btnCheckout").prop("disabled", true).text("Memproses...");
             },
             onSuccess: function (res) {
-                Swal.fire({
+                window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
+                @* Swal.fire({
                     icon: 'success',
                     title: '',
-                    text: 'Anda akan diarahkan kembali ke halaman Pembayaran.',
+                    text: 'Anda akan diarahkan ke halaman Pembayaran.',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
-                });
+                    
+                }); *@
             },
             onError: function (xhr, message) {
                 alert("Gagal: " + message);

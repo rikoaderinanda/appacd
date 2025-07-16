@@ -105,8 +105,13 @@
             data: {},
             success: function (data) {
                 var html = $.map(data, function (item) {
-                    if (item.status_order)
-                        return scr;
+                    if (item.status_order == 1) {
+
+                    }
+                    else {
+
+                    }
+                    return scr;
                 }).join('');
                 $('#ListTacking').html(html);
             },

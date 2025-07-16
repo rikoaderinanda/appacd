@@ -9,6 +9,8 @@ namespace appacd.Services
 {
     public interface IPemesananRepository
     {
+        Task<int> PembayaranSukses(int id);
+
         Task<int> HapusTrackingById(int id);
         Task<IEnumerable<dynamic>> GetTrackingById(int Id);
         Task<IEnumerable<dynamic>> GetTracking();
@@ -224,5 +226,16 @@ namespace appacd.Services
             return resId;
         }
 
+        public async Task<int> PembayaranSukses(int id)
+        {
+            var query = "SELECT sp_PembayaranSukses(@Id)";
+            var param = new
+            {
+                Id = id
+            };
+
+            int resId = await _db.ExecuteScalarAsync<int>(query, param);
+            return resId;
+        }
     }
 }
