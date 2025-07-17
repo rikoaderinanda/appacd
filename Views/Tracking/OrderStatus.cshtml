@@ -64,8 +64,35 @@
         }
         $ = window.jQuery;
         var Id = Storage.get('IdPesanan');
-        LoadStepStatus(Id);
-        $("#idPesanan").text("ACD-" + formatToSixDigits(Id));
+        console.log(Id);
+        if(Id == null){
+            Swal.fire({
+                title: '<strong>❌ Data Tidak Ditemukan</strong>',
+                html: 'ID pesanan yang kamu cari tidak valid atau tidak tersedia.<br><small>Silakan periksa kembali atau hubungi admin jika kamu merasa ini sebuah kesalahan.</small>',
+                icon: 'error',
+                showConfirmButton: true,
+                confirmButtonText: 'Kembali',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg',
+                    title: 'fw-bold text-danger',
+                    confirmButton: 'btn btn-danger px-4 py-2 rounded-pill',
+                },
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then(() => {
+                window.location.href = '@Url.Action("Index", "Tracking")'; // Ganti tujuan redirect sesuai kebutuhan
+            });
+        }
+        else
+        {
+            LoadStepStatus(Id);
+            $("#idPesanan").text("ACD-" + formatToSixDigits(Id));
+        }
+        
     });
 
     function LoadStepStatus(Id) {

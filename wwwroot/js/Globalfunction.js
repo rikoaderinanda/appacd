@@ -20,21 +20,21 @@ const Storage = {
 };
 
 function initCarousel(Element, Qty) {
-            var $slider = $('#' + Element + '');
-            if ($slider.hasClass('owl-loaded')) {
-                $slider.trigger('destroy.owl.carousel');
-            }
-            $slider.owlCarousel({
-                loop: $slider.find('.item').length > 10,
-                margin: 16,
-                nav: false,
-                dots: true,
-                responsive: {
-                    0: { items: Qty },
-                    600: { items: Qty },
-                    1000: { items: Qty }
-                }
-            });
+    var $slider = $('#' + Element + '');
+    if ($slider.hasClass('owl-loaded')) {
+        $slider.trigger('destroy.owl.carousel');
+    }
+    $slider.owlCarousel({
+        loop: $slider.find('.item').length > 10,
+        margin: 16,
+        nav: false,
+        dots: true,
+        responsive: {
+            0: { items: Qty },
+            600: { items: Qty },
+            1000: { items: Qty }
+        }
+    });
 }
 
 function lazyAnimateItems(Element) {

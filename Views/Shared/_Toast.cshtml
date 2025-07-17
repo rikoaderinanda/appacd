@@ -1,29 +1,28 @@
-<div id="myToast" class="toast" aria-live="assertive" aria-atomic="true" style:"display:none;"
-    style="background-color: #fff3cd; border-left: 0px solid #f0ad4e; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 6px;">
-
-    <div class="toast-header">
-        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
-        <strong class="me-auto text-warning">Peringatan</strong>
-        <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-
-    <div class="toast-body text-dark">
-        <span id="messageAlert"></span>
+<div id="myToast" class="toast align-items-center border-0 fade" role="alert" aria-live="assertive" aria-atomic="true"
+    style="background-color: #fff3cd; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); border-left: 6px solid #f0ad4e; border-radius: 0.5rem;">
+    
+    <div class="d-flex">
+        <div class="toast-body text-dark d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5"></i>
+            <span id="messageAlert" class="fw-semibold"></span>
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
 </div>
 
 <script>
-function showToast(message,Id) {
-    const toast = document.getElementById(Id);
-    if (!toast) {
+function showToast(message, Id = "myToast") {
+    const toastEl = document.getElementById(Id);
+    if (!toastEl) {
         console.error(`Elemen dengan id '${Id}' tidak ditemukan.`);
         return;
     }
-    //toast.textContent = message;
+
     $("#messageAlert").text(message);
-    toast.classList.add("show");
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3000);
+
+    const toast = new bootstrap.Toast(toastEl, {
+        delay: 3000
+    });
+    toast.show();
 }
 </script>

@@ -44,9 +44,21 @@
       return;
     }
     $ = window.jQuery;
+    ClearStoragePesanan();
     loadLayanan();
-    Storage.remove('keranjang'); // Clear keranjang on page load
   });
+
+  function ClearStoragePesanan(){
+    Storage.remove('keranjang');
+    Storage.remove('jenis_properti');
+    Storage.remove('keluhan');
+    Storage.remove('JamKunjungan');
+    Storage.remove('TanggalKunjungan');
+    Storage.remove('Total');
+    Storage.remove('Customer');
+    Storage.remove('IdPesanan');
+    Storage.remove('id_layanan');
+  }
 
   function loadLayanan() {
     callApi({

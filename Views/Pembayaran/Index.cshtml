@@ -275,10 +275,22 @@
                 data: Data,
                 success: function (res) {
                     Swal.fire({
+                        title: '<strong>🎉 Berhasil Disimpan!</strong>',
+                        html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
                         icon: 'success',
-                        title: 'Pesanan mu berhasil disimpan dikeranjang',
-                        text: 'Anda akan diarahkan kembali ke halaman Keranjang pesanan.',
-                        confirmButtonText: 'OK'
+                        showConfirmButton: true,
+                        confirmButtonText: 'Lihat Keranjang',
+                        customClass: {
+                            popup: 'rounded-4 shadow-lg',
+                            title: 'fw-bold text-success',
+                            confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
+                        },
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
                     }).then(() => {
                         window.location.href = '@Url.Action("Index", "Cart")';
                     });
