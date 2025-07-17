@@ -34,13 +34,26 @@
             return;
         }
         $ = window.jQuery;
-        LoadListTracking();
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            LoadListTracking(user.id);
+        }
 
     });
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
 
-    function LoadListTracking() {
+    function LoadListTracking(userId) {
+        console.log(userId);
         callApi({
-            url: '/api/Pemesanan/GetTracking',
+            url: '/api/Pemesanan/GetTracking?id='+userId,
             method: 'GET',
             success: function (data) {
                 if (!data) {

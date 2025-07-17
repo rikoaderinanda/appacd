@@ -14,23 +14,23 @@
                     <div class="delivery-dts">
                         <div class="row">
                             <div class="col-12">
-                                <div class="recommend-items ps-0">
-                                    <div class="rc-item d-flex align-items-center pb-3 justify-content-center">
-                                        <div class="rc-item-left d-flex align-items-center">
-                                            <div class="rc-item-img position-relative border br-8 d-flex align-items-center justify-content-center bg-white shadow-sm"
+                                <div class="recommend-items p-3 rounded-4 bg-white">
+                                    <div class="rc-item d-flex align-items-start pb-3">
+                                        <div class="rc-item-left d-flex align-items-start">
+                                            <div class="rc-item-img position-relative border rounded-4 d-flex align-items-center justify-content-center bg-light shadow-sm"
                                                 style="width:64px; height:64px;">
-                                                <img src="~/images/order-status.png" alt="Order Status"
-                                                    class="img-fluid" style="max-width:42px; max-height:42px;" />
+                                                <i class="bi bi-clock text-warning" style="font-size: 2rem;"></i>
+                                                <!-- <img src="~/images/order-status.png" alt="Order Status"
+                                                    class="img-fluid" style="max-width:42px; max-height:42px;" /> -->
                                             </div>
                                             <div class="ms-3">
-                                                <strong id="idPesanan"></strong>
-                                                <span class="text-secondary fs-6 fw-semibold d-block mb-1"
-                                                    id="statusTitle"></span>
+                                                <strong class="text-primary d-block fs-6" id="idPesanan"></strong>
+                                                <span class="text-dark fs-6 fw-semibold d-block" id="statusTitle"></span>
                                                 <span class="text-muted fs-7" id="statusDeskripsi"></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="Scriptcontent mt-4 px-2">
+                                    <div class="Scriptcontent mt-3 px-1">
                                         <div id="stepStatusOrder"></div>
                                     </div>
                                 </div>
@@ -100,12 +100,8 @@
             url: '/api/Pemesanan/GetStepStatus',
             method: 'GET',
             success: function (res) {
-                @* console.log(res); *@
                 var html = $.map(res, function (item) {
-                    @* console.log(item); *@
                     var scr = "";
-                    console.log(status_order);
-                    console.log(item.id);
                     if (item.id < status_order) {
 
                         scr = `

@@ -7,7 +7,7 @@
                 <div class="item-card p-0 br-10 border">
                     <div class="item-img p-0">
                         <div class="skeleton-img br-8" 
-                        style="width:100%;height:120px;background:#e0e0e0;animation:pulse 1.5s infinite;"></div>
+                            style="width:100%;background:#e0e0e0;animation:pulse 1.5s infinite;"></div>
                     </div>
                 </div>
             </div>
@@ -32,6 +32,19 @@
         return;
         }
         var $ = window.jQuery;
+        $('#bannerLayanan').owlCarousel({
+            loop: true,
+            margin: 10,
+            //nav: true,
+            autoplay: true,
+            autoplayTimeout: 3000,
+            autoplayHoverPause: true,
+            responsive: {
+                0: { items: 1 },
+                600: { items: 2 },
+                1000: { items: 3 }
+            }
+        });
         callApi({
             url: '/api/Layanan/BannerLayanan?Id=@ViewData["Id"]',
             method: 'GET',

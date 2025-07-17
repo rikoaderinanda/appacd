@@ -7,7 +7,6 @@
     </div>
     <div class="category-group">
       <div class="owl-carousel category-slider" id="layananCarousel">
-        <!-- Loading skeletons -->
         <div class="item">
           <div class="cate-item text-center loading-skeleton">
             <div class="cate-img mb-2 skeleton-circle"></div>
@@ -38,16 +37,25 @@
 </div>
 
 <script>
+  var $;
   document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.jQuery === 'undefined') {
       console.error('jQuery is not loaded.');
       return;
     }
-    var $ = window.jQuery;
-    $.getJSON('/api/Layanan/GetLayanan', function (data) {
-      var html = $.map(data, function (item) {
-        var scr = "";
-        scr = `
+    $ = window.jQuery;
+    loadLayanan();
+    Storage.remove('keranjang'); // Clear keranjang on page load
+  });
+
+  function loadLayanan() {
+    callApi({
+      url: '/api/Layanan/GetLayanan',
+      method: 'GET',
+      success: function (data) {
+        var html = $.map(data, function (item) {
+          var scr = "";
+          scr = `
           <div class="item fade-in">
             <a href="/layanan/${encodeURIComponent(item.id)}" class="cate-item text-center">
               <div class="cate-img mb-2">
@@ -57,14 +65,20 @@
             </a>
           </div>
         `;
-        return scr;
-      }).join('');
-      $('#layananCarousel').html(html);
-      initCarousel("layananCarousel",4);
-      lazyAnimateItems("layananCarousel");
+          return scr;
+        }).join('');
+        $('#layananCarousel').html(html);
+        initCarousel("layananCarousel", 4);
+        lazyAnimateItems("layananCarousel");
+      },
+      error: function (err) {
+        $('#layananCarousel').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+      },
+      onBeforeSend: function () {
+        $('#layananCarousel').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+      },
+      onComplete: function () {
+      }
     });
-
-    Storage.clear('keranjang'); // Clear keranjang on page load
-
-  });
+  }
 </script>

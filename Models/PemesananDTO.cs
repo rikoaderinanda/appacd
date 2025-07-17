@@ -23,6 +23,15 @@ namespace appacd.Models
         public CustomerInfo Customer { get; set; }
         public int Id { get; set; }
         public int id_layanan { get; set; }
+        public int user_id{get;set;}
+    }
+
+    public class UserInfo
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string NamaLengkap { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
     }
 
     public class KeranjangItem

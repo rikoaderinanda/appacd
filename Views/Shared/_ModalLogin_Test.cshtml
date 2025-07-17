@@ -1,0 +1,78 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+</style>
+
+<div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content rounded-4 overflow-hidden shadow">
+            <!-- Header -->
+            <div class="bg-primary py-4 px-3 position-relative">
+                <div class="d-flex flex-column align-items-start">
+                    <h5 class="fs-4 fw-semibold text-white mb-1" id="TitleModalLogin">Silakan Login</h5>
+                    <p class="text-white fs-6 mb-0">Pilih akun untuk login</p>
+                </div>
+
+                <!-- Tombol close -->
+                <a id="btnClsModalLogin" href="javascript:void(0);" onclick="CloseModalLogin()"
+                    class="position-absolute top-0 end-0 mt-3 me-3 text-white fs-4">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+
+            <!-- Body -->
+            <div class="p-4 bg-light">
+                <!-- Udin -->
+                <button class="btn btn-outline-primary w-100 py-3 rounded-pill mb-3 d-flex align-items-center"
+                    onclick="Login('Udin',1,'Udin saprudin','udin@gmail.com')">
+                    <img src="https://i.pravatar.cc/40?u=udin" class="rounded-circle me-3" alt="Udin" width="40"
+                        height="40">
+                    <span class="fs-6 fw-semibold">Login sebagai Udin</span>
+                </button>
+
+                <!-- Budi -->
+                <button class="btn btn-outline-primary w-100 py-3 rounded-pill mb-3 d-flex align-items-center"
+                    onclick="Login('Budi',2,'Budi Santoso','budi@gmail.com')">
+                    <img src="https://i.pravatar.cc/40?u=budi" class="rounded-circle me-3" alt="Budi" width="40"
+                        height="40">
+                    <span class="fs-6 fw-semibold">Login sebagai Budi</span>
+                </button>
+
+                <!-- Tono -->
+                <button class="btn btn-outline-primary w-100 py-3 rounded-pill mb-2 d-flex align-items-center"
+                    onclick="Login('Tono',3,'Tono Supono','tono@gmail.com')">
+                    <img src="https://i.pravatar.cc/40?u=tono" class="rounded-circle me-3" alt="Tono" width="40"
+                        height="40">
+                    <span class="fs-6 fw-semibold">Login sebagai Tono</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+    });
+
+    function Login(username, userId, nama_lengkap, email) {
+        Storage.set('username', username);
+        Storage.set('userId', userId);
+        Storage.set('nama_lengkap', nama_lengkap);
+        Storage.set('email', email);
+        window.location.reload();
+    }
+</script>

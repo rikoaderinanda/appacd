@@ -55,11 +55,41 @@
                     <a href="@Url.Action("Index", "Home")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-lock fs-6 me-3"></i>Privasi Akun</a>
-                    <a href="@Url.Action("Index", "Home")"
-                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 p-3"><i
-                            class="bi bi-box-arrow-right fs-6 me-3"></i>Keluar</a>
+                    <a href="javascript:void(0)" onclick="Logout();"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 p-3">
+                        <i class="bi bi-box-arrow-right fs-6 me-3"></i>
+                        Keluar
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+    });
+
+    function Logout() {
+        Swal.fire({
+            //title: 'Apakah anda yakin untuk logout?',
+            text: "Apakah anda yakin untuk logout?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Logout!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Storage.remove('username');
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        });
+    }
+
+</script>

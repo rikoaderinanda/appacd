@@ -111,7 +111,7 @@
             alert("session Order expired");
             window.location.href = '@Url.Action("Index", "Home")';
         }
-        console.log(data);
+        
 
         var customer = `
             <dt class="col-sm-4">Nama</dt>
@@ -199,7 +199,13 @@
         $('#Properti').html(properti);
         $('#Keluhan').html(keluhan);
         $('#Total').html(Total);
-        $("#IdPesanan").text("Order ID : ACD -" + formatToSixDigits(data.Id || 0));
+        if (data.Id != null && data.Id != 0) {
+            $("#IdPesanan").text("Order ID : ACD -" + formatToSixDigits(data.Id || 0));
+        }
+        else {
+            $("#IdPesanan").text("");
+        }
+
 
     });
 
@@ -239,23 +245,60 @@
     }
 
     function SimpanDulu() {
+        var user = getUserInfo();
         var Data = getStoragePemesanan();
-        if (
-            Data.Keranjang == null ||
-            Data.JenisProperti == null ||
-            Data.Keluhan == null ||
-            Data.TanggalKunjungan == "" ||
-            Data.JamKunjungan == "" ||
-            Data.Total == null ||
-            Data.Customer == null ||
-            Data.id_layanan == null
-        ) {
-            alert("session Order expired");
-            window.location.href = '@Url.Action("Index", "Home")';
+        console.log(Data);
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            if (
+                Data.Keranjang == null ||
+                Data.JenisProperti == null ||
+                Data.Keluhan == null ||
+                Data.TanggalKunjungan == "" ||
+                Data.JamKunjungan == "" ||
+                Data.Total == null ||
+                Data.Customer == null ||
+                Data.id_layanan == null 
+            ) {
+                alert("session Order expired");
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+
+
+            callApi({
+                url: '/api/Pemesanan/SimpanDulu',
+                method: 'POST',
+                data: Data,
+                success: function (res) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pesanan mu berhasil disimpan dikeranjang',
+                        text: 'Anda akan diarahkan kembali ke halaman Keranjang pesanan.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = '@Url.Action("Index", "Cart")';
+                    });
+                },
+                error: function (err) {
+                    alert("Gagal: " + err);
+                },
+                onBeforeSend: function () {
+                    $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+                    $("#btnCheckout").prop("disabled", true).text("Memproses...");
+                },
+                onComplete: function () {
+                    $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+                    $("#btnCheckout").prop("disabled", false).text("Bayar");
+                }
+            });
         }
 
-        @* console.log(Data); *@
 
+        @* 
         postApi({
             url: "/api/Pemesanan/SimpanDulu",
             data: Data,
@@ -282,7 +325,7 @@
                     $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
                     $("#btnCheckout").prop("disabled", false).text("Bayar");
             }
-        });
+        }); *@
     }
 
     function editCustomer() {
@@ -321,5 +364,10 @@
             window.location.href = '@Url.Action("Index", "Layanan")/' + data.id_layanan;
         }
 
+    }
+
+    function CloseModalLogin() {
+        //window.location.href = '@Url.Action("Index", "Home")';
+        $('#ModalLogin').modal('hide');
     }
 </script>

@@ -2,10 +2,9 @@
     <div class="mt-4">
         <div class="welcome-text">
             <h3 class="mb-3">
-                Hai,
-                <button class="btn btn-warning btn-sm rounded-pill px-3">
-                    <i class="bi bi-exclamation-circle me-1"></i> Login sekarang
-                </button>
+                <span id="SalamWaktu"></span>,
+                <span id="Username"></span>
+
             </h3>
 
             <div class="position-relative">
@@ -15,3 +14,41 @@
         </div>
     </div>
 </div>
+
+<script>
+    var $;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        if (isValidUser(user)) {
+            $("#SalamWaktu").html(getSalamWaktu());
+            $("#Username").html(`${user.username}`);
+        }
+        else {
+            var cr =
+                `
+                <button class="btn btn-warning btn-sm rounded-pill px-3" 
+                    onclick="showLogin();" id="btnLogin">
+                    <i class="bi bi-exclamation-circle me-1"></i> Login sekarang
+                </button>
+            `;
+            $("#Username").html(cr);
+        }
+    });
+
+    function showLogin() {
+        $("#TitleModalLogin").text("Selamat datang");
+        $("#btnClsModalLogin").show();
+        $('#ModalLogin').modal('show');
+    }
+
+    function CloseModalLogin() {
+        $('#ModalLogin').modal('hide');
+    }
+
+</script>

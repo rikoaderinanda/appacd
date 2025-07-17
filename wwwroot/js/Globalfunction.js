@@ -190,6 +190,7 @@ function getStoragePemesanan() {
     var Customer = Storage.get('Customer') || [];
     var IdPesanan = Storage.get('IdPesanan') || 0;
     var id_layanan = Storage.get('id_layanan') || 0;
+    var user_id = Storage.get('userId') || null;
     var data = {
         Keranjang: keranjang,
         JenisProperti: JenisProperti,
@@ -199,7 +200,8 @@ function getStoragePemesanan() {
         Total: Total,
         Customer: Customer,
         Id: IdPesanan,
-        id_layanan: id_layanan
+        id_layanan: id_layanan,
+        user_id: user_id
     };
 
     return data;
@@ -248,4 +250,38 @@ function callApi(options) {
 
 function formatToSixDigits(number) {
     return number.toString().padStart(6, '0');
+}
+
+function isValidUser(u) {
+    return (
+        u != null &&
+        typeof u === 'object' &&
+        u.id != null &&
+        typeof u.username === 'string' &&
+        u.username.trim() !== ''
+    );
+}
+
+function getUserInfo() {
+    var data = {
+        id: Storage.get('userId') || '',
+        username: Storage.get('username') || '',
+        nama_lengkap: Storage.get('nama_lengkap') || '',
+        email: Storage.get('email') || ''
+    };
+    return data;
+}
+
+function getSalamWaktu() {
+    const jam = new Date().getHours();
+
+    if (jam >= 4 && jam < 11) {
+        return 'Pagi';
+    } else if (jam >= 11 && jam < 15) {
+        return 'Siang';
+    } else if (jam >= 15 && jam < 18) {
+        return 'Sore';
+    } else {
+        return 'Malam';
+    }
 }

@@ -99,9 +99,9 @@ namespace appacd.api
         }
 
         [HttpGet("GetTracking")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> GetTracking()
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetTracking(string id)
         {
-            var res = await _pemesananRepository.GetTracking();
+            var res = await _pemesananRepository.GetTracking(id);
             return Ok(res);
         }
 
@@ -160,9 +160,9 @@ namespace appacd.api
         }
 
         [HttpGet("GetPemesanan")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> GetPemesanan()
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetPemesanan(string id)
         {
-            var pesanan = await _pemesananRepository.GetPemesanan();
+            var pesanan = await _pemesananRepository.GetPemesanan(id);
             return Ok(pesanan);
         }
 

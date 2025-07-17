@@ -13,12 +13,12 @@ namespace appacd.Services
 
         Task<int> HapusTrackingById(int id);
         Task<IEnumerable<dynamic>> GetTrackingById(int Id);
-        Task<IEnumerable<dynamic>> GetTracking();
+        Task<IEnumerable<dynamic>> GetTracking(string id);
         Task<int> CheckoutAsync(int Id);
 
         Task<int> SimpanAsync(PemesananDto dto);
         Task<int> HapusPemesananAsync(int id);
-        Task<IEnumerable<dynamic>> GetPemesanan();
+        Task<IEnumerable<dynamic>> GetPemesanan(string id);
         Task<IEnumerable<dynamic>> GetPemesananById(string id);
         Task<IEnumerable<dynamic>> GetPemesanan_Keranjang(string id);
 
@@ -34,12 +34,12 @@ namespace appacd.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<dynamic>> GetPemesanan()
+        public async Task<IEnumerable<dynamic>> GetPemesanan(string id)
         {
             var finalResult = new List<dynamic>();
-            const string sql = "select order_json::text from get_pemesanan_full()";
+            string sql = "select order_json::text from get_pemesanan_full(" + id + ")";
             var result = await _db.QueryAsync<string>(sql);
-            Console.WriteLine(result.First().GetType().Name);
+            // Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
             {
                 // Console.WriteLine("Raw JSON: " + jsonString);
@@ -95,13 +95,15 @@ namespace appacd.Services
 
             if (data.Id != 0)
             {
-                var query = "SELECT sp_update_pemesanan(" +
-                                "@Id,@id_layanan," +
-                                "@nama, @whatsapp, @catatan, @lokasi, @alamat, @total, @tanggalKunjungan::date," +
-                                "@jamKunjungan::time," +
-                                "@keranjang_json::jsonb," +
-                                "@jenisproperti_json::jsonb," +
-                                "@keluhan_json::jsonb)";
+                var query = @"SELECT sp_update_pemesanan(
+                                @Id,@id_layanan,
+                                @nama, @whatsapp, @catatan, @lokasi, @alamat, @total, @tanggalKunjungan::date,
+                                @jamKunjungan::time,
+                                @keranjang_json::jsonb,
+                                @jenisproperti_json::jsonb,
+                                @keluhan_json::jsonb,
+                                @user_id)
+                            ";
 
                 // Console.WriteLine($"nama: {data.Customer.nama}");
                 // Console.WriteLine($"whatsapp: {data.Customer.whatsapp}");
@@ -123,19 +125,25 @@ namespace appacd.Services
                     jamKunjungan = TimeSpan.Parse(data.JamKunjungan),
                     keranjang_json = JsonConvert.SerializeObject(data.Keranjang),
                     jenisproperti_json = JsonConvert.SerializeObject(data.JenisProperti),
-                    keluhan_json = JsonConvert.SerializeObject(data.Keluhan)
+                    keluhan_json = JsonConvert.SerializeObject(data.Keluhan),
+                    user_id = data.user_id
+
                 };
                 int pemesananId = await _db.ExecuteScalarAsync<int>(query, param);
                 return pemesananId;
             }
             else
             {
-                var query = "SELECT sp_simpan_pemesanan(" +
-                "@id_layanan,@nama, @whatsapp, @catatan, @lokasi, @alamat, @total, @tanggalKunjungan::date," +
-                "@jamKunjungan::time," +
-                "@keranjang_json::jsonb," +
-                "@jenisproperti_json::jsonb," +
-                "@keluhan_json::jsonb)";
+                var query = 
+                @"SELECT sp_simpan_pemesanan
+                (
+                    @id_layanan,@nama, @whatsapp, @catatan, @lokasi, @alamat, @total, @tanggalKunjungan::date,
+                    @jamKunjungan::time,
+                    @keranjang_json::jsonb,
+                    @jenisproperti_json::jsonb,
+                    @keluhan_json::jsonb,
+                    @user_id
+                )";
                 // Console.WriteLine($"nama: {data.Customer.nama}");
                 // Console.WriteLine($"whatsapp: {data.Customer.whatsapp}");
                 // Console.WriteLine($"catatan: {data.Customer.catatan}");
@@ -154,7 +162,8 @@ namespace appacd.Services
                     jamKunjungan = TimeSpan.Parse(data.JamKunjungan),
                     keranjang_json = JsonConvert.SerializeObject(data.Keranjang),
                     jenisproperti_json = JsonConvert.SerializeObject(data.JenisProperti),
-                    keluhan_json = JsonConvert.SerializeObject(data.Keluhan)
+                    keluhan_json = JsonConvert.SerializeObject(data.Keluhan),
+                    user_id = data.user_id
                 };
 
                 int pemesananId = await _db.ExecuteScalarAsync<int>(query, param);
@@ -178,15 +187,20 @@ namespace appacd.Services
             return pemesananId;
         }
 
-        public async Task<IEnumerable<dynamic>> GetTracking()
+        public async Task<IEnumerable<dynamic>> GetTracking(string id)
         {
+            if (!int.TryParse(id, out var userId))
+                throw new ArgumentException("Invalid user ID");
+
             var sql = @"
-                select a.*,b.status_tracking,b.status_tracking_color from pemesanan a 
-                left join list_status_order b on b.id = a.status_order
-                where status_order > 0
-                order by status_order asc
+                SELECT a.*, b.status_tracking, b.status_tracking_color 
+                FROM pemesanan a 
+                LEFT JOIN list_status_order b ON b.id = a.status_order
+                WHERE a.status_order > 0
+                AND a.order_by_user_id = @id
+                ORDER BY a.status_order ASC
             ";
-            return await _db.QueryAsync<dynamic>(sql);
+            return await _db.QueryAsync<dynamic>(sql, new { id = userId });
         }
 
         public async Task<IEnumerable<dynamic>> GetTrackingById(int Id)

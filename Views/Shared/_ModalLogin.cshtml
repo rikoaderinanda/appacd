@@ -1,0 +1,77 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+</style>
+
+<div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="home-cart mt-0">
+                <div class="delivery-dts">
+                    <div class="row">
+                        <div class="col-12 p-0">
+                            <div class="login-top position-relative">
+                                <div class="logo-section">
+                                    <h5 class="fs-4 fw-6 text-white mb-2">Welcome Back</h5>
+                                    <p class="text-white fs-7 fw-4">Login with your account to
+                                        continue
+                                    </p>
+                                </div>
+                                <a class="back-btn text-white" data-bs-dismiss="modal">
+                                    <i class="bi bi-x"></i>
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="login-bottom p-4">
+                                <input class="form-input input-shadow w-100 br-8 fs-7" type="text"
+                                    placeholder="Email or Mobile Number*">
+                                <input class="form-input input-shadow w-100 br-8 fs-7 mt-3" type="text"
+                                    placeholder="Password*">
+                                <a href="app-home.html" class="main-btn btn-hover w-100 h_50 br-8 mt-3">Sign
+                                    In</a>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="address-check checkboxes p-0 border-0 mt-0">
+                                        <input id="check-address" type="checkbox" name="addressCheckbox" checked="">
+                                        <label for="check-address">Keep Signin</label>
+                                    </div>
+                                    <a href="app-forgot-password.html" class="fs-7 bb-color ms-auto">Forgot
+                                        Password?</a>
+                                </div>
+                                <div class="other-login">
+                                    <div class="new-quite border_bottom position-relative mt-5">
+                                        <span class="or-text">Or Connect With</span>
+                                    </div>
+                                    <ul class="social-icons ps-0 d-block text-center">
+                                        <li><a href="#" class="social-btn fb-bg"><img src="~/icons/facebook.svg"
+                                                    alt=""></a></li>
+                                        <li><a href="#" class="social-btn tw-bg"><img src="~/icons/twitter.svg"
+                                                    alt=""></a></li>
+                                        <li><a href="#" class="social-btn go-bg"><img src="~/icons/google.svg"
+                                                    alt=""></a></li>
+                                        <li><a href="#" class="social-btn ld-bg"><img src="~/icons/linkedin-in.svg"
+                                                    alt=""></a></li>
+                                    </ul>
+                                </div>
+                                <div class="register-section text-center mt-5">
+                                    <p class="fs-9 b-color mb-3">You don't have an account?</p>
+                                    <a href="app-signup.html  " class="main-btn btn-hover w-100 h_50 br-8">Create an
+                                        Account</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

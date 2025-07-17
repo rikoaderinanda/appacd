@@ -32,21 +32,36 @@
             return;
         }
         $ = window.jQuery;
-        LoadListCart();
-
+        var user = getUserInfo();
+        //console.log(user);
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            LoadListCart(user.id);
+        }
     });
 
-    function LoadListCart() {
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
+
+    function LoadListCart(userId) {
         callApi({
-            url: '/api/Pemesanan/GetPemesanan',
+            url: '/api/Pemesanan/GetPemesanan?Id=' + userId,
             method: 'GET',
             success: function (data) {
+                var html = "";
 
-                if (!data) {
-                    $('#ListPemesanan').html('<p class="text-center text-muted py-4">Data layanan tidak tersedia.</p>');
+                if (!data || data.length === 0) {
+                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
+                    $('#ListPemesanan').html(html);
                 }
-
-                var html = $.map(data, function (item) {
+                else {
+                    html = $.map(data, function (item) {
                     var dtPesanan = '';
                     item.Pesanan.forEach(p => {
                         dtPesanan = dtPesanan +
@@ -122,7 +137,8 @@
                     return scr;
                 }).join('');
 
-                $('#ListPemesanan').html(html);
+                    $('#ListPemesanan').html(html);
+                }
             },
             error: function (err) {
                 $('#ListPemesanan').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
@@ -208,4 +224,6 @@
             }
         });
     }
+
+
 </script>
