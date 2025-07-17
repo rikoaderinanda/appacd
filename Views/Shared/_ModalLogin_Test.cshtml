@@ -11,17 +11,16 @@
     }
 </style>
 
-<div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen-sm-down">
-        <div class="modal-content rounded-4 overflow-hidden shadow">
+<div class="modal fade" id="ModalLogin" tabindex="-1" 
+    aria-labelledby="LoginModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-md"> <!-- Centered dan medium -->
+        <div class="modal-content overflow-hidden shadow rounded-4 border-0">
             <!-- Header -->
-            <div class="bg-primary py-4 px-3 position-relative">
-                <div class="d-flex flex-column align-items-start">
-                    <h5 class="fs-4 fw-semibold text-white mb-1" id="TitleModalLogin">Silakan Login</h5>
-                    <p class="text-white fs-6 mb-0">Pilih akun untuk login</p>
+            <div class="bg-danger py-4 px-4 position-relative rounded-top">
+                <div class="d-flex flex-column">
+                    <h5 class="fs-4 fw-semibold text-white mb-1 text-center" id="TitleModalLogin">Silakan Login</h5>
                 </div>
-
-                <!-- Tombol close -->
                 <a id="btnClsModalLogin" href="javascript:void(0);" onclick="CloseModalLogin()"
                     class="position-absolute top-0 end-0 mt-3 me-3 text-white fs-4">
                     <i class="bi bi-x-lg"></i>
@@ -30,29 +29,27 @@
 
             <!-- Body -->
             <div class="p-4 bg-light">
-                <!-- Udin -->
-                <button class="btn btn-outline-primary w-100 py-3 rounded-pill mb-3 d-flex align-items-center"
-                    onclick="Login('Udin',1,'Udin saprudin','udin@gmail.com')">
-                    <img src="https://i.pravatar.cc/40?u=udin" class="rounded-circle me-3" alt="Udin" width="40"
-                        height="40">
-                    <span class="fs-6 fw-semibold">Login sebagai Udin</span>
-                </button>
+                <p class="text-dark fs-6 mb-3 text-center">Pilih akun untuk penggunaan testing</p>
+                <!-- Reusable user button -->
+                <div class="d-grid gap-3">
+                    <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm"
+                        onclick="Login('Udin',1,'Udin saprudin','udin@gmail.com')">
+                        <img src="https://i.pravatar.cc/40?u=udin" class="rounded-circle me-3" alt="Udin" width="40" height="40">
+                        <span class="fw-semibold text-primary">Login sebagai Udin</span>
+                    </button>
 
-                <!-- Budi -->
-                <button class="btn btn-outline-primary w-100 py-3 rounded-pill mb-3 d-flex align-items-center"
-                    onclick="Login('Budi',2,'Budi Santoso','budi@gmail.com')">
-                    <img src="https://i.pravatar.cc/40?u=budi" class="rounded-circle me-3" alt="Budi" width="40"
-                        height="40">
-                    <span class="fs-6 fw-semibold">Login sebagai Budi</span>
-                </button>
+                    <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm"
+                        onclick="Login('Budi',2,'Budi Santoso','budi@gmail.com')">
+                        <img src="https://i.pravatar.cc/40?u=budi" class="rounded-circle me-3" alt="Budi" width="40" height="40">
+                        <span class="fw-semibold text-primary">Login sebagai Budi</span>
+                    </button>
 
-                <!-- Tono -->
-                <button class="btn btn-outline-primary w-100 py-3 rounded-pill mb-2 d-flex align-items-center"
-                    onclick="Login('Tono',3,'Tono Supono','tono@gmail.com')">
-                    <img src="https://i.pravatar.cc/40?u=tono" class="rounded-circle me-3" alt="Tono" width="40"
-                        height="40">
-                    <span class="fs-6 fw-semibold">Login sebagai Tono</span>
-                </button>
+                    <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm"
+                        onclick="Login('Tono',3,'Tono Supono','tono@gmail.com')">
+                        <img src="https://i.pravatar.cc/40?u=tono" class="rounded-circle me-3" alt="Tono" width="40" height="40">
+                        <span class="fw-semibold text-primary">Login sebagai Tono</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

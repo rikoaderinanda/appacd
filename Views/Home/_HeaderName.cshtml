@@ -2,7 +2,7 @@
     <div class="mt-4">
         <div class="welcome-text">
             <h3 class="mb-3">
-                <span id="SalamWaktu"></span>,
+                <span id="SalamWaktu"></span>
                 <span id="Username"></span>
 
             </h3>
@@ -26,7 +26,7 @@
         $ = window.jQuery;
         var user = getUserInfo();
         if (isValidUser(user)) {
-            $("#SalamWaktu").html(getSalamWaktu());
+            $("#SalamWaktu").html(`${getSalamWaktu()},`);
             $("#Username").html(`${user.username}`);
         }
         else {
