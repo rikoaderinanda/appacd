@@ -31,24 +31,8 @@
             <div class="p-4 bg-light">
                 <p class="text-dark fs-6 mb-3 text-center">Pilih akun untuk penggunaan testing</p>
                 <!-- Reusable user button -->
-                <div class="d-grid gap-3">
-                    <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm"
-                        onclick="Login('Udin',1,'Udin saprudin','udin@gmail.com')">
-                        <img src="https://i.pravatar.cc/40?u=udin" class="rounded-circle me-3" alt="Udin" width="40" height="40">
-                        <span class="fw-semibold text-primary">Login sebagai Udin</span>
-                    </button>
+                <div class="d-grid gap-3" id="userList">
 
-                    <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm"
-                        onclick="Login('Budi',2,'Budi Santoso','budi@gmail.com')">
-                        <img src="https://i.pravatar.cc/40?u=budi" class="rounded-circle me-3" alt="Budi" width="40" height="40">
-                        <span class="fw-semibold text-primary">Login sebagai Budi</span>
-                    </button>
-
-                    <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm"
-                        onclick="Login('Tono',3,'Tono Supono','tono@gmail.com')">
-                        <img src="https://i.pravatar.cc/40?u=tono" class="rounded-circle me-3" alt="Tono" width="40" height="40">
-                        <span class="fw-semibold text-primary">Login sebagai Tono</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -63,13 +47,59 @@
             return;
         }
         $ = window.jQuery;
+        loadLoginUserTest();
     });
 
-    function Login(username, userId, nama_lengkap, email) {
-        Storage.set('username', username);
-        Storage.set('userId', userId);
-        Storage.set('nama_lengkap', nama_lengkap);
-        Storage.set('email', email);
+    function loadLoginUserTest() {
+        var datauser = [
+            {
+                username: 'Udin',
+                id: 1,
+                nama_lengkap: 'Udin Saprudin',
+                email: 'udin@gmail.com',
+                no_hp: '081617233847',
+                photo: 'https://i.pravatar.cc/40?u=udin'
+            },
+            {
+                username: 'Tono',
+                id: 2,
+                nama_lengkap: 'Tono Santoso',
+                email: 'tono@gmail.com',
+                no_hp: '081617233847',
+                photo: 'https://i.pravatar.cc/40?u=tono'
+            },
+            {
+                username: 'Budi',
+                id: 3,
+                nama_lengkap: 'Budiman',
+                email: 'budi@gmail.com',
+                no_hp: '081617233847',
+                photo: 'https://i.pravatar.cc/40?u=budi'
+            },
+        ];
+
+        var html = datauser.map(function (item) {
+            var json = encodeURIComponent(JSON.stringify(item)); // safe encode
+            return `
+            <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm mb-2"
+                onclick="LoginFromJson('${json}')">
+                <img src="${item.photo}" class="rounded-circle me-3" alt="${item.username}" width="40" height="40">
+                <span class="fw-semibold text-primary">Login sebagai ${item.username}</span>
+            </button>
+        `;
+        }).join('');
+
+        $("#userList").html(html);
+    }
+
+    function LoginFromJson(jsonStr) {
+        var user = JSON.parse(decodeURIComponent(jsonStr));
+        Storage.set('username', user.username);
+        Storage.set('userId', user.id);
+        Storage.set('nama_lengkap', user.nama_lengkap);
+        Storage.set('email', user.email);
+        Storage.set('no_hp', user.no_hp);
+        Storage.set('photo', user.photo);
         window.location.reload();
     }
 </script>

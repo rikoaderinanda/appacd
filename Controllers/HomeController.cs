@@ -18,8 +18,8 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var data = await _repo.GetAllAsync();
-        return View(data);
+        //var data = await _repo.GetAllAsync();
+        return View();
     }
 
     

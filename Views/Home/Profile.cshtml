@@ -11,12 +11,9 @@
             <div class="col-12">
                 <div class="profile-dt position-relative d-flex align-items-center mt-3">
                     <div class="profile-img me-1">
-                        <img src="~/img/logo_ACD.png" alt="">
+                        <img alt="" id="photoUser">
                     </div>
-                    <div class="profile-user-dt ms-3">
-                        <h4 class="text-white fw-6">Test</h4>
-                        <p class="text-white fs-7 fw-4 mb-1">+62-1234567890</p>
-                        <p class="text-white fs-7 fw-4 mb-0">johndoe@example.com</p>
+                    <div class="profile-user-dt ms-3" id="UserInfo">
                     </div>
                     <a href="#editProfileModal" data-bs-toggle="modal" class="edit-btn text-white"><i
                             class="bi bi-pencil"></i></a>
@@ -74,7 +71,32 @@
             return;
         }
         $ = window.jQuery;
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            loadUserInfo(user);
+        }
+
     });
+
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
+
+    function loadUserInfo(user) {
+        var scr = `
+            <h4 class="text-white fw-6">${user.nama_lengkap}</h4>
+            <p class="text-white fs-7 fw-4 mb-1">${user.no_hp}</p>
+            <p class="text-white fs-7 fw-4 mb-0">${user.email}</p>
+        `;
+        $("#UserInfo").html(scr);
+        $("#photoUser").attr("src", user.photo);
+    }
 
     function Logout() {
         Swal.fire({

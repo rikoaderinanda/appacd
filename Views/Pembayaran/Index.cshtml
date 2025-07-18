@@ -210,44 +210,52 @@
     });
 
     function Checkout() {
+        var user = getUserInfo();
         var Data = getStoragePemesanan();
-        if (
-            Data.Keranjang == null ||
-            Data.JenisProperti == null ||
-            Data.Keluhan == null ||
-            Data.TanggalKunjungan == "" ||
-            Data.JamKunjungan == "" ||
-            Data.Total == null ||
-            Data.Customer == null ||
-            Data.id_layanan == null
-        ) {
-            alert("session Order expired");
-            window.location.href = '@Url.Action("Index", "Home")';
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
         }
-        postApi({
-            url: "/api/Pemesanan/Checkout",
-            data: Data,
-            onBeforeSend: function () {
-                $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
-                $("#btnCheckout").prop("disabled", true).text("Memproses...");
-            },
-            onSuccess: function (res) {
-                window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
-            },
-            onError: function (xhr, message) {
-                alert("Gagal: " + message);
-            },
-            onComplete: function () {
-                $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
-                $("#btnCheckout").prop("disabled", false).text("Bayar");
+        else{
+            if (
+                Data.Keranjang == null ||
+                Data.JenisProperti == null ||
+                Data.Keluhan == null ||
+                Data.TanggalKunjungan == "" ||
+                Data.JamKunjungan == "" ||
+                Data.Total == null ||
+                Data.Customer == null ||
+                Data.id_layanan == null
+            ) {
+                alert("session Order expired");
+                window.location.href = '@Url.Action("Index", "Home")';
             }
-        });
+            postApi({
+                url: "/api/Pemesanan/Checkout",
+                data: Data,
+                onBeforeSend: function () {
+                    $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+                    $("#btnCheckout").prop("disabled", true).text("Memproses...");
+                },
+                onSuccess: function (res) {
+                    window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
+                },
+                onError: function (xhr, message) {
+                    alert("Gagal: " + message);
+                },
+                onComplete: function () {
+                    $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+                    $("#btnCheckout").prop("disabled", false).text("Bayar");
+                }
+            });
+        }
+        
     }
 
     function SimpanDulu() {
         var user = getUserInfo();
         var Data = getStoragePemesanan();
-        console.log(Data);
         if (!isValidUser(user)) {
             $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
             $("#btnClsModalLogin").show();

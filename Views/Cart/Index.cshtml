@@ -40,7 +40,7 @@
             $('#ModalLogin').modal('show');
         }
         else {
-            LoadListCart(user.id);
+            LoadListCart();
         }
     });
 
@@ -49,9 +49,10 @@
         //$('#ModalLogin').modal('hide');
     }
 
-    function LoadListCart(userId) {
+    function LoadListCart() {
+        var user = getUserInfo();
         callApi({
-            url: '/api/Pemesanan/GetPemesanan?Id=' + userId,
+            url: '/api/Pemesanan/GetPemesanan?Id=' + user.id,
             method: 'GET',
             success: function (data) {
                 var html = "";

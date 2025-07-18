@@ -41,7 +41,7 @@
             $('#ModalLogin').modal('show');
         }
         else {
-            LoadListTracking(user.id);
+            LoadListTracking();
         }
 
     });
@@ -50,10 +50,10 @@
         //$('#ModalLogin').modal('hide');
     }
 
-    function LoadListTracking(userId) {
-        console.log(userId);
+    function LoadListTracking() {
+        var user = getUserInfo();
         callApi({
-            url: '/api/Pemesanan/GetTracking?id='+userId,
+            url: '/api/Pemesanan/GetTracking?id=' + user.id,
             method: 'GET',
             success: function (data) {
                 if (!data) {
