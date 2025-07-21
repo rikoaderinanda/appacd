@@ -21,6 +21,25 @@ namespace appacd.api
             _pemesananRepository = pemesananRepository;
         }
 
+        [HttpPost("VerifikasiPembayaran")]
+        public async Task<IActionResult> VerifikasiPembayaran([FromBody] GeneralRequest request)
+        {
+            if (request == null || request.Id <= 0)
+            {
+                return BadRequest(new { message = "ID tidak valid." });
+            }
+            try
+            {
+                Console.WriteLine(request.Id);
+                var Resid = await _pemesananRepository.VerifikasiPembayaran(request.Id);
+                return Ok(new { message = "Pembayaran berhasil", id = Resid });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menghapus pemesanan", error = ex.Message });
+            }
+        }
+
         [HttpPost("PembayaranSukses")]
         public async Task<IActionResult> PembayaranSukses([FromBody] GeneralRequest request)
         {

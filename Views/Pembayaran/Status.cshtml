@@ -1,3 +1,9 @@
+@{
+    ViewData["Title"] = "Status Pesanan";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Status Pesanan";
+}
 <!-- App Body Start -->
 <div class="app-body pb-30">
     <div class="container">
@@ -66,3 +72,15 @@
     </div>
 </div>
 <!-- App Body End -->
+<script>
+var $;
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+    }
+    $ = window.jQuery;
+    var Id = Storage.get('IdPesanan');
+    console.log(Id);
+});
+</script>

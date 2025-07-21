@@ -1,4 +1,14 @@
-﻿
+﻿function formatTimeLocal(waktu) {
+    const date = new Date(waktu.split('.')[0]);
+
+    const formatted = new Intl.DateTimeFormat("id-ID", {
+        dateStyle: "long",
+        timeStyle: "medium",
+    }).format(date);
+    return formatted
+}
+
+
 function toggleBottomSheet(Id) {
     document.getElementById(Id).classList.toggle("show");
 }
