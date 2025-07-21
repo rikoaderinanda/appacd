@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = "Status Pesanan";
     ViewData["Header"] = "2";
     ViewData["Footer"] = "3";
@@ -19,8 +19,6 @@
                                             <i class="bi bi-cart-check text-success"></i>
                                         </div>
                                         <h5 class="fs-6 fw-6 mt-4 mb-2 b-color">Terima kasih atas pesanan Anda!</h5>
-                                        <p class="p-color fs-7 pb-2 fw-4">Pesanan Anda telah berhasil dibuat.<br>
-                                            ID pesanan Anda adalah #0011111111</p>
                                     </div>
                                     <div class="order-confirmed-dt d-flex align-items-center mt-4">
                                         <div class="d-flex align-items-center w-50 pe-2">
@@ -29,7 +27,7 @@
                                             </div>
                                             <div class="text-odr">
                                                 <h6 class="fs-7 fw-5 mb-1 b-color">Tanggal Pesanan</h6>
-                                                <p class="fs-9 fw-5 mb-0 p-color">Jum, 19 Agu, 14:10</p>
+                                                <p class="fs-9 fw-5 mb-0 p-color" id="TglPesanan"></p>
                                             </div>
                                         </div>
                                         <div class="d-flex align-items-center w-50 ps-2">
@@ -38,30 +36,63 @@
                                             </div>
                                             <div class="text-odr">
                                                 <h6 class="fs-7 fw-5 mb-1 b-color">ID Pesanan</h6>
-                                                <p class="fs-9 fw-5 mb-0 p-color">#0011111111</p>
+                                                <p class="fs-9 fw-5 mb-0 p-color" id="IdPesanan"></p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="light-bg p-3 br-8 mt-4">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <span class="fs-7 fw-4 b-color">Nilai Keranjang</span>
-                                            <span class="mb-0 p-color fs-7 fw-4 ms-auto">Rp26</span>
+                                        <div class="d-flex align-items-center mb-0 border-bottom pb-2">
+                                            <span class="fs-7 fw-6 b-color">Total Transaksi</span>
+                                            <span class="mb-0 p-color fs-7 fw-6 ms-auto" id="TotalTrx"></span>
                                         </div>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <span class="fs-7 fw-4 b-color">Hemat Keranjang</span>
-                                            <span class="mb-0 p-color fs-7 fw-4 ms-auto">Rp3</span>
-                                        </div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <span class="fs-7 fw-4 b-color">Biaya Pengiriman</span>
-                                            <span class="mb-0 p-color fs-7 fw-4 ms-auto">Rp0</span>
-                                        </div>
-                                        <div class="d-flex align-items-center mb-0">
-                                            <span class="fs-7 fw-6 b-color">Total yang Harus Dibayar</span>
-                                            <span class="mb-0 p-color fs-7 fw-6 ms-auto">Rp23</span>
+
+                                        <!-- Accordion -->
+                                        <div class="accordion mt-3" id="detailAccordion">
+
+                                            <!-- Keluhan -->
+                                            <div class="accordion-item border-0">
+                                                <h2 class="accordion-header" id="headingKeluhan">
+                                                    <button class="accordion-button collapsed p-2 rounded-2 bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseKeluhan" aria-expanded="false" aria-controls="collapseKeluhan">
+                                                        ❗ Keluhan
+                                                    </button>
+                                                </h2>
+                                                <div id="collapseKeluhan" class="accordion-collapse collapse" aria-labelledby="headingKeluhan" data-bs-parent="#detailAccordion">
+                                                    <div class="accordion-body small text-muted" id="listKeluhan">
+                                                        - AC meneteskan air<br>
+                                                        - Suara berisik saat dinyalakan
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Layanan -->
+                                            <div class="accordion-item border-0">
+                                                <h2 class="accordion-header" id="headingLayanan">
+                                                    <button class="accordion-button collapsed p-2 rounded-2 bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLayanan" aria-expanded="false" aria-controls="collapseLayanan">
+                                                        🛠️ Layanan
+                                                    </button>
+                                                </h2>
+                                                <div id="collapseLayanan" class="accordion-collapse collapse" aria-labelledby="headingLayanan" data-bs-parent="#detailAccordion">
+                                                    <div class="accordion-body small text-muted" id="listLayanan">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Info Pelanggan -->
+                                            <div class="accordion-item border-0">
+                                                <h2 class="accordion-header" id="headingPelanggan">
+                                                    <button class="accordion-button collapsed p-2 rounded-2 bg-light text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePelanggan" aria-expanded="false" aria-controls="collapsePelanggan">
+                                                        👤 Info Pelanggan
+                                                    </button>
+                                                </h2>
+                                                <div id="collapsePelanggan" class="accordion-collapse collapse" aria-labelledby="headingPelanggan" data-bs-parent="#detailAccordion">
+                                                    <div class="accordion-body small text-muted" id="infoPelanggan">
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
                                     <a href="@Url.Action("OrderStatus", "Tracking")"
-                                        class="main-btn btn-hover w-100 fw-4 h_40 br-8 mt-3">Lacak Pesanan</a>
+                                       class="main-btn btn-hover w-100 fw-4 h_40 br-8 mt-3">Lacak Pesanan</a>
                                 </div>
                             </div>
                         </div>
@@ -82,5 +113,52 @@ document.addEventListener('DOMContentLoaded', function () {
     $ = window.jQuery;
     var Id = Storage.get('IdPesanan');
     console.log(Id);
+    LoadDataStatus(Id);
 });
+    function LoadDataStatus(Id) {
+        callApi({
+            url: `/api/Pemesanan/GetTrackingById?id=${Id}`,
+            method: 'GET',
+            success: function (res) {
+                console.log(res.data);
+                $.map(res.data, function (item) {
+                    console.log(item.checkout_date);
+                    $("#TglPesanan").text(formatTimeLocal(item.checkout_date));
+                    $("#IdPesanan").text("ACD-" + formatToSixDigits(item.id));
+                    $("#TotalTrx").text(formatRupiah(item.total));
+                    var layanan = $.map(item.Pesanan, function (i) {
+                        var scr = `
+                            - ${i.nama} <br>
+                        `;
+                        return scr;
+                    }).join("");
+                    $("#listLayanan").html(layanan);
+
+                    var Keluhan = $.map(item.Keluhan, function (i) {
+                        var scr = `
+                            - ${i.val} <br>
+                        `;
+                        return scr;
+                    }).join("");
+                    $("#listKeluhan").html(Keluhan);
+                    var infoPelanggan = `
+                        Nama: ${item.nama}<br>
+                        Whatsapp: ${item.whatsapp}<br>
+                        Alamat: ${item.alamat}
+                    `;
+                    $("#infoPelanggan").html(infoPelanggan);
+                });
+            },
+            error: function (err) {
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+            },
+            onBeforeSend: function () {
+                $('#stepStatusOrder').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+            onComplete: function () {
+
+            }
+        });
+    }
+
 </script>
