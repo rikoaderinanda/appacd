@@ -98,20 +98,35 @@
         $("#photoUser").attr("src", user.photo);
     }
 
+    
     function Logout() {
         Swal.fire({
-            //title: 'Apakah anda yakin untuk logout?',
-            text: "Apakah anda yakin untuk logout?",
+            title: '🚪 Logout dari Aplikasi?',
+            text: "Anda akan keluar dan perlu login kembali untuk mengakses fitur.",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Logout!',
-            cancelButtonText: 'Batal'
+            confirmButtonText: '🔒 Ya, Logout',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-4 shadow-lg',
+                title: 'fw-bold text-danger',
+                htmlContainer: 'text-muted',
+                confirmButton: 'btn btn-danger rounded-pill px-4 py-2 me-2',
+                cancelButton: 'btn btn-outline-secondary rounded-pill px-4 py-2'
+            },
+            buttonsStyling: false,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 Storage.remove('username');
                 window.location.href = '@Url.Action("Index", "Home")';
             }
         });
-    }
 
+    }
 </script>
