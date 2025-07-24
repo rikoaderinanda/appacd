@@ -22,11 +22,10 @@
                         </a>
                     </li>
                     <li>
-                        <a href="app-scan.html" class="header-action">
+                    <a href="javascript:void(0);" class="header-action" onclick="ScanQRCodePerangkat();">
                             <i class="bi bi-qr-code-scan"></i>
                         </a>
                     </li>
-                    
                 </ul>
             </div>
         </div>
@@ -51,3 +50,17 @@ else if (ViewData["Header"] == "2")
     <!-- Header End -->
     <!-- Header End -->
 }
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+    }
+    var $ = window.jQuery;
+});
+
+function ScanQRCodePerangkat(){
+    $("#ShowBarcodeUnitBaru").modal('show');
+}
+</script>

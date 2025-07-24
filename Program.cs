@@ -26,6 +26,7 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 });
 builder.Services.AddScoped<ILayananRepository, LayananRepository>();
 builder.Services.AddScoped<IPemesananRepository, PemesananRepository>();
+builder.Services.AddScoped<IPerangkatRepository, PerangkatRepository>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
