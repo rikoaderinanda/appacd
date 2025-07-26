@@ -27,10 +27,28 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 builder.Services.AddScoped<ILayananRepository, LayananRepository>();
 builder.Services.AddScoped<IPemesananRepository, PemesananRepository>();
 builder.Services.AddScoped<IPerangkatRepository, PerangkatRepository>();
+builder.Services.AddHttpClient<ITripayRepository, TripayRepository>();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(
+            "https://localhost:7298",
+            "https://mitraacd.onrender.com"
+            )
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Tambahkan ini
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -57,6 +75,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
+app.UseCors();
 app.UseAuthorization();
 
 app.MapControllerRoute(

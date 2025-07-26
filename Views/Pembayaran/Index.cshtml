@@ -239,7 +239,7 @@
                     $("#btnCheckout").prop("disabled", true).text("Memproses...");
                 },
                 onSuccess: function (res) {
-                    window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
+                    window.location.href = '@Url.Action("ChannelPembayaran", "Pembayaran")';
                 },
                 onError: function (xhr, message) {
                     alert("Gagal: " + message);

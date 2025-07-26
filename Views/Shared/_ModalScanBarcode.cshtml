@@ -127,29 +127,26 @@
                 console.log(data);
                 if(data==null){
                     Swal.fire({
-                        title: '<strong class="text-danger">QR-Code Tidak Ditemukan</strong>',
-                        html: `
-                            <p class="mb-2">QR-Code perangkat tidak ditemukan di sistem.</p>
-                            <p>Silakan tekan <b>Daftar</b> jika ingin mendaftarkan perangkat baru.</p>
-                        `,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: '<i class="bi bi-plus-circle me-1"></i> Daftar',
-                        cancelButtonText: 'Batal',
-                        reverseButtons: true,
-                        customClass: {
-                            confirmButton: 'btn btn-danger px-4 ms-2',
-                            cancelButton: 'btn btn-outline-secondary px-4',
-                            popup: 'rounded-4 shadow-lg',
-                            title: 'fs-5',
-                            htmlContainer: 'fs-6'
-                        },
-                        buttonsStyling: false
+                            title: '<strong class="text-danger">QR-Code Tidak Ditemukan</strong>',
+                            html: `
+                                <p class="mb-2">QR-Code perangkat tidak ditemukan di sistem.</p>
+                                <p>Silakan tekan <b>Oke</b> untuk mendaftarkan perangkat baru.</p>
+                            `,
+                            icon: 'warning',
+                            confirmButtonText: '<i class="bi bi-plus-circle me-1"></i> Oke',
+                            customClass: {
+                                confirmButton: 'btn btn-danger px-4',
+                                popup: 'rounded-4 shadow-lg',
+                                title: 'fs-5',
+                                htmlContainer: 'fs-6'
+                            },
+                            buttonsStyling: false
                         }).then((result) => {
-                        if (result.isConfirmed) {
-                            $("#ShowDeskripsiUnit").modal('show');
-                        }
+                            if (result.isConfirmed) {
+                                $("#ShowDeskripsiUnit").modal('show');
+                            }
                     });
+
                 }
                 else
                 {

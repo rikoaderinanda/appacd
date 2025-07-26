@@ -1,0 +1,127 @@
+
+@{
+    ViewData["Title"] = "Channel Pembayaran";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Channel Pembayaran";
+
+}
+
+<style>
+    .channel-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background-color: #f5f7fa;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .channel-card:hover {
+        background-color: #e9f3ff;
+    }
+
+    .channel-icon {
+        font-size: 1.5rem;
+        color: #0d6efd;
+    }
+
+    .channel-name {
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+</style>
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+        <strong>Metode Pembayaran</strong>
+        <div class="position-relative mb-4 mt-2">
+            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
+                id="searchInput">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <button type="button"
+                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                onclick="LoadListTask(0)" title="Segarkan">
+                <i class="bi bi-arrow-clockwise text-primary"></i>
+            </button>
+        </div>
+        <div class="accordion mt-4" id="channelAccordion">
+        </div>
+    </div>
+</div>
+
+<script>
+var $;
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+    }
+    $ = window.jQuery;
+    GetChannelPembayaran();
+    
+});
+
+
+function initFilter() {
+    $('#ListChannelCarousel').owlCarousel({
+        loop: false,
+        margin: 7,
+        nav: false,
+        responsive: {
+            0: { items: 2.2 },
+            600: { items: 3 },
+            1000: { items: 3 }
+        }
+    });
+}
+
+function GetChannelPembayaran(){
+    callApi({
+        url: `/api/Tripay/GetPaymentChannels`,
+        method: 'GET',
+        success: function (res) {
+            
+            var channel = $.map(res, function (item) {
+                console.log(item.payment);
+                var daftarCh = $.map(item.payment, function (dt) {
+                    var scr = `
+                        <label class="channel-card d-flex align-items-center p-2 border rounded mb-2" style="cursor: pointer;">
+                            <input type="radio" name="payment_channel" value="${dt.code}" class="form-check-input me-2" />
+                            <p class="channel-name mb-0">${dt.name}</p>
+                        </label>
+                    `;
+                    return scr;
+                }).join('');
+
+                var scr = `
+                   <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading${item.group_id}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${item.group_id}" aria-expanded="true" aria-controls="collapse${item.group_id}">
+                                <i class="bi bi-calendar-day me-2"></i> ${item.group_name}
+                            </button>
+                        </h2>
+                        <div id="collapse${item.group_id}" class="accordion-collapse collapse" aria-labelledby="heading${item.group_id}" data-bs-parent="#channelAccordion">
+                            <div class="accordion-body">
+                                <!-- Isi Virtual Account di sini -->
+                                <p>Daftar channel pembayaran via ${item.group_name}.</p>
+                                ${daftarCh}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return scr;
+            }).join('');
+            $('#channelAccordion').html(channel);
+        },
+        error: function (err) {Swal.fire('Gagal!', 'Proses gagal.', 'warning');},
+        onBeforeSend: function () {
+            $('#channelAccordion').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+        },
+        onComplete: function () {
+        }
+    });
+}
+
+</script>
