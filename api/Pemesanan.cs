@@ -103,7 +103,7 @@ namespace appacd.api
                 var idPemesanan = await _pemesananRepository.SimpanAsync(dto);
                 if (idPemesanan > 0)
                 {
-                    var idres = await _pemesananRepository.CheckoutAsync(idPemesanan);
+                    var idres = await _pemesananRepository.CheckoutAsync(idPemesanan,dto.NoRefCheckout);
                     return Ok(new { message = "Pemesanan berhasil disimpan", id = idres });
                 }
                 else

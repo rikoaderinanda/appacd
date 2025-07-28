@@ -15,7 +15,7 @@ namespace appacd.Services
         Task<int> HapusTrackingById(int id);
         Task<IEnumerable<dynamic>> GetTrackingById(int Id);
         Task<IEnumerable<dynamic>> GetTracking(string id);
-        Task<int> CheckoutAsync(int Id);
+        Task<int> CheckoutAsync(int Id,string NoRefCheckout);
 
         Task<int> SimpanAsync(PemesananDto dto);
         Task<int> HapusPemesananAsync(int id);
@@ -172,15 +172,16 @@ namespace appacd.Services
             }
         }
 
-        public async Task<int> CheckoutAsync(int Id)
+        public async Task<int> CheckoutAsync(int Id,string _NoRefCheckout)
         {
             var query = @"
-                            select sp_checkout_pemesanan(@Id);
+                            select sp_checkout_pemesanan(@Id,@NoRefCheckout);
                         ";
 
             var param = new
             {
-                Id = Id
+                Id = Id,
+                NoRefCheckout = _NoRefCheckout
             };
 
             int pemesananId = await _db.ExecuteScalarAsync<int>(query, param);

@@ -5,6 +5,55 @@
     ViewData["HeaderName"] = "Konfirmasi Pesanan";
 
 }
+
+<style>
+    .payment-channel-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .channel-card {
+        position: relative;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 0rem;
+        background: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.1s ease-in-out;
+        flex: 1 1 150px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .channel-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    }
+
+    .channel-card input[type="radio"]:checked + .channel-content {
+        border: 2px solid #0d6efd;
+        border-radius: 8px;
+        padding: 2px;
+        background-color: #f0f8ff;
+    }
+
+    .channel-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+        border-radius: 8px;
+        transition: 0.1s;
+    }
+
+    .channel-content img {
+        max-height: 60px;
+        max-width: 100px;
+        object-fit: contain;
+    }
+</style>
+
 <div class="container mt-4">
     <div class="text-center mb-4">
         <img src="~/img/Layanan/cekOrderan.png" alt="Konfirmasi Pesanan" style="max-width: 180px;" class="mb-0" />
@@ -14,7 +63,6 @@
     </div>
     <strong>Informasi Customer</strong>
     <div class="card position-relative shadow-sm border-0">
-
         <!-- Tombol Edit Stylish di pojok kanan atas -->
         <button
             class="btn btn-light border rounded-circle position-absolute d-flex align-items-center justify-content-center"
@@ -65,7 +113,19 @@
     </ul>
 
     <p><strong>Catatan:</strong> Pastikan unit AC dalam kondisi mati sebelum teknisi datang.</p>
-
+    <strong>Metode Pembayaran</strong>
+        <div class="position-relative mb-4 mt-2">
+            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
+                id="searchInput">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <button type="button"
+                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                onclick="GetChannelPembayaran()" title="Segarkan">
+                <i class="bi bi-arrow-clockwise text-primary"></i>
+            </button>
+        </div>
+    <div class="accordion mt-4 mb-30" id="channelAccordion">
+    </div>
 
 </div>
 
@@ -79,8 +139,8 @@
                     Simpan Dulu
                 </button>
             </div>
-            <div class="col">
-                <button class="main-btn btn-hover w-100 fw-4 h_40 br-8" onclick="Checkout();" id="btnCheckout">
+            <div class="col" style="display: none;" id="btnCheckout">
+                <button class="main-btn btn-hover w-100 fw-4 h_40 br-8" onclick="Checkout();">
                     <i class="bi bi-credit-card me-2"></i>
                     Bayar
                 </button>
@@ -89,6 +149,7 @@
     </div>
 </div>
 <!-- Footer End -->
+
 <script>
     var $;
 
@@ -99,6 +160,7 @@
         }
         $ = window.jQuery;
         var data = getStoragePemesanan();
+        console.log(data);
         if (
             data.Keranjang == null ||
             data.JenisProperti == null ||
@@ -112,7 +174,6 @@
             window.location.href = '@Url.Action("Index", "Home")';
         }
         
-
         var customer = `
             <dt class="col-sm-4">Nama</dt>
             <dd class="col-sm-8">${data.Customer.nama}</dd>
@@ -205,9 +266,122 @@
         else {
             $("#IdPesanan").text("");
         }
+        var ChannelPayment = Storage.get("ChannelPayment");
+        if(ChannelPayment!=null){
+            SetChannelPembayaranV2(ChannelPayment,"");
+        }
+        else{
+            GetChannelPembayaran();
+        }
 
+        $('#searchInput').on('keydown', function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault(); // mencegah submit form jika ada
+                let keyword = $(this).val();
+                console.log("Kata kunci pencarian:", keyword);
+                $('#btnCheckout').fadeOut();
+                // Panggil fungsi pencarian
+                var ChannelPayment = Storage.get("ChannelPayment");
+                if(keyword!=""){
+                    SetChannelPembayaranV2(ChannelPayment,$("#searchInput").val());
+                }
+                else{
+                    
+                    SetChannelPembayaranV2(ChannelPayment,"");
+                }
+            }
+        });
 
     });
+
+    function GetChannelPembayaran(){
+        callApi({
+            url: `/api/Tripay/GetPaymentChannelsV2`,
+            method: 'GET',
+            success: function (res) {
+                console.log(res);
+                Storage.set("ChannelPayment",res);
+                SetChannelPembayaranV2(res,"");
+            },
+            error: function (err) {Swal.fire('Gagal!', 'Proses gagal.', 'warning');},
+            onBeforeSend: function () {
+                $('#channelAccordion').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+            onComplete: function () {
+            }
+        });
+    }
+
+    function SetChannelPembayaranV2(res,cari){
+        // Grouping berdasarkan "group"
+        if(cari == ""){
+            $("#searchInput").val("");
+        }
+        
+        const grouped = {};
+        res.forEach(item => {
+            if(cari != "")
+            {
+                let regex = new RegExp(cari, "i"); 
+                if(regex.test(item.name)){
+                    if (!grouped[item.group]) grouped[item.group] = [];
+                    grouped[item.group].push(item);
+                }
+            }
+            else
+            {
+                if (!grouped[item.group]) grouped[item.group] = [];
+                grouped[item.group].push(item);
+            }
+            
+        });
+        const accordion = document.getElementById("channelAccordion");
+        let idx = 0;
+        $('#channelAccordion').html("");
+        Object.keys(grouped).forEach(group => {
+            const collapseId = `collapse-${idx}`;
+            const headerId = `heading-${idx}`;
+
+            const items = grouped[group].map(item => `
+                <div class="payment-channel-list">
+                    <label class="channel-card">
+                        <input type="radio" name="payment_channel" value="${item.code}" class="form-check-input d-none" onclick="checkRadioStatus();"/>
+                        <div class="channel-content">
+                            <img src="${item.icon_url}" alt="${item.name}" width="80">
+                        </div>
+                    </label>
+                </div>
+            `).join("");
+
+            const section = `
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="${headerId}">
+                        <button class="accordion-button" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#${collapseId}" 
+                                aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+                            ${group}
+                        </button>
+                    </h2>
+                    <div id="${collapseId}" class="accordion-collapse collapse ${cari != '' ? 'show' : '' }" 
+                            aria-labelledby="${headerId}" data-bs-parent="#channelAccordion">
+                        <div class="accordion-body">
+                            ${items}
+                        </div>
+                    </div>
+                </div>
+            `;
+            accordion.innerHTML += section;
+            idx++;
+        });
+    }
+
+    function checkRadioStatus() {
+        if ($('input[name="payment_channel"]:checked').length > 0) {
+            $('#btnCheckout').fadeIn();
+        } else {
+            $('#btnCheckout').fadeOut();
+        }
+    }
 
     function Checkout() {
         var user = getUserInfo();
@@ -231,26 +405,82 @@
                 alert("session Order expired");
                 window.location.href = '@Url.Action("Index", "Home")';
             }
-            postApi({
-                url: "/api/Pemesanan/Checkout",
-                data: Data,
-                onBeforeSend: function () {
-                    $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
-                    $("#btnCheckout").prop("disabled", true).text("Memproses...");
-                },
-                onSuccess: function (res) {
-                    window.location.href = '@Url.Action("ChannelPembayaran", "Pembayaran")';
-                },
-                onError: function (xhr, message) {
-                    alert("Gagal: " + message);
-                },
-                onComplete: function () {
-                    $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
-                    $("#btnCheckout").prop("disabled", false).text("Bayar");
-                }
-            });
+            InstruksiBayar(Data);
         }
         
+    }
+
+    function SimpanCheckOut(_Data){
+        callApi({
+            url: "/api/Pemesanan/Checkout",
+            method: 'POST',
+            data:_Data,
+            success: function (res) {
+                //console.log(res);
+                Storage.set('IdPesanan',res.Id);
+                Storage.set('NoRefCheckout',_Data.NoRefCheckout);
+                window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
+            },
+            error: function (err) {
+                Swal.fire('Gagal!', 'Pesanan berhasil gagal dicheckout.', 'warning');
+            },
+            onBeforeSend : function () {
+                $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+                $("#btnCheckout").prop("disabled", true).text("Memproses...");
+            },
+            onComplete : function () {
+                $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+                $("#btnCheckout").prop("disabled", false).text("Bayar");
+            }
+        });  
+    }
+
+    function InstruksiBayar(datatrx){
+        
+        var method = $('input[name="payment_channel"]:checked').val();
+        var _order_items = [];
+        $.map(datatrx.Keranjang, function (item) {
+            var dt = {
+                sku : item.id,
+                name : item.nama,
+                price : item.total,
+                quantity : item.jumlah,
+            }
+            _order_items.push(dt);
+        });
+
+        var dataapi =
+        {   
+            method : method,
+            merchant_ref : "ACD-"+formatToSixDigits(datatrx.Id),
+            amount: datatrx.Total,
+            customer_name : datatrx.Customer.nama,
+            customer_email : "rikoaderinanda@gmail.com",
+            customer_phone : datatrx.Customer.whatsapp,
+            order_items : _order_items,
+            callback_url : "",
+            return_url: "",
+            expired_time: 0,
+            signature: ""
+        }
+        
+        callApi({
+            url: '/api/Tripay/CreateTransaction',
+            method: 'POST',
+            data:dataapi,
+            success: function (res) {
+                if(res.success){
+                    datatrx.NoRefCheckout = res.data.reference;
+                    SimpanCheckOut(datatrx);
+                }
+                else{
+                    Swal.fire('Gagal!',data.message, 'warning');
+                }
+            },
+            error: function (err) {
+                Swal.fire('Gagal!', 'ada kendala dikoneksi anda', 'warning');
+            }
+        });
     }
 
     function SimpanDulu() {
@@ -390,4 +620,5 @@
         //window.location.href = '@Url.Action("Index", "Home")';
         $('#ModalLogin').modal('hide');
     }
+
 </script>

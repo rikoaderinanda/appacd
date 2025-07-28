@@ -157,7 +157,7 @@
             url: '/api/Pemesanan/GetPemesananById?id=' + Id,
             method: 'GET',
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 data.forEach(item => {
                     Storage.set('keranjang', item.Pesanan);
                     Storage.set('keluhan', item.Keluhan);

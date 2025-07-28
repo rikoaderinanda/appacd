@@ -201,6 +201,7 @@ function getStoragePemesanan() {
     var IdPesanan = Storage.get('IdPesanan') || 0;
     var id_layanan = Storage.get('id_layanan') || 0;
     var user_id = Storage.get('userId') || null;
+    var _NoRefCheckout = Storage.get('userId') || ""n";
     var data = {
         Keranjang: keranjang,
         JenisProperti: JenisProperti,
@@ -211,7 +212,8 @@ function getStoragePemesanan() {
         Customer: Customer,
         Id: IdPesanan,
         id_layanan: id_layanan,
-        user_id: user_id
+        user_id: user_id,
+        NoRefCheckout :""
     };
 
     return data;

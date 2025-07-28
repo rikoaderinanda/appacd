@@ -4,37 +4,59 @@
     ViewData["Header"] = "2";
     ViewData["Footer"] = "3";
     ViewData["HeaderName"] = "Channel Pembayaran";
-
 }
 
 <style>
-    .channel-card {
+    .payment-channel-list {
         display: flex;
-        align-items: center;
+        flex-wrap: wrap;
         gap: 1rem;
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-        background-color: #f5f7fa;
-        margin-bottom: 0.75rem;
-        transition: all 0.3s ease;
+    }
+
+    .channel-card {
+        position: relative;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 0rem;
+        background: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.1s ease-in-out;
+        flex: 1 1 150px;
+        text-align: center;
+        cursor: pointer;
     }
 
     .channel-card:hover {
-        background-color: #e9f3ff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
     }
 
-    .channel-icon {
-        font-size: 1.5rem;
-        color: #0d6efd;
+    .channel-card input[type="radio"]:checked + .channel-content {
+        border: 2px solid #0d6efd;
+        border-radius: 8px;
+        padding: 2px;
+        background-color: #f0f8ff;
     }
 
-    .channel-name {
-        font-weight: 500;
-        margin-bottom: 0;
+    .channel-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+        border-radius: 8px;
+        transition: 0.1s;
+    }
+
+    .channel-content img {
+        max-height: 60px;
+        max-width: 100px;
+        object-fit: contain;
     }
 </style>
+
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
+        
         <strong>Metode Pembayaran</strong>
         <div class="position-relative mb-4 mt-2">
             <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
@@ -42,11 +64,34 @@
             <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
             <button type="button"
                 class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
-                onclick="LoadListTask(0)" title="Segarkan">
+                onclick="GetChannelPembayaran()" title="Segarkan">
                 <i class="bi bi-arrow-clockwise text-primary"></i>
             </button>
         </div>
+        <ul class="list-group mb-3" id="">
+            <li class="list-group-item d-flex justify-content-between align-items-center py-2 position-relative">
+                <div class="d-flex align-items-center">
+                    <div class="fw-semibold">Total Pembayaran</div>
+                </div>
+                <div class="text-end">
+                    <div class="text-primary fw-bold">
+                        <div id="Total">
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
         <div class="accordion mt-4" id="channelAccordion">
+        </div>
+        
+        <div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+            <div class="container p-0">
+                <div class="row">
+                    <div id="continueButtonWrapper" class="mt-3" style="display: none;" onclick="InstruksiBayar()">
+                        <button class="btn btn-primary w-100">Lanjutkan</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -59,61 +104,118 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
     $ = window.jQuery;
-    GetChannelPembayaran();
+
+    var data = getStoragePemesanan();
+    if (
+        data.Keranjang == null ||
+        data.JenisProperti == null ||
+        data.Keluhan == null ||
+        data.TanggalKunjungan == "" ||
+        data.JamKunjungan == "" ||
+        data.Total == null ||
+        data.Customer == null
+    ) {
+        alert("session Order expired");
+        window.location.href = '@Url.Action("Index", "Home")';
+    }
+    
+    var Total = `${formatRupiah(data.Total)}`;
+    $('#Total').html(Total);
+    var ChannelPayment = Storage.get("ChannelPayment");
+    if(ChannelPayment!=null){
+        SetChannelPembayaranV2(ChannelPayment,"");
+    }
+    else{
+        GetChannelPembayaran();
+    }
+
+
+    $('#searchInput').on('keydown', function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault(); // mencegah submit form jika ada
+            let keyword = $(this).val();
+            console.log("Kata kunci pencarian:", keyword);
+            $('#continueButtonWrapper').fadeOut();
+            // Panggil fungsi pencarian
+            var ChannelPayment = Storage.get("ChannelPayment");
+            if(keyword!=""){
+                SetChannelPembayaranV2(ChannelPayment,$("#searchInput").val());
+            }
+            else{
+                
+                SetChannelPembayaranV2(ChannelPayment,"");
+            }
+        }
+    });
     
 });
 
+function checkRadioStatus() {
+    if ($('input[name="payment_channel"]:checked').length > 0) {
+        $('#continueButtonWrapper').fadeIn();
+    } else {
+        $('#continueButtonWrapper').fadeOut();
+    }
+}
 
-function initFilter() {
-    $('#ListChannelCarousel').owlCarousel({
-        loop: false,
-        margin: 7,
-        nav: false,
-        responsive: {
-            0: { items: 2.2 },
-            600: { items: 3 },
-            1000: { items: 3 }
+function LoadPencarian(){
+    var ChannelPayment = Storage.get("ChannelPayment");
+    //console.log(ChannelPayment);
+    
+    var cari = $("#searchInput").val();
+    var channel = $.map(ChannelPayment, function (item) {
+        var scr = "";
+        var daftarCh = $.map(item.payment, function (dt) {
+            scr ="";
+            let regex = new RegExp(cari, "i"); 
+            if(regex.test(dt.name)){
+                scr = `
+                <div class="payment-channel-list">
+                    <label class="channel-card">
+                        <input type="radio" name="payment_channel" value="${dt.code}" class="form-check-input d-none" onclick="checkRadioStatus();"/>
+                        <div class="channel-content">
+                            ${icon}
+                            <p class="channel-name mb-0">${dt.name}</p>
+                        </div>
+                    </label>
+                </div>
+                `;
+            }
+            return scr;
+        }).join('');
+        scr = "";
+        if(daftarCh!=""){
+            scr = `
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${item.group_id}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${item.group_id}" aria-expanded="true" aria-controls="collapse${item.group_id}">
+                            <i class="bi bi-calendar-day me-2"></i> ${item.group_name}
+                        </button>
+                    </h2>
+                    <div id="collapse${item.group_id}" class="accordion-collapse collapse show" aria-labelledby="heading${item.group_id}" data-bs-parent="#channelAccordion">
+                        <div class="accordion-body">
+                            <!-- Isi Virtual Account di sini -->
+                            <p>Daftar channel pembayaran via ${item.group_name}.</p>
+                            ${daftarCh}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
-    });
+        return scr;
+    }).join("");
+
+    $('#channelAccordion').html(channel);
 }
 
 function GetChannelPembayaran(){
     callApi({
-        url: `/api/Tripay/GetPaymentChannels`,
+        url: `/api/Tripay/GetPaymentChannelsV2`,
         method: 'GET',
         success: function (res) {
-            
-            var channel = $.map(res, function (item) {
-                console.log(item.payment);
-                var daftarCh = $.map(item.payment, function (dt) {
-                    var scr = `
-                        <label class="channel-card d-flex align-items-center p-2 border rounded mb-2" style="cursor: pointer;">
-                            <input type="radio" name="payment_channel" value="${dt.code}" class="form-check-input me-2" />
-                            <p class="channel-name mb-0">${dt.name}</p>
-                        </label>
-                    `;
-                    return scr;
-                }).join('');
-
-                var scr = `
-                   <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading${item.group_id}">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${item.group_id}" aria-expanded="true" aria-controls="collapse${item.group_id}">
-                                <i class="bi bi-calendar-day me-2"></i> ${item.group_name}
-                            </button>
-                        </h2>
-                        <div id="collapse${item.group_id}" class="accordion-collapse collapse" aria-labelledby="heading${item.group_id}" data-bs-parent="#channelAccordion">
-                            <div class="accordion-body">
-                                <!-- Isi Virtual Account di sini -->
-                                <p>Daftar channel pembayaran via ${item.group_name}.</p>
-                                ${daftarCh}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                return scr;
-            }).join('');
-            $('#channelAccordion').html(channel);
+            console.log(res);
+            Storage.set("ChannelPayment",res);
+            SetChannelPembayaranV2(res,"");
         },
         error: function (err) {Swal.fire('Gagal!', 'Proses gagal.', 'warning');},
         onBeforeSend: function () {
@@ -122,6 +224,169 @@ function GetChannelPembayaran(){
         onComplete: function () {
         }
     });
+}
+
+function SetChannelPembayaran(res){
+    $("#searchInput").val("");
+    var channel = $.map(res, function (item) {
+           
+            var daftarCh = $.map(item.payment, function (dt) {
+                var scr = `
+                `;
+                scr = `
+                <div class="payment-channel-list">
+                    <label class="channel-card">
+                        <input type="radio" name="payment_channel" value="${dt.code}" class="form-check-input d-none" onclick="checkRadioStatus();" />
+                        <div class="channel-content">
+                            ${icon}
+                            <p class="channel-name mb-0">${dt.name}</p>
+                        </div>
+                    </label>
+                </div>
+                `;
+                return scr;
+            }).join('');
+
+            var scr = `
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${item.group_id}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${item.group_id}" aria-expanded="true" aria-controls="collapse${item.group_id}">
+                            <i class="bi bi-calendar-day me-2"></i> ${item.group_name}
+                        </button>
+                    </h2>
+                    <div id="collapse${item.group_id}" class="accordion-collapse collapse" aria-labelledby="heading${item.group_id}" data-bs-parent="#channelAccordion">
+                        <div class="accordion-body">
+                            <!-- Isi Virtual Account di sini -->
+                            <p>Daftar channel pembayaran via ${item.group_name}.</p>
+                            ${daftarCh}
+                        </div>
+                    </div>
+                </div>
+            `;
+            return scr;
+        }).join('');
+        $('#channelAccordion').html(channel);
+}
+
+function SetChannelPembayaranV2(res,cari){
+    // Grouping berdasarkan "group"
+    if(cari == ""){
+        $("#searchInput").val("");
+    }
+    
+    const grouped = {};
+    res.forEach(item => {
+        if(cari != "")
+        {
+            let regex = new RegExp(cari, "i"); 
+            if(regex.test(item.name)){
+                if (!grouped[item.group]) grouped[item.group] = [];
+                grouped[item.group].push(item);
+            }
+        }
+        else
+        {
+            if (!grouped[item.group]) grouped[item.group] = [];
+            grouped[item.group].push(item);
+        }
+        
+    });
+    const accordion = document.getElementById("channelAccordion");
+    let idx = 0;
+    $('#channelAccordion').html("");
+    Object.keys(grouped).forEach(group => {
+        const collapseId = `collapse-${idx}`;
+        const headerId = `heading-${idx}`;
+
+        const items = grouped[group].map(item => `
+            <div class="payment-channel-list">
+                <label class="channel-card">
+                    <input type="radio" name="payment_channel" value="${item.code}" class="form-check-input d-none" onclick="checkRadioStatus();"/>
+                    <div class="channel-content">
+                        <img src="${item.icon_url}" alt="${item.name}" width="80">
+                    </div>
+                </label>
+            </div>
+        `).join("");
+
+        const section = `
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="${headerId}">
+                    <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#${collapseId}" 
+                            aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+                        ${group}
+                    </button>
+                </h2>
+                <div id="${collapseId}" class="accordion-collapse collapse ${cari != '' ? 'show' : '' }" 
+                        aria-labelledby="${headerId}" data-bs-parent="#channelAccordion">
+                    <div class="accordion-body">
+                        ${items}
+                    </div>
+                </div>
+            </div>
+        `;
+        accordion.innerHTML += section;
+        idx++;
+    });
+}
+
+function InstruksiBayar()
+{
+    var method = $('input[name="payment_channel"]:checked').val();
+    console.log(method);
+    var datatrx = getStoragePemesanan();
+    console.log(datatrx);
+    var _order_items = [];
+    $.map(datatrx.Keranjang, function (item) {
+        var dt = {
+            sku : item.id,
+            name : item.nama,
+            price : item.total,
+            quantity : item.jumlah,
+        }
+        _order_items.push(dt);
+    });
+
+    var dataapi =
+    {   
+        method : method,
+        merchant_ref : "ACD-"+formatToSixDigits(datatrx.Id),
+        amount: datatrx.Total,
+        customer_name : datatrx.Customer.nama,
+        customer_email : "rikoaderinanda@gmail.com",
+        customer_phone : datatrx.Customer.whatsapp,
+        order_items : _order_items,
+        callback_url : "",
+        return_url: "",
+        expired_time: 0,
+        signature: ""
+    }
+
+    console.log(dataapi)
+    
+    callApi({
+        url: '/api/Tripay/CreateTransaction',
+        method: 'POST',
+        data:dataapi,
+        success: function (data) {
+            console.log(data);
+            if(data.success){
+                Storage.set("TripayData",data);
+
+            }
+            else{
+                Swal.fire('Gagal!',data.message, 'warning');
+            }
+        },
+        error: function (err) {
+            Swal.fire('Gagal!', 'Pesanan berhasil gagal dihapus.', 'warning');
+            SetChannelPembayaranV2(ChannelPayment,"");
+        }
+    });  
+}
+
+function SimpanDataTripayCheckOut(data){
 }
 
 </script>

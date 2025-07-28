@@ -23,7 +23,8 @@ namespace appacd.Models
         public CustomerInfo Customer { get; set; }
         public int Id { get; set; }
         public int id_layanan { get; set; }
-        public int user_id{get;set;}
+        public int user_id {get;set;}
+        public string NoRefCheckout {get;set;}
     }
 
     public class UserInfo

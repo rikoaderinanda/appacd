@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Instruksi Pembayaran";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Instruksi Pembayaran";
+}
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+    
+    </div>
+</div>
+
+<script>
+    var $;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var data = getStoragePemesanan();
+        console.log(data);
+    });
+
+</script>

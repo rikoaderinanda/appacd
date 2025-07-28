@@ -115,7 +115,7 @@
     function ShowTrackingById(Id, StatusOrder) {
         Storage.set('IdPesanan', Id);
         if (StatusOrder == 1) {
-            window.location.href = '@Url.Action("CallApiPaymentGateway", "Pembayaran")';
+            GetDataTrx(Id);
         }
         else if (StatusOrder >= 2) {
             Storage.set('StatusOrder', StatusOrder);
@@ -159,7 +159,46 @@
             },
             error: function (err) {
                 @* alert('Error: ' + err); *@
-                    Swal.fire('Gagal!', 'Pesanan gagal dihapus.', 'warning');
+                Swal.fire('Gagal!', 'Pesanan gagal dihapus.', 'warning');
+                LoadListTracking();
+            }
+        });
+    }
+
+    function GetDataTrx(Id){
+        console.log(Id);
+        callApi({
+            url: '/api/Pemesanan/GetTrackingById?Id='+Id,
+            method: 'GET',
+            success: function (res) {
+                console.log(res);
+                res.data.forEach(item => {
+                    Storage.set('keranjang', item.Pesanan);
+                    Storage.set('keluhan', item.Keluhan);
+                    Storage.set('jenis_properti', item.Properti);
+                    Storage.set('TanggalKunjungan', item.tanggal_kunjungan);
+                    Storage.set('JamKunjungan', item.jam_kunjungan);
+                    Storage.set('Total', item.total);
+                    Storage.set('id_layanan', item.id_layanan)
+                    let dataCustomer = {
+                        "nama": item.nama,
+                        "whatsapp": item.whatsapp,
+                        "catatan": item.catatan,
+                        "lokasi": item.lokasi,
+                        "alamat": item.alamat
+                    }
+                    Storage.set('Customer', dataCustomer);
+                    Storage.set('IdPesanan', Id);
+                });
+                var result = getStoragePemesanan();
+                if (result != null) {
+                    //window.location.href = '@Url.Action("Index", "Pembayaran")';
+                    window.location.href = '@Url.Action("ChannelPembayaran", "Pembayaran")';
+                }
+            },
+            error: function (err) {
+                @* alert('Error: ' + err); *@
+                Swal.fire('Gagal!', 'Data Gagal diload.', 'warning');
                 LoadListTracking();
             }
         });
