@@ -4,7 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using appacd.Models;
 using appacd.Services;
 using System.Text.Json;
+using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Extensions.Primitives;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace appacd.api
 {
     [ApiController]
@@ -12,10 +18,14 @@ namespace appacd.api
     public class TripayController : ControllerBase
     {
         private readonly ITripayRepository _repo;
+        private readonly IPemesananRepository _pesanan;
+        private readonly ILogger<TripayController> _logger;
 
-        public TripayController(ITripayRepository repo)
+        public TripayController(ITripayRepository repo, IPemesananRepository pesanan, ILogger<TripayController> logger)
         {
             _repo = repo;
+            _pesanan = pesanan;
+            _logger = logger;
         }
 
         [HttpGet("GetPaymentChannels")]
@@ -29,6 +39,13 @@ namespace appacd.api
         public async Task<ActionResult<IEnumerable<dynamic>>> GetPaymentChannelsV2()
         {
             var res = await _repo.GetPaymentChannelsV2Async();
+            return Ok(res);
+        }
+
+        [HttpGet("GetDetailTransaction")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetDetailTransaction(string reference)
+        {
+            var res = await _repo.GetDetailTransactionAsync(reference);
             return Ok(res);
         }
 
@@ -64,6 +81,29 @@ namespace appacd.api
             }
         }
 
+        [HttpPost("callback-transaction")]
+        [SwaggerOperation(Summary = "Callback from Tripay", Description = "Handles Tripay payment status")]
+        public async Task<IActionResult> Callback(
+            [FromHeader(Name = "X-Callback-Signature")] string callbackSignature,
+            [FromHeader(Name = "X-Callback-Event")] string callbackEvent,
+            [FromBody] TripayCallbackDto body)
+        {
+            // --- BUFFERING AGAR Body bisa dibaca 2x ---
+            Request.EnableBuffering();
 
+            // Signature validation
+            var expectedSignature = await _repo.GetSignatureAsync(body.merchant_ref, body.total_amount);
+            if (callbackSignature != expectedSignature)
+                return BadRequest(new { success = false, message = "Invalid signature" });
+
+            if (callbackEvent != "payment_status")
+                return BadRequest(new { success = false, message = $"Unexpected event: {callbackEvent}" });
+
+            _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
+
+
+            // // Update invoice status, etc
+            return Ok(new { success = true });
+        }
     }
 }

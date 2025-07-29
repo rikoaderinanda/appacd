@@ -300,3 +300,46 @@ function getSalamWaktu() {
         return 'Malam';
     }
 }
+
+function formatUnixToDateTimeString(unixTimestamp) {
+    const date = new Date(unixTimestamp * 1000); // konversi ke milidetik
+
+    const day = date.getDate().toString().padStart(2, '0');
+    const monthNames = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember'
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+
+    return `${day} ${month} ${year}, ${hours}:${minutes}:${seconds}`;
+}
+
+function getRandomHexColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function getRandomLinearGradient(deg = 135) {
+    const color1 = getRandomHexColor();
+    const color2 = getRandomHexColor();
+    return `linear-gradient(${deg}deg, ${color1}, ${color2})`;
+}

@@ -16,7 +16,7 @@ public class HomeController : Controller
         _repo = repo;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         //var data = await _repo.GetAllAsync();
         return View();

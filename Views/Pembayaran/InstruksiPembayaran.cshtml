@@ -1,17 +1,159 @@
 @{
-    ViewData["Title"] = "Instruksi Pembayaran";
+    ViewData["Title"] = "Detail Pembayaran";
     ViewData["Header"] = "2";
     ViewData["Footer"] = "3";
-    ViewData["HeaderName"] = "Instruksi Pembayaran";
+    ViewData["HeaderName"] = "Detail Pembayaran";
 }
+
+<style>
+    .info {
+        background: #f9fbfd;
+        border-left: 5px solid #005baa;
+        padding: 1.2em;
+        border-radius: 10px;
+        margin-bottom: 2em;
+    }
+
+    .info p {
+        margin: 6px 0;
+        font-size: 15px;
+    }
+
+    .va-code-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .va-code {
+        font-size: 1.6em;
+        font-weight: bold;
+        color: #005baa;
+        background: #e5efff;
+        padding: 0.5em 1em;
+        border-radius: 8px;
+    }
+
+    .copy-btn {
+        background: #005baa;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 0.9em;
+    }
+
+    .copy-btn:hover {
+        background: #004080;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 1em;
+        flex-wrap: wrap;
+        margin-top: 1.5em;
+    }
+
+    .tab-button {
+        padding: 10px 16px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-button:hover {
+        background: #d0d7e2;
+    }
+
+    .tab-button.active {
+        background: #005baa;
+        color: #fff;
+    }
+
+    .steps {
+        margin-top: 1em;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .steps ol {
+        padding-left: 1.2em;
+    }
+
+    .steps li {
+        margin-bottom: 12px;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@media (max-width: 600px) {
+        .va-code-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .tabs {
+            flex-direction: column;
+        }
+    }
+
+    .step-icon {
+        width: 2.2rem;
+        height: 2.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+</style>
+
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
-    
+        <div class="alert alert-white border rounded-3 shadow-sm p-4 mt-4" id="infobayar">
+        </div>
+
+        <div class="col-12">
+            <div class="home-categories mt-3">
+                <div class="category-group">
+                    <p>Cara Pembayaran</p>
+                    <div class="owl-carousel category-slider" id="listInstruksi">
+                    </div>
+                    <div id="instructions" class="steps">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
+<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    <div class="container p-0">
+        <div class="row align-items-center">
+            <div class="col">
+                <button onclick="backToHome()" class="btn btn-outline-danger btn-hover w-100 fw-4 h_40 br-8">Lihat Invoice</button>
+            </div>
+            <div class="col">
+                <button onclick="cekStatus()" class="btn btn-success btn-hover w-100 fw-4 h_40 br-8">Cek Status</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     var $;
+    const colors =[
+        "linear-gradient(135deg, #007bff, #00c6ff)",
+        "linear-gradient(135deg, #ffc107, #ff7b00)",
+        "linear-gradient(135deg, #28a745, #43e97b)"
+    ]
 
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
@@ -20,7 +162,211 @@
         }
         $ = window.jQuery;
         var data = getStoragePemesanan();
-        console.log(data);
+
+        if (
+            data.Keranjang == null || data.JenisProperti == null || data.Keluhan == null ||
+            data.TanggalKunjungan == "" || data.JamKunjungan == "" || data.Total == null ||
+            data.Customer == null || data.Id == null || data.NoRefCheckout == null
+        ) {
+            alert("Session Order expired");
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+
+        LoadInstruksiBayar(data.NoRefCheckout);
+        
     });
+
+    function initFilter() {
+        $('#listInstruksi').owlCarousel({
+            loop: false,
+            margin: 5,
+            nav: false,
+            responsive: {
+                0: { items: 2.2 },
+                600: { items: 3 },
+                1000: { items: 3 }
+            }
+        });
+    }
+
+
+    function copyCode(Id,Message) {
+        const el = document.getElementById(Id);
+        navigator.clipboard.writeText(el.value).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Disalin!',
+                text: Message+' berhasil disalin ke clipboard.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }).catch(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Gagal menyalin teks.',
+            });
+        });
+    }
+
+
+    function LoadInstruksiBayar(NoRefCheckout){
+        callApi({
+            url: `/api/Tripay/GetDetailTransaction?reference=` + NoRefCheckout,
+            method: 'GET',
+            success: function (res) {
+                console.log(res.data);
+                if (res.success) {
+                    Storage.set('Instruksi',res.data.instructions);
+                    
+                    setInstruksi(res.data);
+                }
+            },
+            error: function (err) {
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+            }
+        });
+    }
+
+    function setInstruksi(data) {
+        setInfoBayar(data);
+        var html = $.map(data.instructions, function (item,idx) 
+        {
+            var scr = `
+                <div class="item px-0">
+                    <button id="btn${item.title}" class="btn text-white btn-sm w-100 py-2 shadow-sm "
+                        onclick="loadInstruksi('${item.title}')"
+                        style="background: ${colors[idx]}; transition: 0.3s;">
+                        ${item.title}
+                    </button>
+                </div>
+            `;
+            return scr;
+        }).join('');
+        $("#listInstruksi").html(html);
+        initFilter();
+        loadInstruksi("");
+    }
+
+    function loadInstruksi(title){
+        $("#instructions").html(`<p>sedang memuat data...</p>`);
+        var Instruksi = Storage.get('Instruksi') || [];
+        if(title==""){
+            title = Instruksi[0].title;
+        }
+        var scr = ``;
+        var html = $.map(Instruksi, function (item) {
+            if (item.title === title) {
+                let stepsHtml = item.steps.map((step, index) => `
+                    <li class="list-group-item d-flex align-items-center border-2 py-2 border-shadow rounded">
+                        <div class="step-icon bg-primary text-white rounded-circle me-3 flex-shrink-0">
+                            <span>${index + 1}</span>
+                        </div>
+                        <div>${step}</div>
+                    </li>
+                `).join('');
+                let html = `
+                    <h5 class="mt-2 fw-semibold mb-4">
+                        Cara Pembayaran menggunakan 
+                        <span class="text-primary">${item.title}</span>
+                    </h5>
+                    <ul class="list-group list-group-flush">
+                        ${stepsHtml}
+                    </ul>
+                `;
+
+                $("#instructions").html(html);
+            }
+        });
+        
+    }
+
+    function setInfoBayar(data)
+    {
+        console.log(data);
+        var header =`
+            <div class="text-center mb-4">
+                <i class="bi bi-credit-card fs-2 text-primary"></i>
+                <h5 class="mt-2 fw-semibold mb-1">
+                    Pembayaran via 
+                    <span class="text-primary">${data.payment_name}</span>
+                </h5>
+                <p class="text-muted small">Silakan bayar sebelum batas waktu dan pastikan nominal sesuai.</p>
+            </div>
+            <p class="text-center">${data.merchant_ref}</p>
+            <hr>
+
+        `;
+        var pay_code = '';
+        if(data.pay_code != null)
+        {
+            pay_code = `
+                <div class="mb-3">
+                    <label for="vaCode" class="form-label text-secondary">Kode Bayar / Nomor VA</label>
+                    <div class="input-group input-group-md">
+                        <input type="text" class="form-control border-end-0 text-primary" id="vaCode" value="${data.pay_code}" readonly>
+                        <button class="btn btn-outline-primary" type="button" onclick="copyCode('vaCode','Kode Bayar')" title="Salin Kode VA">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+            `;    
+        }
+        else
+        {
+            pay_code =`
+            <div class="mb-3">
+                <label for="vaCode" class="form-label text-secondary">Silahkan Scan ${data.payment_name}</label>
+                <img src="${data.qr_url}" class="img-fluid">
+            </div>
+            `;
+        }
+        
+        var scr = `
+            ${header}
+            ${pay_code}
+            <!-- Nominal -->
+            <div class="mb-3">
+                <label for="vaAmount" class="form-label text-secondary fw-semibold">Nominal Pembayaran</label>
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control border-end-0 text-success" id="vaAmount" value="${formatRupiah(data.amount)}" readonly>
+                    <button class="btn btn-outline-success" type="button" onclick="copyCode('vaAmount','Nominal')" title="Salin Nominal">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- No Referensi -->
+            <div>
+                <label for="vaRef" class="form-label text-secondary fw-semibold">Nomor Referensi</label>
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control border-end-0 text-dark" id="vaRef" value="${data.reference}" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyCode('vaRef','No Referensi')" title="Salin Referensi">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small">Batas Waktu Pembayaran</p>
+                <h5 class="mt-2 fw-semibold mb-1"><span class="text-primary">${formatUnixToDateTimeString(1753753347)}</span></h5>
+            </div>
+        `;
+        $("#infobayar").html(scr);
+    }
+
+    
+    function backToHome(){
+        window.location.href = '@Url.Action("Index", "Home")';
+    }
+
+    function cekStatus(){
+        console.log("cek status");
+        window.location.href = '@Url.Action("OrderStatus", "Tracking")';
+    }
+
 
 </script>

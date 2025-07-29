@@ -25,6 +25,9 @@ namespace appacd.Services
 
         Task<IEnumerable<dynamic>> GetStepStatus();
 
+        Task<dynamic> GetInvoiceByReference(string id, string tripayReference);
+        Task<bool> UpdateInvoiceStatusAsync(string Id, string Status);
+
     }
     public class PemesananRepository : IPemesananRepository
     {
@@ -274,5 +277,31 @@ namespace appacd.Services
             return await _db.QueryAsync<dynamic>(sql);
         }
 
+        public async Task<dynamic> GetInvoiceByReference(string _id, string _tripayReference)
+        {
+            if (!int.TryParse(_id, out var _Id))
+                throw new ArgumentException("id");
+
+            var sql = @"
+                select id,tripay_status 
+                from pemesanan 
+                where id=@id and no_ref_checkout = @reference
+            ";
+            return await _db.QueryAsync<dynamic>(sql, new { id = _Id, reference = _tripayReference });
+        }
+        public async Task<bool> UpdateInvoiceStatusAsync(string id, string status)
+        {
+            if (!int.TryParse(id, out var parsedId))
+                throw new ArgumentException("Invalid id", nameof(id));
+
+            var sql = @"
+                UPDATE pemesanan
+                SET tripay_status = @status
+                WHERE id = @id
+            ";
+
+            var affectedRows = await _db.ExecuteAsync(sql, new { id = parsedId, status });
+            return affectedRows > 0;
+        }
     }
 }

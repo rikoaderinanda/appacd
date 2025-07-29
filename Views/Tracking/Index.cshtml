@@ -27,7 +27,7 @@
 <script>
 
     var $;
-
+    
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -114,6 +114,9 @@
 
     function ShowTrackingById(Id, StatusOrder) {
         Storage.set('IdPesanan', Id);
+        console.log(StatusOrder);
+        console.log(Id);
+
         if (StatusOrder == 1) {
             GetDataTrx(Id);
         }
@@ -188,12 +191,13 @@
                         "alamat": item.alamat
                     }
                     Storage.set('Customer', dataCustomer);
-                    Storage.set('IdPesanan', Id);
+                    Storage.set('IdPesanan', item.id);
+                    Storage.set('NoRefCheckout',item.no_ref_checkout);
                 });
                 var result = getStoragePemesanan();
                 if (result != null) {
                     //window.location.href = '@Url.Action("Index", "Pembayaran")';
-                    window.location.href = '@Url.Action("ChannelPembayaran", "Pembayaran")';
+                    window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
                 }
             },
             error: function (err) {

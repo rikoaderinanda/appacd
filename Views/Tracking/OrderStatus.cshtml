@@ -310,16 +310,16 @@
                         $("#statusDeskripsi").text(item.deskripsi);
                     }
                     else {
-                        scr = `
+                        @* scr = `
                         <div class="step step-active">
                             <div>
-                                <div class="circle bg-dark">${item.id}</div>
+                                <div class="circle bg-danger">${item.id}</div>
                             </div>
                             <div>
                                 <div class="title">${item.title}</div>
                             </div>
                         </div>
-                        `;
+                        `; *@
                     }
                     return scr;
                 }).join('');

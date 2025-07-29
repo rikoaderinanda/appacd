@@ -18,6 +18,8 @@ namespace appacd.Services
         Task<dynamic> GetPaymentChannelsV2Async();
         Task<string>  GetSignatureAsync(string noReferensiMerchant, decimal nominal);
         Task<dynamic> CreateTransactionAsync(TripayTransactionRequest dt);
+        Task<dynamic> GetDetailTransactionAsync(string reference);
+        Task<string> GetSignatureCallbackAsync(string data);
     }
 
     public class TripayRepository : ITripayRepository
@@ -61,6 +63,47 @@ namespace appacd.Services
             return obj["data"];
         }
 
+        public async Task<dynamic> GetDetailTransactionAsync(string reference)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(reference))
+                    throw new ArgumentException("Reference tidak boleh kosong.");
+
+                var response = await _httpClient.GetAsync("transaction/detail?reference=" + reference);
+
+                // Jika status code bukan 2xx
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new HttpRequestException($"Tripay API error ({(int)response.StatusCode}): {response.ReasonPhrase}\n{errorContent}");
+                }
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                if (string.IsNullOrWhiteSpace(responseBody))
+                    throw new Exception("Response dari Tripay kosong.");
+
+                return JsonConvert.DeserializeObject<dynamic>(responseBody);
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"[HTTP Error] {httpEx.Message}");
+                throw; // Lempar lagi ke caller atau bisa dikembalikan nilai default
+            }
+            catch (JsonException jsonEx)
+            {
+                Console.WriteLine($"[JSON Parsing Error] {jsonEx.Message}");
+                throw new Exception("Gagal memproses response JSON dari Tripay.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[General Error] {ex.Message}");
+                throw new Exception("Terjadi kesalahan saat mengambil detail transaksi.");
+            }
+        }
+
+
         public async Task<dynamic> CreateTransactionAsync(TripayTransactionRequest dt)
         {
             dt.signature = await GetSignatureAsync(dt.merchant_ref, dt.amount);
@@ -86,7 +129,16 @@ namespace appacd.Services
             }
         }
 
-        
+        public async Task<string> GetSignatureCallbackAsync(string data)
+        {
+            
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_privateKey)))
+            {
+                byte[] hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            }
+        }
+
     }
 
     public class TripayChannelResponse

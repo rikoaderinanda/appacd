@@ -168,7 +168,7 @@
             data.TanggalKunjungan == "" ||
             data.JamKunjungan == "" ||
             data.Total == null ||
-            data.Customer == null
+            data.Customer == null || data.Id == null
         ) {
             alert("session Order expired");
             window.location.href = '@Url.Action("Index", "Home")';
@@ -416,9 +416,11 @@
             method: 'POST',
             data:_Data,
             success: function (res) {
-                //console.log(res);
-                Storage.set('IdPesanan',res.Id);
+                console.log(res);
+                Storage.set('IdPesanan',res.id);
                 Storage.set('NoRefCheckout',_Data.NoRefCheckout);
+                //var data = getStoragePemesanan();
+                //console.log(data);
                 window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
             },
             error: function (err) {

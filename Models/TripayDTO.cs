@@ -63,4 +63,21 @@ namespace appacd.Models
         public int price { get; set; }
         public int quantity { get; set; }
     }
+
+    public class TripayCallbackDto
+    {
+        public string reference { get; set; }
+        public string merchant_ref { get; set; }
+        public string payment_method { get; set; }
+        public string payment_method_code { get; set; }
+        public int total_amount { get; set; }
+        public int fee_merchant { get; set; }
+        public int fee_customer { get; set; }
+        public int total_fee { get; set; }
+        public int amount_received { get; set; }
+        public int is_closed_payment { get; set; }
+        public string status { get; set; }
+        public long? paid_at { get; set; }
+        public string note { get; set; }
+    }
 }
