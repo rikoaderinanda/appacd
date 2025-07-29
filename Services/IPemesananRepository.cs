@@ -25,7 +25,7 @@ namespace appacd.Services
 
         Task<IEnumerable<dynamic>> GetStepStatus();
 
-        Task<dynamic> GetInvoiceByReference(string id, string tripayReference);
+        Task<dynamic> GetInvoiceByReference(string tripayReference);
         Task<bool> UpdateInvoiceStatusAsync(string Id, string Status);
 
     }
@@ -277,18 +277,16 @@ namespace appacd.Services
             return await _db.QueryAsync<dynamic>(sql);
         }
 
-        public async Task<dynamic> GetInvoiceByReference(string _id, string _tripayReference)
+        public async Task<dynamic> GetInvoiceByReference(string _tripayReference)
         {
-            if (!int.TryParse(_id, out var _Id))
-                throw new ArgumentException("id");
-
             var sql = @"
                 select id,tripay_status 
                 from pemesanan 
-                where id=@id and no_ref_checkout = @reference
+                where no_ref_checkout = @reference
             ";
-            return await _db.QueryAsync<dynamic>(sql, new { id = _Id, reference = _tripayReference });
+            return await _db.QueryAsync<dynamic>(sql, new { reference = _tripayReference });
         }
+        
         public async Task<bool> UpdateInvoiceStatusAsync(string id, string status)
         {
             if (!int.TryParse(id, out var parsedId))

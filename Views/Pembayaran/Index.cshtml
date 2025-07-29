@@ -386,6 +386,7 @@
     function Checkout() {
         var user = getUserInfo();
         var Data = getStoragePemesanan();
+        
         if (!isValidUser(user)) {
             $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
             $("#btnClsModalLogin").show();
@@ -405,7 +406,14 @@
                 alert("session Order expired");
                 window.location.href = '@Url.Action("Index", "Home")';
             }
-            InstruksiBayar(Data);
+            console.log(Data.Id);
+            if(Data.Id == null || Data.Id == 0){
+                SimpanDulu(0);
+            }
+            else
+            {
+                InstruksiBayar(Data);
+            }
         }
         
     }
@@ -419,8 +427,6 @@
                 console.log(res);
                 Storage.set('IdPesanan',res.id);
                 Storage.set('NoRefCheckout',_Data.NoRefCheckout);
-                //var data = getStoragePemesanan();
-                //console.log(data);
                 window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
             },
             error: function (err) {
@@ -485,7 +491,7 @@
         });
     }
 
-    function SimpanDulu() {
+    function SimpanDulu(action) {
         var user = getUserInfo();
         var Data = getStoragePemesanan();
         if (!isValidUser(user)) {
@@ -508,32 +514,42 @@
                 window.location.href = '@Url.Action("Index", "Home")';
             }
 
-
             callApi({
                 url: '/api/Pemesanan/SimpanDulu',
                 method: 'POST',
                 data: Data,
                 success: function (res) {
-                    Swal.fire({
-                        title: '<strong>🎉 Berhasil Disimpan!</strong>',
-                        html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
-                        icon: 'success',
-                        showConfirmButton: true,
-                        confirmButtonText: 'Lihat Keranjang',
-                        customClass: {
-                            popup: 'rounded-4 shadow-lg',
-                            title: 'fw-bold text-success',
-                            confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
-                        },
-                        showClass: {
-                            popup: 'animate__animated animate__fadeInDown'
-                        },
-                        hideClass: {
-                            popup: 'animate__animated animate__fadeOutUp'
-                        }
-                    }).then(() => {
-                        window.location.href = '@Url.Action("Index", "Cart")';
-                    });
+                    console.log(res);
+                    if(action == 0){
+                        Storage.set('IdPesanan',res.id);
+                        Data.Id = res.id;
+                        InstruksiBayar(Data);
+                        return res;
+                    }
+                    else
+                    {
+                        Swal.fire({
+                            title: '<strong>🎉 Berhasil Disimpan!</strong>',
+                            html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
+                            icon: 'success',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Lihat Keranjang',
+                            customClass: {
+                                popup: 'rounded-4 shadow-lg',
+                                title: 'fw-bold text-success',
+                                confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
+                            },
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        }).then(() => {
+                            window.location.href = '@Url.Action("Index", "Cart")';
+                        });
+
+                    }
                 },
                 error: function (err) {
                     alert("Gagal: " + err);
@@ -548,36 +564,6 @@
                 }
             });
         }
-
-
-        @* 
-        postApi({
-            url: "/api/Pemesanan/SimpanDulu",
-            data: Data,
-            onBeforeSend: function () {
-                $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
-                $("#btnCheckout").prop("disabled", true).text("Memproses...");
-                    
-            },
-            onSuccess: function (res) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pesanan mu berhasil disimpan dikeranjang',
-                    text: 'Anda akan diarahkan kembali ke halaman Keranjang pesanan.',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = '@Url.Action("Index", "Cart")';
-                });
-
-            },
-            onError: function (xhr, message) {
-                alert("Gagal: " + message);
-            },
-            onComplete: function () {
-                    $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
-                    $("#btnCheckout").prop("disabled", false).text("Bayar");
-            }
-        }); *@
     }
 
     function editCustomer() {

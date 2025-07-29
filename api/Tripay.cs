@@ -99,13 +99,6 @@ namespace appacd.api
             // --- BUFFERING AGAR Body bisa dibaca 2x ---
             Request.EnableBuffering();
 
-            //string requestBody;
-
-            // using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
-            // {
-            //     requestBody = await reader.ReadToEndAsync();
-            //     Request.Body.Position = 0; // Reset posisi stream supaya bisa dibaca lagi oleh model binder
-            // }
             // Signature validation
             string json = JsonConvert.SerializeObject(body, Formatting.None);
             var expectedSignature = await _repo.GetSignatureCallbackAsync(json);
@@ -115,6 +108,15 @@ namespace appacd.api
 
             if (callbackEvent != "payment_status")
                 return BadRequest(new { success = false, message = $"Unexpected event: {callbackEvent}" });
+
+
+            var resInv = await _pesanan.GetInvoiceByReference(body.reference);
+
+            var resUpdateInv = await _pesanan.UpdateInvoiceStatusAsync(resInv.id, body.status);
+            if (!resUpdateInv)
+            {
+                return BadRequest(new { success = false, message = $"update gagal" });
+            }
 
             _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
 
