@@ -101,7 +101,6 @@ namespace appacd.api
 
             _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
 
-
             // // Update invoice status, etc
             return Ok(new { success = true });
         }
