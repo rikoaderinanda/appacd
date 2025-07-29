@@ -73,7 +73,7 @@ namespace appacd.Models
         public int total_amount { get; set; }
         public int fee_merchant { get; set; }
         public int fee_customer { get; set; }
-        //public int total_fee { get; set; }
+        public int total_fee { get; set; }
         public int amount_received { get; set; }
         public int is_closed_payment { get; set; }
         public string status { get; set; }
