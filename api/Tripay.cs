@@ -119,7 +119,7 @@ namespace appacd.api
 
             var resInv = await _pesanan.GetInvoiceByReference(body.reference);
 
-            if (resInv == null)
+            if (resInv == null || resInv.Count == 0)
             {
                 return BadRequest(new { success = false, message = "Invalid Reference" });
             }
