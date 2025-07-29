@@ -57,7 +57,15 @@ namespace appacd.api
             var res = await _repo.GetSignatureAsync(noReferensiMerchant, nominal);
             return Ok(res);
         }
-       
+
+        [HttpGet("create-signature-callback")]
+        public async Task<ActionResult<dynamic>> CreateSignatureCallback(TripayCallbackDto dto)
+        {
+            string json = JsonConvert.SerializeObject(dto, Formatting.None);
+            var res = await _repo.GetSignatureCallbackAsync(json);
+            return Ok(res);
+        }
+
         [HttpPost("CreateTransaction")]
         public async Task<IActionResult> CreateTransaction([FromBody] TripayTransactionRequest dt)
         {
@@ -91,15 +99,17 @@ namespace appacd.api
             // --- BUFFERING AGAR Body bisa dibaca 2x ---
             Request.EnableBuffering();
 
-            string requestBody;
+            //string requestBody;
 
-            using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
-            {
-                requestBody = await reader.ReadToEndAsync();
-                Request.Body.Position = 0; // Reset posisi stream supaya bisa dibaca lagi oleh model binder
-            }
+            // using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
+            // {
+            //     requestBody = await reader.ReadToEndAsync();
+            //     Request.Body.Position = 0; // Reset posisi stream supaya bisa dibaca lagi oleh model binder
+            // }
             // Signature validation
-            var expectedSignature = await _repo.GetSignatureCallbackAsync(requestBody);
+            string json = JsonConvert.SerializeObject(body, Formatting.None);
+            var expectedSignature = await _repo.GetSignatureCallbackAsync(json);
+
             if (callbackSignature != expectedSignature)
                 return BadRequest(new { success = false, message = "Invalid signature" });
 
@@ -109,7 +119,7 @@ namespace appacd.api
             _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
 
             // // Update invoice status, etc
-            return Ok(new { success = true });
+            return Ok(new { success = true});
         }
     }
 }
