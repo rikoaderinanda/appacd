@@ -54,7 +54,7 @@
             alert("session Order expired");
             window.location.href = '@Url.Action("Index", "Home")';
         }
-        console.log(Data);
+        
         callApi({
             url: '/api/Pemesanan/PembayaranSukses',
             method: 'POST',

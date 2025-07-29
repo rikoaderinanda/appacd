@@ -42,7 +42,6 @@
                 $('#listJenisProperti').html(html);
                 lazyAnimateItems("listJenisProperti");
                 var jenisProperti = Storage.get('jenis_properti') || [];
-                @* console.log(jenisProperti); *@
                 if (jenisProperti.length > 0) {
                     // Set radio button yang sesuai dengan jenis properti yang disimpan
                     $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':' + jenisProperti[0].id + '"]').prop('checked', true);

@@ -95,7 +95,6 @@
             (decodedText, decodedResult) => {
                 if (!scannerRunning) return;
                 scannerRunning = false;
-                console.log("QR Code berhasil:", decodedText);
                 CheckQrCodeUnit(decodedText);
             },
             (errorMessage) => {
@@ -124,7 +123,6 @@
             url: '/api/Perangkat/CheckQrCodeUnit?decodedText=' + decodedText,
             method: 'GET',
             success: function (data) {
-                console.log(data);
                 if(data==null){
                     Swal.fire({
                             title: '<strong class="text-danger">QR-Code Tidak Ditemukan</strong>',

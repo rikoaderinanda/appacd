@@ -80,4 +80,9 @@ namespace appacd.Models
         public long? paid_at { get; set; }
         public string note { get; set; }
     }
+
+    public class NotifikasiRequest
+    {
+        public string Pesan { get; set; }
+    }
 }

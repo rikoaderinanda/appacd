@@ -3,6 +3,7 @@ using appacd.Models;
 using appacd.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using appacd.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ builder.Services.AddScoped<ILayananRepository, LayananRepository>();
 builder.Services.AddScoped<IPemesananRepository, PemesananRepository>();
 builder.Services.AddScoped<IPerangkatRepository, PerangkatRepository>();
 builder.Services.AddHttpClient<ITripayRepository, TripayRepository>();
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -83,7 +85,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseRouting();
 app.UseCors();
 app.UseAuthorization();
-
+app.MapHub<NotifikasiHub>("/notifikasiHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

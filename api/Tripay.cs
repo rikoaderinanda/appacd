@@ -10,6 +10,8 @@ using Microsoft.Extensions.Primitives;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.SignalR;
+using appacd.Hubs;
 
 namespace appacd.api
 {
@@ -20,12 +22,14 @@ namespace appacd.api
         private readonly ITripayRepository _repo;
         private readonly IPemesananRepository _pesanan;
         private readonly ILogger<TripayController> _logger;
+        private readonly IHubContext<NotifikasiHub> _hubContext;
 
-        public TripayController(ITripayRepository repo, IPemesananRepository pesanan, ILogger<TripayController> logger)
+        public TripayController(ITripayRepository repo, IPemesananRepository pesanan, ILogger<TripayController> logger, IHubContext<NotifikasiHub> hubContext)
         {
             _repo = repo;
             _pesanan = pesanan;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         [HttpGet("GetPaymentChannels")]
@@ -132,6 +136,8 @@ namespace appacd.api
             }
 
             _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
+
+            await _hubContext.Clients.All.SendAsync("TerimaNotifikasi", "Pembayaran Kamu telah diterima");
 
             // // Update invoice status, etc
             return Ok(new { success = resUpdateInv });

@@ -41,13 +41,10 @@
     }
         var $ = window.jQuery;
         const Keluhan = Storage.get('keluhan');
-        console.log('Keluhan');
-        console.log(Keluhan);
         callApi({
             url: '/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]',
             method: 'GET',
             success: function (data) {
-                @* console.log('Data:', data); *@
                 var html = $.map(data, function (item) {
                     var scr = "";
                     if (item.typeinput == "checkbox") {
@@ -144,7 +141,6 @@
 
         // Simpan ke localStorage
         Storage.set('keluhan', keluhanTerpilih);
-        console.log('Keluhan diupdate:', keluhanTerpilih);
     }
     });
 </script>

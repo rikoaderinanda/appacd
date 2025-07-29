@@ -155,6 +155,29 @@
         "linear-gradient(135deg, #28a745, #43e97b)"
     ]
 
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notifikasiHub")
+        .build();
+
+    connection.on("TerimaNotifikasi", function (pesan) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Notifikasi Baru',
+            text: pesan,
+            toast: true,
+            position: 'top-end',
+            timer: 4000,
+            showConfirmButton: false
+        });
+
+        window.location.href = '@Url.Action("Status", "Pembayaran")';
+        
+    });
+
+    connection.start().catch(function (err) {
+        console.error(err.toString());
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -212,13 +235,11 @@
         });
     }
 
-
     function LoadInstruksiBayar(NoRefCheckout){
         callApi({
             url: `/api/Tripay/GetDetailTransaction?reference=` + NoRefCheckout,
             method: 'GET',
             success: function (res) {
-                console.log(res.data);
                 if (res.success) {
                     if(res.data.status == null || res.data.status == "UNPAID"){
                         Storage.set('Instruksi',res.data.instructions);

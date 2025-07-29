@@ -128,7 +128,6 @@
 
 
                                         var dataKeranjang = Storage.get('keranjang') || [];
-                                        console.log(dataKeranjang);
                                         renderKeranjangGrid();
                                         $('#ModalLayanan').modal('hide');
                                     });
@@ -189,7 +188,6 @@
                 url: '/api/Layanan/JasaLayananDetail?Id=' + id_jasa + '',
                 method: 'GET',
                 success: function (data) {
-                    console.log('Data TEST:', data);
                     if (!data || data.length === 0) {
                         $('#listJasaLayananDetail').html('<li class="text-center text-muted py-4">Data layanan tidak tersedia.</li>');
                         return;

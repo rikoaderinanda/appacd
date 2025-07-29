@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === "Enter") {
             e.preventDefault(); // mencegah submit form jika ada
             let keyword = $(this).val();
-            console.log("Kata kunci pencarian:", keyword);
+            
             $('#continueButtonWrapper').fadeOut();
             // Panggil fungsi pencarian
             var ChannelPayment = Storage.get("ChannelPayment");
@@ -213,7 +213,6 @@ function GetChannelPembayaran(){
         url: `/api/Tripay/GetPaymentChannelsV2`,
         method: 'GET',
         success: function (res) {
-            console.log(res);
             Storage.set("ChannelPayment",res);
             SetChannelPembayaranV2(res,"");
         },
@@ -334,9 +333,7 @@ function SetChannelPembayaranV2(res,cari){
 function InstruksiBayar()
 {
     var method = $('input[name="payment_channel"]:checked').val();
-    console.log(method);
     var datatrx = getStoragePemesanan();
-    console.log(datatrx);
     var _order_items = [];
     $.map(datatrx.Keranjang, function (item) {
         var dt = {
@@ -362,15 +359,13 @@ function InstruksiBayar()
         expired_time: 0,
         signature: ""
     }
-
-    console.log(dataapi)
     
     callApi({
         url: '/api/Tripay/CreateTransaction',
         method: 'POST',
         data:dataapi,
         success: function (data) {
-            console.log(data);
+            
             if(data.success){
                 Storage.set("TripayData",data);
 

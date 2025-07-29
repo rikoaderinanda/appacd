@@ -186,7 +186,6 @@
         }
         $ = window.jQuery;
         var Id = Storage.get('IdPesanan');
-        console.log(Id);
         if(Id == null){
             Swal.fire({
                 title: '<strong>❌ Data Tidak Ditemukan</strong>',
@@ -223,7 +222,6 @@
             url: `/api/Pemesanan/GetTrackingById?Id=${Id}`,
             method: 'GET',
             success: function (res) {
-                console.log(res);
                 res.data.forEach(item => {
                     status_order = item.status_order;
                 });

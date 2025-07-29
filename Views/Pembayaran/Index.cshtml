@@ -160,7 +160,7 @@
         }
         $ = window.jQuery;
         var data = getStoragePemesanan();
-        console.log(data);
+        
         if (
             data.Keranjang == null ||
             data.JenisProperti == null ||
@@ -278,7 +278,6 @@
             if (e.key === "Enter") {
                 e.preventDefault(); // mencegah submit form jika ada
                 let keyword = $(this).val();
-                console.log("Kata kunci pencarian:", keyword);
                 $('#btnCheckout').fadeOut();
                 // Panggil fungsi pencarian
                 var ChannelPayment = Storage.get("ChannelPayment");
@@ -299,7 +298,6 @@
             url: `/api/Tripay/GetPaymentChannelsV2`,
             method: 'GET',
             success: function (res) {
-                console.log(res);
                 Storage.set("ChannelPayment",res);
                 SetChannelPembayaranV2(res,"");
             },
@@ -406,7 +404,6 @@
                 alert("session Order expired");
                 window.location.href = '@Url.Action("Index", "Home")';
             }
-            console.log(Data.Id);
             if(Data.Id == null || Data.Id == 0){
                 SimpanDulu(0);
             }
@@ -424,7 +421,6 @@
             method: 'POST',
             data:_Data,
             success: function (res) {
-                console.log(res);
                 Storage.set('IdPesanan',res.id);
                 Storage.set('NoRefCheckout',_Data.NoRefCheckout);
                 window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
@@ -519,7 +515,6 @@
                 method: 'POST',
                 data: Data,
                 success: function (res) {
-                    console.log(res);
                     if(action == 0){
                         Storage.set('IdPesanan',res.id);
                         Data.Id = res.id;
@@ -568,7 +563,6 @@
 
     function editCustomer() {
         var data = getStoragePemesanan();
-        console.log(data.Customer);
         if (data.Customer != null) {
             window.location.href = '@Url.Action("Index", "CustomerInfo")';
         }

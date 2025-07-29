@@ -163,11 +163,9 @@ function postApi(options) {
         contentType: 'application/json',
         data: JSON.stringify(data),
         beforeSend: function () {
-            console.log('Mengirim request ke:', url);
             onBeforeSend();
         },
         success: function (response) {
-            console.log('Respon sukses:', response);
             onSuccess(response);
         },
         error: function (xhr, status, error) {
@@ -202,7 +200,7 @@ function getStoragePemesanan() {
     var id_layanan = Storage.get('id_layanan') || 0;
     var user_id = Storage.get('userId') || null;
     var _NoRefCheckout = Storage.get('NoRefCheckout') || '';
-    
+
     var data = {
         Keranjang: keranjang,
         JenisProperti: JenisProperti,
@@ -252,7 +250,6 @@ function callApi(options) {
             error(errMsg);
         },
         beforeSend: function () {
-            // console.log('Mengirim request ke:', url);
             onBeforeSend();
         },
         complete: function () {

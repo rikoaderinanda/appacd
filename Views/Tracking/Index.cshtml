@@ -114,9 +114,6 @@
 
     function ShowTrackingById(Id, StatusOrder) {
         Storage.set('IdPesanan', Id);
-        console.log(StatusOrder);
-        console.log(Id);
-
         if (StatusOrder == 1) {
             GetDataTrx(Id);
         }
@@ -134,7 +131,6 @@
                 Id: Id
             },
             success: function (res) {
-                console.log(res);
                 res.data.forEach(item => {
                     Storage.set('keranjang', item.Pesanan);
                     Storage.set('keluhan', item.Keluhan);
@@ -169,12 +165,10 @@
     }
 
     function GetDataTrx(Id){
-        console.log(Id);
         callApi({
             url: '/api/Pemesanan/GetTrackingById?Id='+Id,
             method: 'GET',
             success: function (res) {
-                console.log(res);
                 res.data.forEach(item => {
                     Storage.set('keranjang', item.Pesanan);
                     Storage.set('keluhan', item.Keluhan);

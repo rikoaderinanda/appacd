@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     $ = window.jQuery;
     var Id = Storage.get('IdPesanan');
-    console.log(Id);
     LoadDataStatus(Id);
 });
     function LoadDataStatus(Id) {
@@ -120,9 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
             url: `/api/Pemesanan/GetTrackingById?id=${Id}`,
             method: 'GET',
             success: function (res) {
-                console.log(res.data);
                 $.map(res.data, function (item) {
-                    console.log(item.checkout_date);
                     $("#TglPesanan").text(formatTimeLocal(item.checkout_date));
                     $("#IdPesanan").text("ACD-" + formatToSixDigits(item.id));
                     $("#TotalTrx").text(formatRupiah(item.total));

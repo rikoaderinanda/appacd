@@ -85,7 +85,7 @@
 
     $(document).on('click', '.btn-delete-item', function () {
       var id = $(this).data('id');
-      console.log('Hapus item dengan ID:', id);
+      //console.log('Hapus item dengan ID:', id);
       var keranjang = Storage.get('keranjang') || [];
       keranjang = keranjang.filter(function (item) {
         return item.id !== id;
