@@ -125,6 +125,7 @@ namespace appacd.api
             }
 
             var resUpdateInv = await _pesanan.UpdateInvoiceStatusAsync(resInv[0].id.ToString(), body.status);
+
             if (!resUpdateInv)
             {
                 return BadRequest(new { success = false, message = $"update gagal" });

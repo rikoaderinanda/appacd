@@ -220,9 +220,14 @@
             success: function (res) {
                 console.log(res.data);
                 if (res.success) {
-                    Storage.set('Instruksi',res.data.instructions);
-                    
-                    setInstruksi(res.data);
+                    if(res.data.status == null || res.data.status == "UNPAID"){
+                        Storage.set('Instruksi',res.data.instructions);
+                        setInstruksi(res.data);
+                    }
+                    else
+                    {
+                        window.location.href = '@Url.Action("OrderStatus", "Tracking")';
+                    }
                 }
             },
             error: function (err) {
@@ -286,7 +291,7 @@
 
     function setInfoBayar(data)
     {
-        console.log(data);
+        //console.log(data);
         var header =`
             <div class="text-center mb-4">
                 <i class="bi bi-credit-card fs-2 text-primary"></i>
@@ -376,7 +381,7 @@
     }
 
     function cekStatus(){
-        console.log("cek status");
+        //console.log("cek status");
         window.location.href = '@Url.Action("OrderStatus", "Tracking")';
     }
 

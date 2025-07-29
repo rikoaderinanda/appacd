@@ -301,7 +301,9 @@ namespace appacd.Services
                 var sql = @"
                     UPDATE pemesanan
                     SET 
-                        tripay_status = @status
+                        tripay_status = @status,
+                        pay_date = now(),
+                        status_order = 3
                     WHERE id = @id
                 ";
 
