@@ -58,8 +58,8 @@ namespace appacd.api
             return Ok(res);
         }
 
-        [HttpGet("create-signature-callback")]
-        public async Task<ActionResult<dynamic>> CreateSignatureCallback(TripayCallbackDto dto)
+        [HttpPost("create-signature-callback")]
+        public async Task<ActionResult<dynamic>> CreateSignatureCallback([FromBody] TripayCallbackDto dto)
         {
             string json = JsonConvert.SerializeObject(dto, Formatting.None);
             var res = await _repo.GetSignatureCallbackAsync(json);
@@ -119,7 +119,12 @@ namespace appacd.api
 
             var resInv = await _pesanan.GetInvoiceByReference(body.reference);
 
-            var resUpdateInv = await _pesanan.UpdateInvoiceStatusAsync(resInv.id, body.status);
+            if (resInv == null)
+            {
+                return BadRequest(new { success = false, message = "Invalid Reference" });
+            }
+
+            var resUpdateInv = await _pesanan.UpdateInvoiceStatusAsync(resInv[0].id.ToString(), body.status);
             if (!resUpdateInv)
             {
                 return BadRequest(new { success = false, message = $"update gagal" });
@@ -128,7 +133,7 @@ namespace appacd.api
             _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
 
             // // Update invoice status, etc
-            return Ok(new { success = true});
+            return Ok(new { success = resUpdateInv });
         }
     }
 }

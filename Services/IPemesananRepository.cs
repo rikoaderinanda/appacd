@@ -286,20 +286,35 @@ namespace appacd.Services
             ";
             return await _db.QueryAsync<dynamic>(sql, new { reference = _tripayReference });
         }
-        
+
         public async Task<bool> UpdateInvoiceStatusAsync(string id, string status)
         {
-            if (!int.TryParse(id, out var parsedId))
-                throw new ArgumentException("Invalid id", nameof(id));
+            try
+            {
+                if (!int.TryParse(id, out var parsedId))
+                {
+                    // Kamu bisa log error ini kalau punya logger
+                    // _logger.LogWarning("Invalid id format: {Id}", id);
+                    return false;
+                }
 
-            var sql = @"
-                UPDATE pemesanan
-                SET tripay_status = @status
-                WHERE id = @id
-            ";
+                var sql = @"
+                    UPDATE pemesanan
+                    SET 
+                        tripay_status = @status
+                    WHERE id = @id
+                ";
 
-            var affectedRows = await _db.ExecuteAsync(sql, new { id = parsedId, status });
-            return affectedRows > 0;
+                var affectedRows = await _db.ExecuteAsync(sql, new { id = parsedId, status });
+                return affectedRows > 0;
+            }
+            catch (Exception ex)
+            {
+                // Log exception jika kamu pakai logger
+                // _logger.LogError(ex, "Error updating invoice status for ID: {Id}", id);
+                return false; // bisa juga throw lagi kalau ingin controller yang menangani
+            }
         }
+
     }
 }
