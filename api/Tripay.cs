@@ -91,8 +91,15 @@ namespace appacd.api
             // --- BUFFERING AGAR Body bisa dibaca 2x ---
             Request.EnableBuffering();
 
+            string requestBody;
+
+            using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
+            {
+                requestBody = await reader.ReadToEndAsync();
+                Request.Body.Position = 0; // Reset posisi stream supaya bisa dibaca lagi oleh model binder
+            }
             // Signature validation
-            var expectedSignature = await _repo.GetSignatureAsync(body.merchant_ref, body.total_amount);
+            var expectedSignature = await _repo.GetSignatureCallbackAsync(requestBody);
             if (callbackSignature != expectedSignature)
                 return BadRequest(new { success = false, message = "Invalid signature" });
 
