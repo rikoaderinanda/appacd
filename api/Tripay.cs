@@ -66,6 +66,13 @@ namespace appacd.api
             return Ok(res);
         }
 
+        [HttpGet("GetInvoiceByReference")]
+        public async Task<ActionResult<dynamic>> GetInvoiceByReference(string reference)
+        {
+            var res = await _pesanan.GetInvoiceByReference(reference);
+            return Ok(res);
+        }
+
         [HttpPost("CreateTransaction")]
         public async Task<IActionResult> CreateTransaction([FromBody] TripayTransactionRequest dt)
         {

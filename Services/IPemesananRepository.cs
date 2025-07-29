@@ -280,7 +280,7 @@ namespace appacd.Services
         public async Task<dynamic> GetInvoiceByReference(string _tripayReference)
         {
             var sql = @"
-                select id,tripay_status 
+                select *
                 from pemesanan 
                 where no_ref_checkout = @reference
             ";

@@ -317,12 +317,24 @@
         }
         else
         {
-            pay_code =`
-            <div class="mb-3">
-                <label for="vaCode" class="form-label text-secondary">Silahkan Scan ${data.payment_name}</label>
-                <img src="${data.qr_url}" class="img-fluid">
-            </div>
-            `;
+            if(data.qr_url!= null){
+                pay_code =`
+                <div class="mb-3">
+                    <label for="vaCode" class="form-label text-secondary">Silahkan Scan ${data.payment_name}</label>
+                    <img src="${data.qr_url}" class="img-fluid">
+                </div>
+                `;
+            }
+            else
+            {
+                pay_code =`
+                <div class="mb-3">
+                    <a href="${data.checkout_url}" target="_blank" class="btn btn-primary">
+                    Lanjutkan Pembayaran dengan ${data.payment_name}
+                    </a>
+                </div>
+                `;
+            }
         }
         
         var scr = `
