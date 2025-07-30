@@ -161,6 +161,7 @@
 
     function LanjutPembayaran(){
         var Data = getStoragePemesanan();
+        console.log(Data);
         if (
             Data.Keranjang == null ||
             Data.JenisProperti == null ||
@@ -195,20 +196,12 @@
                 break;
             }
         }
-
+        
         if (validasiForm()) {
             Storage.set('Customer', dataCustomer)
-            var Data = getStoragePemesanan();
-            //console.log(Data);
-            const kosong = getEmptyFields(Data);
-            if (kosong.length) {
-                //console.log("Field kosong ditemukan di:");
-                //console.log(kosong);
-            } else {
-                //console.log("Semua data terisi.");
-                //Storage.set('Data',Data);
-                window.location.href = '@Url.Action("Index", "Pembayaran")';
-            }
+            @* var Data = getStoragePemesanan();
+            console.log(Data); *@
+            window.location.href = '@Url.Action("Index", "Pembayaran")';
         }
         else {
             if (firstEmpty) {
