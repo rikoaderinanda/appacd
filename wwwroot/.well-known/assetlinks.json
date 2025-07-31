@@ -4,7 +4,7 @@
         "target": {
             "namespace": "android_app",
             "package_name": "com.dikita.app",
-            "sha256_cert_fingerprints": ["XX:XX:XX:...:YY"]
+            "sha256_cert_fingerprints": ["88:6F:AA:7E:BD:08:67:32:A3:AD:2C:51:AE:D9:1D:87:CE:97:42:57:B0:04:0C:24:BE:E4:F4:AA:A9:9F:57:14"]
         }
     }
 ]
