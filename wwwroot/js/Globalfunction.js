@@ -246,8 +246,21 @@ function callApi(options) {
         error: function (xhr) {
             const errMsg =
                 xhr.responseJSON?.message || xhr.statusText || 'API Error';
-            console.error('API Error:', errMsg);
+            //console.error('API Error:', errMsg);
             error(errMsg);
+            Swal.fire({
+                icon: 'error',
+                title: '<strong>Koneksi gagal</strong>',
+                html: `<div style="font-size: 15px;">Silahkan cek koneksi internet anda</div>`,
+                confirmButtonText: '<i class="bi bi-x-circle me-1"></i> Tutup',
+                confirmButtonColor: '#e74c3c',
+                background: '#fff',
+                color: '#333',
+                padding: '1.5em',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
         },
         beforeSend: function () {
             onBeforeSend();

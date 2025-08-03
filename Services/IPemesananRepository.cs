@@ -41,8 +41,8 @@ namespace appacd.Services
         public async Task<IEnumerable<dynamic>> GetPemesanan(string id)
         {
             var finalResult = new List<dynamic>();
-            string sql = "select order_json::text from get_pemesanan_full(" + id + ")";
-            var result = await _db.QueryAsync<string>(sql);
+            string sql = "select order_json::text from get_pemesanan_full(@Id::bigint)";
+            var result = await _db.QueryAsync<string>(sql, new { Id = long.Parse(id) });
             // Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
             {
@@ -66,8 +66,8 @@ namespace appacd.Services
         public async Task<IEnumerable<dynamic>> GetPemesananById(string id)
         {
             var finalResult = new List<dynamic>();
-            string qry = "select order_json::text from get_pemesanan_byId(" + id + ")";
-            var result = await _db.QueryAsync<string>(qry);
+            string qry = "SELECT order_json::text FROM get_pemesanan_byId(@Id::bigint)";
+            var result = await _db.QueryAsync<string>(qry, new { Id = long.Parse(id) });
             Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
             {

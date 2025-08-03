@@ -4,6 +4,12 @@ using appacd.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using appacd.Hubs;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +28,11 @@ builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API",
+        Version = "v1"
+    });
     c.EnableAnnotations();
 });
 
@@ -34,8 +45,34 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 builder.Services.AddScoped<ILayananRepository, LayananRepository>();
 builder.Services.AddScoped<IPemesananRepository, PemesananRepository>();
 builder.Services.AddScoped<IPerangkatRepository, PerangkatRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
 builder.Services.AddHttpClient<ITripayRepository, TripayRepository>();
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            builder.Configuration["Jwt:Key"]))
+    };
+});
+
 builder.Services.AddSignalR();
+
+
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -51,6 +88,12 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Path}");
+    await next.Invoke();
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -81,10 +124,24 @@ app.UseStaticFiles(new StaticFileOptions
         }
     }
 });
-
+// Middleware untuk handle error status code seperti 404
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+app.UseExceptionHandler("/Error/500");
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers.Remove("Cross-Origin-Opener-Policy");
+        return Task.CompletedTask;
+    });
+    await next();
+});
 app.UseRouting();
 app.UseCors();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapHub<NotifikasiHub>("/notifikasiHub");
 app.MapControllerRoute(
     name: "default",

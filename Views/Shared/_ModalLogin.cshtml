@@ -9,7 +9,31 @@
         transform: translateY(0) scale(1);
         opacity: 1;
     }
+    /* Pastikan tombol Google Sign-In memiliki lebar 100% */
+    #google-signin-container {
+        display: flex;
+        justify-content: center; /* Posisikan item secara horizontal di tengah */
+        align-items: center; /* Opsional: Posisikan item secara vertikal di tengah */
+        text-align: center; /* Posisikan semua konten di tengah secara horizontal */
+    }
+
+    /* Target iframe yang dibuat oleh Google untuk menyesuaikan tinggi dan gaya lainnya */
+    #google-signin-container iframe {
+        height: 50px !important; /* Menyesuaikan tinggi dengan h_50 */
+        border-radius: 8px !important; /* Menyesuaikan border-radius dengan br-8 */
+        box-shadow: none !important; /* Menghapus shadow default Google jika ada */
+        margin-top:20px;
+        margin-top:20px;
+        width: 100%; /* Pastikan iframe mengisi lebar kontainer */
+        max-width: 300px; /* Opsional: Batasi lebar maksimum agar tidak terlalu lebar di layar besar */
+    }
+
+    /* Atau menyesuaikan tampilan tombol sosial jika diperlukan */
+    .social-icons {
+        margin-top: 15px; /* Menyesuaikan margin di bawah tombol Google */
+    }
 </style>
+
 
 <div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen-sm-down">
@@ -17,7 +41,7 @@
             <div class="home-cart mt-0">
                 <div class="delivery-dts">
                     <div class="row">
-                        <div class="col-12 p-0">
+                        <div class="col-12">
                             <div class="login-top position-relative">
                                 <div class="logo-section">
                                     <h5 class="fs-4 fw-6 text-white mb-2">Welcome Back</h5>
@@ -25,7 +49,7 @@
                                         continue
                                     </p>
                                 </div>
-                                <a class="back-btn text-white" data-bs-dismiss="modal">
+                                <a class="back-btn text-white" data-bs-dismiss="modal" onclick="CloseModalLogin()">
                                     <i class="bi bi-x"></i>
                                 </a>
 
@@ -37,8 +61,6 @@
                                     placeholder="Email or Mobile Number*">
                                 <input class="form-input input-shadow w-100 br-8 fs-7 mt-3" type="text"
                                     placeholder="Password*">
-                                <a href="app-home.html" class="main-btn btn-hover w-100 h_50 br-8 mt-3">Sign
-                                    In</a>
                                 <div class="d-flex align-items-center mt-3">
                                     <div class="address-check checkboxes p-0 border-0 mt-0">
                                         <input id="check-address" type="checkbox" name="addressCheckbox" checked="">
@@ -47,31 +69,108 @@
                                     <a href="app-forgot-password.html" class="fs-7 bb-color ms-auto">Forgot
                                         Password?</a>
                                 </div>
-                                <div class="other-login">
-                                    <div class="new-quite border_bottom position-relative mt-5">
-                                        <span class="or-text">Or Connect With</span>
-                                    </div>
-                                    <ul class="social-icons ps-0 d-block text-center">
-                                        <li><a href="#" class="social-btn fb-bg"><img src="~/icons/facebook.svg"
-                                                    alt=""></a></li>
-                                        <li><a href="#" class="social-btn tw-bg"><img src="~/icons/twitter.svg"
-                                                    alt=""></a></li>
-                                        <li><a href="#" class="social-btn go-bg"><img src="~/icons/google.svg"
-                                                    alt=""></a></li>
-                                        <li><a href="#" class="social-btn ld-bg"><img src="~/icons/linkedin-in.svg"
-                                                    alt=""></a></li>
-                                    </ul>
-                                </div>
-                                <div class="register-section text-center mt-5">
-                                    <p class="fs-9 b-color mb-3">You don't have an account?</p>
-                                    <a href="app-signup.html  " class="main-btn btn-hover w-100 h_50 br-8">Create an
-                                        Account</a>
+                                <a href="app-home.html" class="main-btn btn-hover w-100 h_50 br-8 mt-3 mb-3">Sign
+                                In</a>
+                                
+                                <div id="google-signin-container">
+                                    @* <div id="g_id_onload"
+                                        data-client_id="88037961929-iicocvnl4u3hjo265aoqe1ac3s4sv0jg.apps.googleusercontent.com"
+                                        data-callback="handleCredentialResponse"
+                                        data-type="standard"
+                                        data-size="large"
+                                        data-theme="outline"
+                                        data-shape="rectangular"
+                                    >    
+                                    </div> *@
+                                    <div id="g_id_signin"></div>
+                                    @* <div class="g_id_signin"
+                                        id="g_id_signin"
+                                        data-type="standard"
+                                        data-size="large"
+                                        data-theme="outline"
+                                        data-text="sign_in_with"
+                                        data-shape="rectangular"
+                                        data-logo_alignment="left">
+                                    </div> *@
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+var $;
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+    }
+    $ = window.jQuery;
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+        google.accounts.id.initialize({
+            client_id: "88037961929-iicocvnl4u3hjo265aoqe1ac3s4sv0jg.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+
+        google.accounts.id.renderButton(
+            document.getElementById("g_id_signin"),
+            { theme: "outline", size: "large" }
+        );
+
+        google.accounts.id.prompt(); // optional
+    } 
+    else {
+        // Optional: Validasi token ke backend jika perlu
+        //console.log("User sudah login, token tersedia:", token);
+        document.getElementById("g_id_signin").style.display = "none";
+    }
+});
+
+function handleCredentialResponse(response) {
+    // response.credential berisi ID Token (JWT)
+    const idToken = response.credential;
+    //console.log(idToken);
+    var _Data = { idToken: idToken }
+    callApi({
+        url: "/api/Auth/google-login",
+        method: 'POST',
+        data:_Data,
+        success: function (res) {
+            //console.log('Login berhasil:', res);
+            document.getElementById("g_id_signin").style.display = "none";
+            setUser(res);
+            
+        },
+        error: function (err) {
+            Swal.fire('Gagal!', 'Pesanan berhasil gagal dicheckout.', 'warning');
+        },
+        onBeforeSend : function () {
+            $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+            $("#btnCheckout").prop("disabled", true).text("Memproses...");
+        },
+        onComplete : function () {
+            $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+            $("#btnCheckout").prop("disabled", false).text("Bayar");
+        }
+    });
+}
+
+function setUser(data){
+    Storage.set('username', data.user.name);
+    Storage.set('userId', data.user.id);
+    Storage.set('nama_lengkap', data.user.name);
+    Storage.set('email', data.user.email);
+    Storage.set('no_hp', "-");
+    Storage.set('photo', data.user.picture);
+    Storage.set("jwt", data.token);
+    window.location.reload();
+}
+
+</script>

@@ -162,13 +162,22 @@
     connection.on("TerimaNotifikasi", function (pesan) {
         Swal.fire({
             icon: 'info',
-            title: 'Notifikasi Baru',
-            text: pesan,
+            title: '<span style="font-size: 16px; font-weight: 600;">🔔 Notifikasi</span>',
+            html: `<div style="font-size: 14px; line-height: 1.5; color: #444;">${pesan}</div>`,
             toast: true,
             position: 'top-end',
+            background: '#fff',
             timer: 4000,
-            showConfirmButton: false
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: {
+                popup: 'shadow-md rounded-lg p-2'
+            },
+            didOpen: (toast) => {
+                toast.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            }
         });
+
 
         window.location.href = '@Url.Action("Status", "Pembayaran")'; 
         
