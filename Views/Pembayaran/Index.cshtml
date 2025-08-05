@@ -452,6 +452,16 @@
             }
             _order_items.push(dt);
         });
+        
+        $.map(datatrx.JenisProperti, function (item) {
+            var dt = {
+                sku : item.id,
+                name : "biaya Properti: "+item.nama_jenis,
+                price : item.harga,
+                quantity : 1,
+            }
+            _order_items.push(dt);
+        });
 
         var dataapi =
         {   
