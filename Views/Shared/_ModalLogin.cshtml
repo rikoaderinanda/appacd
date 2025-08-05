@@ -146,7 +146,6 @@ function handleCredentialResponse(response) {
             //console.log('Login berhasil:', res);
             document.getElementById("g_id_signin").style.display = "none";
             setUser(res);
-            
         },
         error: function (err) {
             Swal.fire('Gagal!', 'Pesanan berhasil gagal dicheckout.', 'warning');

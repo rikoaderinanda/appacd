@@ -71,8 +71,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSignalR();
 
-
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
