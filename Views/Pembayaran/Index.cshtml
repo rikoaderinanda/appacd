@@ -478,7 +478,8 @@
                     SimpanCheckOut(datatrx);
                 }
                 else{
-                    Swal.fire('Gagal!',data.message, 'warning');
+                    console.log(res);
+                    Swal.fire('Gagal!',res.message, 'warning');
                 }
             },
             error: function (err) {
