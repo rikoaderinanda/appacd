@@ -12,6 +12,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment;
+Console.WriteLine($"Current Environment: {env.EnvironmentName}");
 
 // Add services to the container.
 builder.Services
