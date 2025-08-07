@@ -15,24 +15,6 @@
     </div>
     <div class="category-group">
         <div class="row" id="layananCarousel">
-            <div class="col-4">
-                <div class="cate-item text-center loading-skeleton">
-                    <div class="cate-img mb-2 skeleton-circle"></div>
-                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
-                </div>
-            </div>
-            <div class="col-4">
-            <div class="cate-item text-center loading-skeleton">
-                <div class="cate-img mb-2 skeleton-circle"></div>
-                <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
-            </div>
-            </div>
-            <div class="col-4">
-            <div class="cate-item text-center loading-skeleton">
-                <div class="cate-img mb-2 skeleton-circle"></div>
-                <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
-            </div>
-            </div>
             <!-- Tambah item lagi jika diperlukan -->
         </div>
     
@@ -48,7 +30,6 @@
       return;
     }
     $ = window.jQuery;
-    initCarousel("layananCarousel", 4, true);
     ClearStoragePesanan();
     loadLayanan();
   });
@@ -94,10 +75,30 @@
         $('#layananCarousel').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
       },
       onBeforeSend: function () {
-        //$('#layananCarousel').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+        $('#layananCarousel').html(`
+          <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+                </div>
+                <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+                </div>
+                <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+            </div>
+        `);
       },
       onComplete: function () {
       }
     });
   }
+
 </script>

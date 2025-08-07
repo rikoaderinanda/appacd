@@ -1,0 +1,87 @@
+<div class="col-12">
+  <div class="home-categories mt-30">
+    <div class="main-title d-flex align-items-center mb-3">
+      <strong class="mb-0">Etalase Product</strong>
+      <a href="app-categories.html" class="fs-7 ms-auto p-color text-hover"><i class="bi bi-search me-2"></i>cari product</a>
+    </div>
+    <div class="category-group">
+        <div class="row" id="EtalaseProduct">
+        </div>
+    </div>
+</div>
+
+<script>
+     var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+        }
+        $ = window.jQuery;
+        loadProduct();
+    });
+
+    function loadProduct() {
+    callApi({
+      url: '/api/Layanan/GetLayanan',
+      method: 'GET',
+      success: function (data) {
+        var html = $.map(data, function (item) {
+          var scr = "";
+          scr = `
+            <div class="col-6 mb-2">
+                <div class="cate-item text-center">
+                    <a href="/layanan/${encodeURIComponent(item.id)}" class="cate-item text-center text-decoration-none">
+                    <div class="mb-2">
+                        <img src="${item.img_layanan}" class="img-fluid" style="border-radius:20px 20px;" loading="lazy" />
+                    </div>
+                    <p class="mb-0 medium text-dark fw-semibold">${item.nama_layanan}</p>
+                    <p class="mb-0 text-danger small fw-bold">Rp ${item.harga}</p>
+                    <div class="text-warning small">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                        <i class="bi bi-star"></i>
+                        <span class="text-muted small">(5.0 dari 10 pembeli)</span>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        `;
+          return scr;
+        }).join('');
+        $('#EtalaseProduct').html(html);
+        //initCarousel("layananCarousel", 2);
+        lazyAnimateItems("EtalaseProduct");
+      },
+      error: function (err) {
+        $('#EtalaseProduct').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+      },
+      onBeforeSend: function () {
+        $('#EtalaseProduct').html(`
+          <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+                </div>
+                <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+                </div>
+                <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+            </div>
+        `);
+      },
+      onComplete: function () {
+      }
+    });
+  }
+</script>
