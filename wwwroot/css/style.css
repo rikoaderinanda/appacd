@@ -534,7 +534,7 @@ p {
 }
 
 .gobo-menu-footer {
-	background: #eb394d;
+	background: #6668df;
 	padding: 0px !important;
 	border-radius: 0;
 }
@@ -564,7 +564,7 @@ p {
 
 .gobo-menu-footer .col.selected a {
 	color: #ffffff !important;
-    background: #eb394d;
+    background: #6668df;
     opacity: 1;
 }
 
@@ -1074,7 +1074,7 @@ p {
 
 .main-btn {
     color: #fff !important;
-    background: #eb394d;
+    background: #6668df;
     border: 0;
     display: block;
     text-align: center;
@@ -2162,7 +2162,7 @@ p {
 /* Login/Signup Page */
 
 .login-top {
-    background: #da2f42;
+    background: #6668df;
     height: 220px;
 }
 
