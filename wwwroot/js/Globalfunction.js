@@ -29,13 +29,13 @@ const Storage = {
     }
 };
 
-function initCarousel(Element, Qty) {
+function initCarousel(Element, Qty, loop) {
     var $slider = $('#' + Element + '');
     if ($slider.hasClass('owl-loaded')) {
         $slider.trigger('destroy.owl.carousel');
     }
     $slider.owlCarousel({
-        loop: $slider.find('.item').length > 10,
+        loop: loop,
         margin: 16,
         nav: false,
         dots: true,
