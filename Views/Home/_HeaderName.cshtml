@@ -1,19 +1,4 @@
-<div class="col-12">
-    <div class="mt-4">
-        <div class="welcome-text">
-            <h3 class="mb-3">
-                <span id="SalamWaktu"></span>
-                <span id="Username"></span>
 
-            </h3>
-
-            <div class="position-relative">
-                <input class="form-input input-shadow ps-5" type="text" placeholder="Kamu lagi butuh jasa apa?">
-                <i class="bi bi-search search-icon-lg"></i>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     var $;
@@ -32,8 +17,10 @@
         else {
             var cr =
                 `
-                <button class="btn btn-warning btn-sm rounded-pill px-3" 
-                    onclick="showLogin();" id="btnLogin">
+                <button class="btn btn-warning btn-sm rounded-pill w-100" 
+                    onclick="showLogin();" id="btnLogin" 
+                    style="background: linear-gradient(to right, #007bff, #0056b3); border-color: #007bff; color: white;"
+                >
                     <i class="bi bi-exclamation-circle me-1"></i> Login sekarang
                 </button>
             `;

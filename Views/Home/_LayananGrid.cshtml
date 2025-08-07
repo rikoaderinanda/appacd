@@ -1,0 +1,103 @@
+<style>
+  .cate-item:hover {
+    background: linear-gradient(145deg, #e4ecff, #ffffff);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.1);
+  }
+</style>
+
+<div class="col-12">
+  <div class="home-categories mt-23">
+    <div class="main-title d-flex align-items-center mb-3">
+      <strong class="mb-0">Layanan AC</strong>
+      @* <a href="@Url.Action("Index", "Layanan")" class="ms-auto text-decoration-none text-secondary small">Lihat
+        Semua</a> *@
+    </div>
+    <div class="category-group">
+        <div class="row" id="layananCarousel">
+            <div class="col-4">
+                <div class="cate-item text-center loading-skeleton">
+                    <div class="cate-img mb-2 skeleton-circle"></div>
+                    <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+                </div>
+            </div>
+            <div class="col-4">
+            <div class="cate-item text-center loading-skeleton">
+                <div class="cate-img mb-2 skeleton-circle"></div>
+                <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+            </div>
+            </div>
+            <div class="col-4">
+            <div class="cate-item text-center loading-skeleton">
+                <div class="cate-img mb-2 skeleton-circle"></div>
+                <p class="mb-0 small fw-semibold text-dark text-truncate skeleton-text"></p>
+            </div>
+            </div>
+            <!-- Tambah item lagi jika diperlukan -->
+        </div>
+    
+    </div>
+  </div>
+</div>
+
+<script>
+  var $;
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+      console.error('jQuery is not loaded.');
+      return;
+    }
+    $ = window.jQuery;
+    initCarousel("layananCarousel", 4, true);
+    ClearStoragePesanan();
+    loadLayanan();
+  });
+
+  function ClearStoragePesanan(){
+    Storage.remove('keranjang');
+    Storage.remove('jenis_properti');
+    Storage.remove('keluhan');
+    Storage.remove('JamKunjungan');
+    Storage.remove('TanggalKunjungan');
+    Storage.remove('Total');
+    Storage.remove('Customer');
+    Storage.remove('IdPesanan');
+    Storage.remove('id_layanan');
+  }
+
+  function loadLayanan() {
+    callApi({
+      url: '/api/Layanan/GetLayanan',
+      method: 'GET',
+      success: function (data) {
+        var html = $.map(data, function (item) {
+          var scr = "";
+          scr = `
+          <div class="col-4 mb-2">
+            <div class="cate-item text-center">
+                <a href="/layanan/${encodeURIComponent(item.id)}" class="cate-item text-center">
+                <div class="mb-2">
+                    <img src="${item.img_layanan}" class="img-fluid" style="border-radius:20px 20px;" loading="lazy" />
+                </div>
+                <p class="mb-0 medium text-dark">${item.nama_layanan}</p>
+                </a>
+            </div>
+          </div>
+        `;
+          return scr;
+        }).join('');
+        $('#layananCarousel').html(html);
+        //initCarousel("layananCarousel", 2);
+        lazyAnimateItems("layananCarousel");
+      },
+      error: function (err) {
+        $('#layananCarousel').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+      },
+      onBeforeSend: function () {
+        //$('#layananCarousel').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+      },
+      onComplete: function () {
+      }
+    });
+  }
+</script>
