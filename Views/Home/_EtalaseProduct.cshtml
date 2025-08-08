@@ -2,7 +2,7 @@
   <div class="home-categories mt-30">
     <div class="main-title d-flex align-items-center mb-3">
       <strong class="mb-0">Etalase Product</strong>
-      <a href="app-categories.html" class="fs-7 ms-auto p-color text-hover"><i class="bi bi-search me-2"></i>cari product</a>
+      <a href="app-categories.html" class="fs-7 ms-auto p-color text-hover"><i class="bi bi-search me-2"></i>Cari</a>
     </div>
     <div class="category-group">
         <div class="row" id="EtalaseProduct">
@@ -23,27 +23,35 @@
 
     function loadProduct() {
     callApi({
-      url: '/api/Layanan/GetLayanan',
+      url: '/api/Product/GetProduct',
       method: 'GET',
       success: function (data) {
+        @* {
+          "id": "37e35a37-3c3f-4ed2-9c1b-a90eca846c92",
+          "nama_product": "Panasonic CS/CU-LN5AKJ AC Standart Low Voltage",
+          "img_product": null,
+          "harga": 4094000,
+          "rating": 4.9,
+          "jumlah_pembeli": 250
+        } *@
         var html = $.map(data, function (item) {
           var scr = "";
           scr = `
             <div class="col-6 mb-2">
                 <div class="cate-item text-center">
-                    <a href="/layanan/${encodeURIComponent(item.id)}" class="cate-item text-center text-decoration-none">
+                    <a href="${item.img_product}" class="cate-item text-center text-decoration-none">
                     <div class="mb-2">
-                        <img src="${item.img_layanan}" class="img-fluid" style="border-radius:20px 20px;" loading="lazy" />
+                        <img src="${item.img_product}" class="img-fluid" style="border-radius:20px 20px;" loading="lazy" />
                     </div>
-                    <p class="mb-0 medium text-dark fw-semibold">${item.nama_layanan}</p>
-                    <p class="mb-0 text-danger small fw-bold">Rp ${item.harga}</p>
+                    <p class="mb-0 medium text-dark fw-semibold">${item.nama_product}</p>
+                    <p class="mb-0 text-danger small fw-bold">${formatRupiah(item.harga)}</p>
                     <div class="text-warning small">
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-fill"></i>
                         <i class="bi bi-star-half"></i>
                         <i class="bi bi-star"></i>
-                        <span class="text-muted small">(5.0 dari 10 pembeli)</span>
+                        <span class="text-muted small">(${item.rating}. ${item.jumlah_pembeli} terjual)</span>
                     </div>
                     </a>
                 </div>
@@ -56,7 +64,7 @@
         lazyAnimateItems("EtalaseProduct");
       },
       error: function (err) {
-        $('#EtalaseProduct').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+        $('#EtalaseProduct').html('<p class="text-center text-muted py-4">oopss..coba cek koneksi internet kamu.</p>');
       },
       onBeforeSend: function () {
         $('#EtalaseProduct').html(`

@@ -2,14 +2,14 @@
 <!-- Loading skeletons -->
        
     <div class="list-group" id="listJasaLayanan">
-      @for (int i = 0; i < 2; i++)
-      {
-        <div class="col-12 mb-2">
-          <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
-          <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
-          <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
-        </div>
-      }
+        @for (int i = 0; i < 2; i++)
+        {
+          <div class="col-12 mb-2">
+            <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
+            <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
+            <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
+          </div>
+        }
     </div>
 
     <div class="mt-3" id="KeranjangPesanan" style="display: none;">
@@ -51,6 +51,14 @@
       url: '/api/Layanan/JasaLayanan?Id=@ViewData["Id"]',
       method: 'GET',
       success: function (data) {
+        const panelLayananDibutuhkan = document.getElementById("panelLayananDibutuhkan");
+        if(data.length > 0){
+            panelLayananDibutuhkan.style.display = "block";                    
+        }
+        else{
+            panelLayananDibutuhkan.style.display = "none";
+        }
+        
         var html = $.map(data, function (item) {
           var scr = "";
           scr = `

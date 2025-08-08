@@ -1,0 +1,257 @@
+<style>
+  .rc-item-img {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 8px;
+    flex-shrink: 0; /* Biar ukuran tetap */
+  }
+
+  .rc-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+     @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+<div class="items-group">
+<!-- Loading skeletons -->       
+  <ul class="recommend-items ps-0" id="ListLayanan">
+  </ul>
+</div>
+@await Html.PartialAsync("_berlangganan")
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+        }
+        $ = window.jQuery;
+        (async () => {
+            try {
+
+                  for (let i = 0; i < 2; i++) {
+                    var html = `
+                        <div class="col-12 mb-2">
+                            <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
+                            <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
+                            <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
+                        </div>
+                    `;
+                    $("#ListLayanan").append(html);
+                }
+                const data = await getDataLayanan();
+                console.log(data.length)
+                if(data.length>1){
+                    renderData(data);
+                }
+                else
+                {
+                    console.log(data);
+                    const detail = await getDataLayananDetail(data[0].id);
+                    if(detail.length>0){
+                        renderDataDetail(detail);
+                    }
+                }
+                
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        })();
+    });
+    
+    async function getDataLayanan() {
+        return await new Promise((resolve, reject) => {
+            callApi({
+                url: '/api/Layanan/JasaLayanan?Id=@ViewData["Id"]',
+                method: 'GET',
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (err) {
+                    reject(err);
+                }
+            });
+        });
+    }
+
+    async function getDataLayananDetail(Id) {
+        return await new Promise((resolve, reject) => {
+            callApi({
+                url: '/api/Layanan/JasaLayananDetail?Id=' + Id + '',
+                method: 'GET',
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (err) {
+                    reject(err);
+                }
+            });
+        });
+    }
+
+
+    function renderData(data){
+        var html = $.map(data, function (item) {
+          var scr = "";
+          scr = `
+                  <div
+                      class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
+                      <div class="d-flex align-items-center">
+                          <img src="${item.img_jasa}" alt="" class="rounded-circle me-3"
+                              style="width:40px;height:40px;object-fit:cover;">
+                          <span>${item.nama_jasa}</span>  
+                      </div>
+                      <a class="btn btn-outline-primary btn-sm rounded-circle" 
+                          href="#ModalLayanan"
+                          data-bs-toggle="modal" 
+                          data-namalayanan="${item.nama_jasa}" 
+                          data-id="${item.id}"
+                      >
+                          <i class="bi bi-plus"></i>
+                      </a>
+                  </div>
+                  
+                `;
+          return scr;
+        }).join('');
+
+      $('#ListLayanan').html(html);
+    }
+    
+    function renderDataDetail(data){
+        var html = $.map(data, function (item) {
+            @* {
+                "id": 1,
+                "created_at": "2025-07-03T08:20:38.471404",
+                "created_by": 1,
+                "nama_detail_jasa": "Cuci AC 0.5 - 2 PK",
+                "harga_satuan": 85000,
+                "diskon": 0,
+                "id_jasalayanan": 2
+            }, *@
+            var diskon = ``;
+            let hargaAkhir = item.harga_satuan - item.diskon;
+            if(hargaAkhir < item.harga_satuan){
+              diskon = `
+                <span class="item-weight-count">
+                    <span class="text-decoration-line-through text-muted me-2">
+                        ${formatRupiah(item.harga_satuan)}
+                    </span>
+                </span>`;
+            }
+            var scr =`
+                <li class="list-group-item">
+                    <div class="rc-item d-flex align-items-center justify-content-between">
+                        <!-- Kiri: Gambar + deskripsi -->
+                        <div class="rc-item-left d-flex align-items-center">
+                            <div class="rc-item-img position-relative border br-8 flex-shrink-0">
+                                <img src="${item.img_url}" alt="">
+                            </div>
+                            <div class="rc-item-content ms-3">
+                                <p class="fw-bold mb-1">${item.nama_detail_jasa}</p>
+                                <span class="b-color d-block fs-6 fw-5">${formatRupiah(hargaAkhir)}</span>
+                                ${diskon}
+                            </div>
+                        </div>
+
+                        <!-- Kanan: Counter -->
+                        <div class="rc-item-right flex-shrink-0">
+                            <div class="cart-counter text-end">
+                                <p>Jumlah AC</p>
+                                <div class="input-group input-group-sm mb-2">
+                                    <button class="btn btn-outline-primary minus" type="button">-</button>
+                                    <input type="text" class="form-control text-center" value="0" data-harga=${hargaAkhir}>
+                                    <button class="btn btn-outline-primary plus" type="button">+</button>
+                                </div>
+                                <span class="total-harga fw-bold">${formatRupiah(0)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            `;
+            return scr;
+        }).join('');
+        $("#ListLayanan").html(html);
+        initHandleEventButtonPlusMinus();
+
+    }
+
+    function initHandleEventButtonPlusMinusv1(){
+        // Pasang event listener ulang setelah render
+        document.querySelectorAll(".plus").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                let input = this.parentElement.querySelector("input");
+                let currentValue = parseInt(input.value) || 0;
+                input.value = currentValue + 1;
+
+            });
+        });
+
+        document.querySelectorAll(".minus").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                let input = this.parentElement.querySelector("input");
+                let currentValue = parseInt(input.value) || 0;
+                if (currentValue > 0) {
+                    input.value = currentValue - 1;
+                }
+            });
+        });
+    }
+
+    function initHandleEventButtonPlusMinus(){
+            let totalQty = 0;
+            document.querySelectorAll(".plus").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let input = this.parentElement.querySelector("input");
+                    let harga = parseInt(input.dataset.harga) || 0;
+                    let currentValue = parseInt(input.value) || 0;
+                    currentValue++;
+                    input.value = currentValue;
+                    totalQty++;
+                    ShowHideBerlangganan(totalQty);
+                    // Update total harga
+                    let total = harga * currentValue;
+                    this.closest(".cart-counter")
+                        .querySelector(".total-harga").textContent = formatRupiah(total);
+                });
+            });
+
+            document.querySelectorAll(".minus").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let input = this.parentElement.querySelector("input");
+                    let harga = parseInt(input.dataset.harga) || 0;
+                    let currentValue = parseInt(input.value) || 0;
+                    if (currentValue > 0) {
+                        currentValue--;
+                        input.value = currentValue;
+                        totalQty--;
+                        ShowHideBerlangganan(totalQty);
+                        // Update total harga
+                        let total = harga * currentValue;
+                        this.closest(".cart-counter")
+                            .querySelector(".total-harga").textContent = formatRupiah(total);
+                    }
+                });
+            });
+            
+            
+        }
+
+    function ShowHideBerlangganan(totalQty){
+        if(totalQty>0){
+            $("#panelberlangganan").show();
+            @* const paket = document.getElementById("panelberlangganan");
+            paket.style.display = "flex"; *@
+        }
+        else{
+            $("#panelberlangganan").hide();
+            @* const paket = document.getElementById("panelberlangganan");
+            paket.style.display = "none"; *@
+        }
+    }
+</script>

@@ -48,6 +48,8 @@ builder.Services.AddScoped<ILayananRepository, LayananRepository>();
 builder.Services.AddScoped<IPemesananRepository, PemesananRepository>();
 builder.Services.AddScoped<IPerangkatRepository, PerangkatRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 
 builder.Services.AddHttpClient<ITripayRepository, TripayRepository>();
 

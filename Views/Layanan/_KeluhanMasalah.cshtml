@@ -1,9 +1,8 @@
+
 <div class="items-group">
     <div class="form-group">
         <div class="row g-2">
-
             <!-- Loading skeletons -->
-            
             <div id="ItemKeluhanMasalah">
                 @for (int i = 0; i < 2; i++)
                 {
@@ -28,23 +27,87 @@
                         id="catatanKeluhanLainnya"
                         style="display: none;"></textarea>
             </div>
-                
         </div>
     </div>
 </div>
 
 <script>
+    var $ = window.jQuery;
     document.addEventListener('DOMContentLoaded', function () {
-    if (typeof window.jQuery === 'undefined') {
-      console.error('jQuery is not loaded.');
-      return;
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        
+        LoadDataKeluhan();
+        $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
+            updateKeluhanLocalStorage();
+        });
+
+        // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
+        $('#keluhan5').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('#catatanKeluhanLainnya').show();
+            } else {
+                $('#catatanKeluhanLainnya').hide();
+            }
+            updateKeluhanLocalStorage();
+        });
+        $(document).on('input', 'textarea[name="CatatanKeluhanLainnya"]', function () {
+            if ($('#keluhan5').is(':checked')) {
+                updateKeluhanLocalStorage();
+            }
+        });
+    });
+    function updateKeluhanLocalStorage() {
+        var keluhanTerpilih = [];
+
+        // Ambil semua checkbox yang dicentang
+        $('#ItemKeluhanMasalah input[type="checkbox"]').each(function () {
+            if ($(this).is(':checked')) {
+                var keluhan = $(this).closest('.d-flex').find('span').text().trim();
+                var id = $(this).val();
+                keluhanTerpilih.push(
+                    {
+                        "id":id,
+                        "val":keluhan
+                    }
+                );
+            }
+        });
+
+        // Tambahkan keluhan lainnya jika dicentang
+        if ($('#keluhan5').is(':checked')) {
+            var catatan = $('textarea[name="CatatanKeluhanLainnya"]').val();
+            if (catatan && catatan.trim() !== '') {
+                keluhanTerpilih.push(
+                    {
+                        "id":99,
+                        "val":catatan.trim()
+                    }
+                )
+                    
+            }
+        }
+
+        // Simpan ke localStorage
+        Storage.set('keluhan', keluhanTerpilih);
     }
-        var $ = window.jQuery;
+    function LoadDataKeluhan(){
         const Keluhan = Storage.get('keluhan');
         callApi({
             url: '/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]',
             method: 'GET',
             success: function (data) {
+                const panelKeluhan = document.getElementById("panelKeluhan");
+                console.log(data.length);
+                if(data.length > 0){
+                    panelKeluhan.style.display = "block";                    
+                }
+                else{
+                    panelKeluhan.style.display = "none";
+                }
+
                 var html = $.map(data, function (item) {
                     var scr = "";
                     if (item.typeinput == "checkbox") {
@@ -89,58 +152,5 @@
                 alert('Error: ' + err);
             }
         });
-
-        $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
-            updateKeluhanLocalStorage();
-        });
-
-        // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
-        $('#keluhan5').on('change', function () {
-            if ($(this).is(':checked')) {
-                $('#catatanKeluhanLainnya').show();
-            } else {
-                $('#catatanKeluhanLainnya').hide();
-            }
-            updateKeluhanLocalStorage();
-        });
-        $(document).on('input', 'textarea[name="CatatanKeluhanLainnya"]', function () {
-            if ($('#keluhan5').is(':checked')) {
-                updateKeluhanLocalStorage();
-            }
-        });
-        function updateKeluhanLocalStorage() {
-        var keluhanTerpilih = [];
-
-        // Ambil semua checkbox yang dicentang
-        $('#ItemKeluhanMasalah input[type="checkbox"]').each(function () {
-            if ($(this).is(':checked')) {
-                var keluhan = $(this).closest('.d-flex').find('span').text().trim();
-                var id = $(this).val();
-                keluhanTerpilih.push(
-                    {
-                        "id":id,
-                        "val":keluhan
-                    }
-                );
-            }
-        });
-
-        // Tambahkan keluhan lainnya jika dicentang
-        if ($('#keluhan5').is(':checked')) {
-            var catatan = $('textarea[name="CatatanKeluhanLainnya"]').val();
-            if (catatan && catatan.trim() !== '') {
-                keluhanTerpilih.push(
-                    {
-                        "id":99,
-                        "val":catatan.trim()
-                    }
-                )
-                    
-            }
-        }
-
-        // Simpan ke localStorage
-        Storage.set('keluhan', keluhanTerpilih);
     }
-    });
 </script>
