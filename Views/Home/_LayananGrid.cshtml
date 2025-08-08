@@ -54,11 +54,11 @@
         var html = $.map(data, function (item) {
           var scr = "";
           scr = `
-          <div class="col-4 mb-2">
+          <div class="col-3 mb-2">
             <div class="cate-item text-center">
                 <a href="/layanan/${encodeURIComponent(item.id)}" class="cate-item text-center">
                 <div class="mb-2">
-                    <img src="${item.img_layanan}" class="img-fluid" style="border-radius:20px 20px;" loading="lazy" />
+                    <img src="${item.img_layanan}" class="img-fluid" style="border-radius:10px 10px;" loading="lazy" />
                 </div>
                 <p class="mb-0 medium text-dark">${item.nama_layanan}</p>
                 </a>
