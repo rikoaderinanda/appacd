@@ -24,14 +24,14 @@
     #listJadwal .jadwal-num {
         width: 30px;
         height: 30px;
-        border-radius: 50%;
+        border-radius: 20%;
         background: var(--bs-primary);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        margin-right: 10px;
+        margin-right: 20px;
     }
     /* Animasi untuk list jadwal */
     @@keyframes fadeSlideUp {
@@ -54,6 +54,7 @@
         border-radius: 6px;
         border: 1px solid #ddd;
     }
+    
     .tanggal-input:focus {
         border-color: var(--bs-primary);
         box-shadow: 0 0 5px rgba(0,123,255,0.3);
@@ -93,7 +94,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card card-option border-success shadow-sm h-100" data-value="tahunan">
+            <div class="card card-option border-danger shadow-sm h-100" data-value="tahunan">
                 <div class="card-body text-center">
                     <h6 class="fw-bold">Paket Intensif Bulanan</h6>
                     <p class="text-muted small">12x cuci/tahun (setiap bulan)</p>
@@ -200,7 +201,7 @@
             item.classList.add('jadwal-item');
             item.innerHTML = `
                 <div class="jadwal-num">${i + 1}</div>
-                <div class="flex-grow-1">
+                <div class="">
                     <div class="fw-semibold tanggal-text">${fullDate}</div>
                     <small class="text-muted">Jadwal ke-${i + 1}</small>
                 </div>
