@@ -17,41 +17,43 @@
         to { opacity: 1; transform: translateY(0); }
     }
 </style>
+
+<div class="main-title text-left d-flex align-items-center mb-3">
+    <h5 class="mb-0 fw-6 b-color">Layanan Cuci AC</h5>
+</div>
 <div class="items-group">
 <!-- Loading skeletons -->       
-  <ul class="recommend-items ps-0" id="ListLayanan">
-  </ul>
+    <ul class="recommend-items ps-0" id="ListLayanan">
+        @await Html.PartialAsync("_SkeltonLoading")
+    </ul>
+    <hr>
+    <div class="total-harga d-flex justify-content-between align-items-center">
+        <p class="mb-0">Total Harga Reguler :</p>
+        <span class="total-harga fw-bold" id="TotalHargaReguler">Rp 0</span>
+    </div>
+    <br>
 </div>
-@await Html.PartialAsync("_berlangganan")
+
 <script>
     var $;
+    
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
         console.error('jQuery is not loaded.');
         return;
         }
         $ = window.jQuery;
+      
+        Storage.remove("CartData");
         (async () => {
             try {
 
-                  for (let i = 0; i < 2; i++) {
-                    var html = `
-                        <div class="col-12 mb-2">
-                            <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
-                            <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
-                            <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
-                        </div>
-                    `;
-                    $("#ListLayanan").append(html);
-                }
                 const data = await getDataLayanan();
-                console.log(data.length)
                 if(data.length>1){
                     renderData(data);
                 }
                 else
                 {
-                    console.log(data);
                     const detail = await getDataLayananDetail(data[0].id);
                     if(detail.length>0){
                         renderDataDetail(detail);
@@ -94,7 +96,6 @@
         });
     }
 
-
     function renderData(data){
         var html = $.map(data, function (item) {
           var scr = "";
@@ -125,15 +126,8 @@
     
     function renderDataDetail(data){
         var html = $.map(data, function (item) {
-            @* {
-                "id": 1,
-                "created_at": "2025-07-03T08:20:38.471404",
-                "created_by": 1,
-                "nama_detail_jasa": "Cuci AC 0.5 - 2 PK",
-                "harga_satuan": 85000,
-                "diskon": 0,
-                "id_jasalayanan": 2
-            }, *@
+            //console.log("Data Detail");
+            //console.log(item);
             var diskon = ``;
             let hargaAkhir = item.harga_satuan - item.diskon;
             if(hargaAkhir < item.harga_satuan){
@@ -165,7 +159,12 @@
                                 <p>Jumlah AC</p>
                                 <div class="input-group input-group-sm mb-2">
                                     <button class="btn btn-outline-primary minus" type="button">-</button>
-                                    <input type="text" class="form-control text-center" value="0" data-harga=${hargaAkhir}>
+                                    <input type="text" class="form-control text-center" 
+                                        value="0" 
+                                        data-harga=${hargaAkhir} 
+                                        data-detaillayanan=${encodeURIComponent(item.nama_detail_jasa)}
+                                        data-id=${item.id}
+                                        >
                                     <button class="btn btn-outline-primary plus" type="button">+</button>
                                 </div>
                                 <span class="total-harga fw-bold">${formatRupiah(0)}</span>
@@ -181,43 +180,42 @@
 
     }
 
-    function initHandleEventButtonPlusMinusv1(){
-        // Pasang event listener ulang setelah render
-        document.querySelectorAll(".plus").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                let input = this.parentElement.querySelector("input");
-                let currentValue = parseInt(input.value) || 0;
-                input.value = currentValue + 1;
-
-            });
-        });
-
-        document.querySelectorAll(".minus").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                let input = this.parentElement.querySelector("input");
-                let currentValue = parseInt(input.value) || 0;
-                if (currentValue > 0) {
-                    input.value = currentValue - 1;
-                }
-            });
-        });
-    }
-
     function initHandleEventButtonPlusMinus(){
             let totalQty = 0;
+            let cartData = [];
             document.querySelectorAll(".plus").forEach(function (btn) {
                 btn.addEventListener("click", function () {
                     let input = this.parentElement.querySelector("input");
                     let harga = parseInt(input.dataset.harga) || 0;
                     let currentValue = parseInt(input.value) || 0;
+                    var detaillayanan = decodeURIComponent(input.dataset.detaillayanan);
+                    let _id = parseInt(input.dataset.id);
                     currentValue++;
                     input.value = currentValue;
                     totalQty++;
-                    ShowHideBerlangganan(totalQty);
-                    // Update total harga
+                    
+                    // Cek apakah layanan ini sudah ada di cartData
+                    let existingItem = cartData.find(item => item.nama === detaillayanan);
+                    if (existingItem) {
+                        existingItem.qty = currentValue; // update qty sesuai input terbaru
+                    } else {
+                        cartData.push({
+                            id: _id,
+                            nama: detaillayanan,
+                            harga: harga,
+                            qty: currentValue
+                        });
+                    }
+
                     let total = harga * currentValue;
                     this.closest(".cart-counter")
                         .querySelector(".total-harga").textContent = formatRupiah(total);
+                    const totalHarga = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+                    $("#TotalHargaReguler").text(formatRupiah(totalHarga));
+                    
+                    Storage.set("CartData",cartData);
+                    ShowHideBerlangganan(totalQty);
+                    
                 });
             });
 
@@ -226,12 +224,33 @@
                     let input = this.parentElement.querySelector("input");
                     let harga = parseInt(input.dataset.harga) || 0;
                     let currentValue = parseInt(input.value) || 0;
+                    var detaillayanan = decodeURIComponent(input.dataset.detaillayanan);
+                    let _id = parseInt(input.dataset.id);
                     if (currentValue > 0) {
                         currentValue--;
                         input.value = currentValue;
                         totalQty--;
+                        
+                        // Cek apakah layanan ini sudah ada di cartData
+                        let existingItem = cartData.find(item => item.nama === detaillayanan);
+                        if (existingItem) {
+                            if(currentValue == 0){
+                                let index = cartData.findIndex(item => item.nama === detaillayanan);
+                                if (index !== -1) {
+                                    cartData.splice(index, 1);
+                                }
+                            }
+                            existingItem.qty = currentValue; // update qty sesuai input terbaru
+                        } else {
+                            cartData.push({
+                                id: _id,
+                                nama: detaillayanan,
+                                harga: harga,
+                                qty: currentValue
+                            });
+                        }
+                        Storage.set("CartData",cartData);
                         ShowHideBerlangganan(totalQty);
-                        // Update total harga
                         let total = harga * currentValue;
                         this.closest(".cart-counter")
                             .querySelector(".total-harga").textContent = formatRupiah(total);
@@ -239,19 +258,25 @@
                 });
             });
             
-            
         }
 
     function ShowHideBerlangganan(totalQty){
         if(totalQty>0){
+            var cart = Storage.get("CartData");
+            LoadDataPaket(cart);
+            // Reset input tanggal
+            document.getElementById('tanggalAwal').value = '';
+
+            // Kosongkan list jadwal
+            document.getElementById('listJadwal').innerHTML =`<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`;
+            paketDipilih = "";
             $("#panelberlangganan").show();
-            @* const paket = document.getElementById("panelberlangganan");
-            paket.style.display = "flex"; *@
         }
         else{
             $("#panelberlangganan").hide();
-            @* const paket = document.getElementById("panelberlangganan");
-            paket.style.display = "none"; *@
+             document.getElementById('tanggalAwal').value = '';
+            document.getElementById('listJadwal').innerHTML =`<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`;
+            paketDipilih = "";
         }
     }
 </script>

@@ -1,3 +1,6 @@
+<div class="main-title text-left d-flex align-items-center mb-3">
+    <h5 class="mb-0 fw-6 b-color">Jenis properti Anda? *</h5>
+</div>
 <div class="items-group">
     <div class="form-group">
         <div class="row g-2" id="listJenisProperti">
@@ -12,46 +15,21 @@
         </div>
     </div>
 </div>
-
+<div class="alert alert-warning mt-3" role="alert" id="AlertProperti">
+    Bagi customer yang melakukan pemesanan untuk unit apartment, mohon
+    mempersiapkan surat izin untuk mitra ACD dari pihak gedung sebelum waktu
+    pengerjaan dilakukan.
+</div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.jQuery === 'undefined') {
       console.error('jQuery is not loaded.');
       return;
     }
-        var $ = window.jQuery;
-        callApi({
-            url: '/api/Layanan/JenisProperti?Id=@ViewData["Id"]',
-            method: 'GET',
-            success: function (data) {
-                var html = $.map(data, function (item) {
-                    var scr = "";
-                    scr = `
-            <div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
-                <span>${item.nama_jenis}</span>
-                <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
-                    <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
-                        name="JenisProperti" value="${item.nama_jenis}:${item.harga}:${item.id}">
-                </span></span>
-            </div>
-            `;
-                    return scr;
-                }).join('');
-
-                $('#listJenisProperti').html(html);
-                lazyAnimateItems("listJenisProperti");
-                var jenisProperti = Storage.get('jenis_properti') || [];
-                if (jenisProperti.length > 0) {
-                    // Set radio button yang sesuai dengan jenis properti yang disimpan
-                    $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':' + jenisProperti[0].id + '"]').prop('checked', true);
-
-                }
-            },
-            error: function (err) {
-                alert('Error: ' + err);
-        }
-    });
+    var $ = window.jQuery;
+    loadDataProperti();
+        
     $(document).on('change', 'input[name="JenisProperti"]', function () {
         const jenisProperti = $(this).val();
         const [nama, harga, id] = jenisProperti.split(':');
@@ -61,10 +39,54 @@
             harga: Number(harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
             id: id
         });
-        
+
         // Simpan ke localStorage
         Storage.set('jenis_properti', j);
-        $('#totalHargaPesanan').text('Rp ' + CalculateTotal().toLocaleString() || '0');
+        //$('#totalHargaPesanan').text('Rp ' + CalculateTotal().toLocaleString() || '0');
+
+        // Tampilkan alert jika properti adalah apartment
+        if (nama.trim().toLowerCase() === 'apartemen') {
+            $('#AlertProperti').show();
+        } else {
+            $('#AlertProperti').hide();
+        }
     });
+
+    // Sembunyikan alert di awal load
+    $('#AlertProperti').hide();
   });
+
+function loadDataProperti(){
+    callApi({
+        url: '/api/Layanan/JenisProperti?Id=1',
+        method: 'GET',
+        success: function (data) {
+            var html = $.map(data, function (item) {
+                var scr = "";
+                scr = `
+                    <div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
+                        <span>${item.nama_jenis}</span>
+                        <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
+                            <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
+                                name="JenisProperti" value="${item.nama_jenis}:${item.harga}:${item.id}">
+                        </span></span>
+                    </div>
+                `;
+                return scr;
+            }).join('');
+
+            $('#listJenisProperti').html(html);
+            lazyAnimateItems("listJenisProperti");
+            var jenisProperti = Storage.get('jenis_properti') || [];
+            if (jenisProperti.length > 0) {
+                // Set radio button yang sesuai dengan jenis properti yang disimpan
+                $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':' + jenisProperti[0].id + '"]').prop('checked', true);
+
+            }
+        },
+        error: function (err) {
+            alert('Error: ' + err);
+        }
+    });
+}
 </script>

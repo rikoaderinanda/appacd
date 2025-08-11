@@ -31,6 +31,13 @@ namespace appacd.Controllers
             return View(layanan);
         }
 
+        [Route("Layanan/CuciAC")]
+        public async Task<IActionResult> CuciAC()
+        {
+            ViewData["Id"] = 2;
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

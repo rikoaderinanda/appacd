@@ -33,7 +33,13 @@
         margin-top: 15px; /* Menyesuaikan margin di bawah tombol Google */
     }
 </style>
-
+<script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+    onload="onGoogleScriptLoad()"
+    onerror="onGoogleScriptError()">
+</script>
 
 <div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen-sm-down">
@@ -113,7 +119,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     $ = window.jQuery;
     const token = localStorage.getItem("jwt");
+    
     if (!token) {
+        if (typeof google === 'undefined' || !google.accounts) {
+            console.warn("Google Sign-In API tidak tersedia.");
+            loadGoogleSignInScript(function () {
+                google.accounts.id.initialize({
+                    client_id: "88037961929-iicocvnl4u3hjo265aoqe1ac3s4sv0jg.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+
+                google.accounts.id.renderButton(
+                    document.getElementById("g_id_signin"),
+                    { theme: "outline", size: "large" }
+                );
+            });
+            return;
+        }
+
         google.accounts.id.initialize({
             client_id: "88037961929-iicocvnl4u3hjo265aoqe1ac3s4sv0jg.apps.googleusercontent.com",
             callback: handleCredentialResponse
@@ -132,6 +155,45 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("g_id_signin").style.display = "none";
     }
 });
+
+function onGoogleScriptLoad() {
+    console.log("Google Sign-In script loaded");
+}
+
+function onGoogleScriptError() {
+    console.warn("Google Sign-In gagal dimuat. Pastikan koneksi atau coba mode login lain.");
+    document.getElementById("g_id_signin").innerHTML =
+        '<button class="btn btn-danger w-100">Login Google Tidak Tersedia</button>';
+}
+
+function loadGoogleSignInScript(callback) {
+    // Cek apakah sudah ada script sebelumnya, kalau ada hapus dulu
+    const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+    if (existingScript) {
+        existingScript.remove();
+    }
+
+    // Buat elemen script baru
+    const script = document.createElement('script');
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+
+    // Jika berhasil dimuat
+    script.onload = function () {
+        console.log("Google Sign-In API berhasil dimuat ulang.");
+        if (typeof callback === "function") callback();
+    };
+
+    // Jika gagal dimuat
+    script.onerror = function () {
+        console.error("Gagal memuat Google Sign-In API. Coba lagi...");
+        setTimeout(() => loadGoogleSignInScript(callback), 3000); // coba ulang setelah 3 detik
+    };
+
+    // Tambahkan script ke head
+    document.head.appendChild(script);
+}
 
 function handleCredentialResponse(response) {
     // response.credential berisi ID Token (JWT)

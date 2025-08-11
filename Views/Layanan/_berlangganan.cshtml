@@ -137,14 +137,34 @@
     </div>
 </div>
 
-
 <script>
-    document.getElementById("cekLangganan").addEventListener("change", function() {
+    var RegAtauMember="REG";
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+
+        //LoadDataPaket();
+    });
+
+    // Toggle paket & jadwal
+    document.getElementById("cekLangganan").addEventListener("change", function () {
         const paket = document.getElementById("paketLangganan");
         const jadwal = document.getElementById("jadwalLangganan");
         paket.style.display = this.checked ? "flex" : "none";
         jadwal.style.display = this.checked ? "flex" : "none";
         
+        if(this.checked){
+            $("#sessionWaktuKunjunganReguler").hide();
+            RegAtauMember = "MEMBER";
+        }
+        else{
+            $("#sessionWaktuKunjunganReguler").show();
+            RegAtauMember = "REG";
+        }
     });
 
     const bulanIndo = [
@@ -159,27 +179,31 @@
         "tahunan": { total: 12, interval: 1 }
     };
 
-    document.querySelectorAll('.card-option').forEach(card => {
-        card.addEventListener('click', function () {
-            document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            paketDipilih = this.getAttribute('data-value');
+    // Event delegation untuk card-option
+    document.getElementById("paketLangganan").addEventListener("click", function (e) {
+        const card = e.target.closest('.card-option');
+        if (!card) return;
 
-            // Tampilkan pengaturan jadwal
-            document.getElementById('jadwalLangganan').style.display = 'block';
+        document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
 
-            // Reset input tanggal
-            document.getElementById('tanggalAwal').value = '';
+        paketDipilih = card.getAttribute('data-value');
 
-            // Kosongkan list jadwal
-            document.getElementById('listJadwal').innerHTML =
-                `<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`;
-        });
+        // Tampilkan pengaturan jadwal
+        document.getElementById('jadwalLangganan').style.display = 'block';
+
+        // Reset input tanggal
+        document.getElementById('tanggalAwal').value = '';
+
+        // Kosongkan list jadwal
+        document.getElementById('listJadwal').innerHTML =
+            `<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`;
     });
 
     document.getElementById('tanggalAwal').addEventListener('change', function () {
         if (!paketDipilih) {
             alert('Pilih paket langganan terlebih dahulu!');
+            this.value = "";
             return;
         }
         generateJadwal(new Date(this.value));
@@ -189,7 +213,12 @@
         const listJadwal = document.getElementById('listJadwal');
         listJadwal.innerHTML = '';
 
-        const { total, interval } = paketSettings[paketDipilih];
+        const { total, interval } = paketSettings[paketDipilih] || {};
+
+        if (!total || !interval) {
+            listJadwal.innerHTML = `<p class="text-danger small m-0 p-3">Paket tidak dikenali.</p>`;
+            return;
+        }
 
         for (let i = 0; i < total; i++) {
             let tgl = new Date(tanggalMulai);
@@ -201,14 +230,15 @@
             item.classList.add('jadwal-item');
             item.innerHTML = `
                 <div class="jadwal-num">${i + 1}</div>
-                <div class="">
+                <div>
                     <div class="fw-semibold tanggal-text">${fullDate}</div>
                     <small class="text-muted">Jadwal ke-${i + 1}</small>
                 </div>
-                <input type="date" class="form-control form-control-sm ms-2 tanggal-input" value="${tgl.toISOString().split('T')[0]}" style="max-width:150px">
+                <input type="date" class="form-control form-control-sm ms-2 tanggal-input" 
+                    value="${tgl.toISOString().split('T')[0]}" style="max-width:150px">
             `;
 
-            // Event ubah manual
+            // Event ubah manual tanggal
             item.querySelector('.tanggal-input').addEventListener('change', function () {
                 let newDate = new Date(this.value);
                 item.querySelector('.tanggal-text').textContent = formatTanggal(newDate);
@@ -222,5 +252,45 @@
         let day = String(date.getDate()).padStart(2, '0');
         let monthName = bulanIndo[date.getMonth()];
         return `${monthName}, ${day}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    }
+
+    function LoadDataPaket(cart) {
+        
+        let totalHarga = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+        let Qty = cart.reduce((sum, item) => sum + (item.qty), 0);
+        callApi({
+            url: '/api/Layanan/PaketLangganan?Id=@ViewData["Id"]',
+            method: 'GET',
+            success: function (data) {
+                var html = $.map(data, function (item) {
+                    let harga = totalHarga - ((totalHarga*item.harga)/100);
+                    let TotalPaket = harga * item.frekuensi;
+
+                    return `
+                        <div class="col-md-4">
+                            <div class="card card-option shadow-sm h-100" data-value="${item.periode}">
+                                <div class="card-body text-center">
+                                    <h6 class="fw-bold">${item.nama_paket}</h6>
+                                    <p class="text-muted small">${item.deskripsi}</p>
+                                    <h4 class="text-primary fw-bold">
+                                        ${formatRupiah(TotalPaket)}
+                                        <span class="fs-6 text-muted">/tahun</span>
+                                    </h4>
+                                    <span class="badge bg-success">Hemat ${item.harga}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                $("#paketLangganan").html(html);
+            },
+            error: function () {
+                $('#paketLangganan').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');
+            },
+            onBeforeSend: function () {
+                $('#paketLangganan').html('<p class="text-center text-muted py-4">sedang memuat data ...</p>');
+            },
+            onComplete: function () {}
+        });
     }
 </script>

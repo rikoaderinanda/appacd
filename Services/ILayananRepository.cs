@@ -16,7 +16,7 @@ namespace appacd.Services
         Task<IEnumerable<dynamic>> JenisPropertiAsync(string Id);
         Task<IEnumerable<dynamic>> BannerLayananAsync(string Id);
         Task<IEnumerable<dynamic>> JasaLayananDetailAsync(string Id);
-        
+        Task<IEnumerable<dynamic>> LanggananJasaAsync(string Id);
     }
     public class LayananRepository : ILayananRepository
     {
@@ -73,5 +73,13 @@ namespace appacd.Services
             var sql = "SELECT * FROM jasa_layanan_detail where id_jasalayanan = " + Id + " ORDER BY id asc";
             return await _db.QueryAsync<dynamic>(sql);
         }
+
+        public async Task<IEnumerable<dynamic>> LanggananJasaAsync(string Id)
+        {
+            var sql = "SELECT * FROM langganan where id_layanan = " + Id + " ORDER BY id asc";
+            return await _db.QueryAsync<dynamic>(sql);
+        }
+
+
     }
 }

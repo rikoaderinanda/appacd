@@ -1,0 +1,271 @@
+<style>
+    /* Card Style */
+    .card-modern {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        padding: 20px;
+        background: #fff;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    /* Label styling */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+
+    /* Select & Input style */
+    .form-select, .form-control, textarea {
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease;
+    }
+    .form-select:focus, .form-control:focus, textarea:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,.15);
+    }
+
+    /* Icon input group */
+    .input-group-text {
+        border-radius: 10px 0 0 10px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+
+    /* Animation */
+    @@keyframes fadeIn {
+        from {opacity: 0; transform: translateY(10px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+</style>
+<div class="mb-3">
+    <label class="form-label fw-bold">Informasi Kontak</label>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="pilihKontak" id="kontakAkun" value="akun" checked>
+        <label class="form-check-label" for="kontakAkun">
+            Gunakan data sesuai akun
+        </label>
+    </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="radio" name="pilihKontak" id="kontakBerbeda" value="berbeda">
+        <label class="form-check-label" for="kontakBerbeda">
+            Gunakan data berbeda
+        </label>
+    </div>
+
+    <!-- Input Nama & WhatsApp -->
+    <div id="formKontakBerbeda" style="display: none;">
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control" id="nama" name="nama"
+                    placeholder="Masukkan nama lengkap">
+                <div class="invalid-feedback">Nama wajib diisi.</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-whatsapp"></i></span>
+                <input type="tel" class="form-control" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx">
+                <div class="invalid-feedback">WhatsApp wajib diisi.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" style="border-top: 2px dashed #bbb;">
+
+<div class="mb-3">
+    <label class="form-label fw-bold">Lokasi</label>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="pilihAlamat" id="alamatTersimpan" value="tersimpan" checked>
+        <label class="form-check-label" for="alamatTersimpan">
+            Gunakan alamat tersimpan
+        </label>
+    </div>
+    <div id="pilihanAlamatTersimpan" class="mt-2">
+        <select class="form-select" id="selectAlamatTersimpan">
+            <option value="">Pilih alamat</option>
+            <option value="Rumah">Rumah - Jl. Contoh No. 123</option>
+            <option value="Kantor">Kantor - Jl. Kerja No. 45</option>
+        </select>
+    </div>
+
+    <div class="form-check mt-3">
+        <input class="form-check-input" type="radio" name="pilihAlamat" id="alamatBaru" value="baru">
+        <label class="form-check-label" for="alamatBaru">
+            Tambah alamat baru
+        </label>
+    </div>
+
+    <div id="formAlamatBaru" class="" style="display: none;">
+        <!-- Input Lokasi via Map -->
+        <div class="mb-3">
+            <label class="form-label">Tandai Lokasi</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <a href="#ModalMapsAddres" data-bs-toggle="modal"><i class="bi bi-geo-alt"></i></a>
+                </span>
+                <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Tandai lokasi di peta">
+                <div class="invalid-feedback">Lokasi wajib diisi.</div>
+            </div>
+        </div>
+
+        <!-- Provinsi -->
+        <div class="mb-3">
+            <label class="form-label">Provinsi</label>
+            <select class="form-select" id="provinsi" name="provinsi" required>
+                <option value="">Pilih Provinsi</option>
+            </select>
+            <div class="invalid-feedback">Provinsi wajib dipilih.</div>
+        </div>
+
+        <!-- Kabupaten -->
+        <div class="mb-3">
+            <label class="form-label">Kabupaten / Kota</label>
+            <select class="form-select" id="kabupaten" name="kabupaten" required>
+                <option value="">Pilih Kabupaten/Kota</option>
+            </select>
+            <div class="invalid-feedback">Kabupaten/Kota wajib dipilih.</div>
+        </div>
+
+        <!-- Kecamatan -->
+        <div class="mb-3">
+            <label class="form-label">Kecamatan</label>
+            <select class="form-select" id="kecamatan" name="kecamatan" required>
+                <option value="">Pilih Kecamatan</option>
+            </select>
+            <div class="invalid-feedback">Kecamatan wajib dipilih.</div>
+        </div>
+
+        <!-- Kelurahan -->
+        <div class="mb-3">
+            <label class="form-label">Kelurahan</label>
+            <select class="form-select" id="kelurahan" name="kelurahan" required>
+                <option value="">Pilih Kelurahan</option>
+            </select>
+            <div class="invalid-feedback">Kelurahan wajib dipilih.</div>
+        </div>
+
+        <!-- Alamat Lengkap -->
+        <div class="mb-3">
+            <label class="form-label">Alamat Lengkap</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-house"></i></span>
+                <textarea class="form-control" id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap"></textarea>
+                <div class="invalid-feedback">Alamat wajib diisi.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" style="border-top: 2px dashed #bbb;">
+<div class="mb-3">
+    <label for="catatan" class="form-label">Catatan</label>
+    <div class="input-group">
+        <span class="input-group-text bg-white"><i class="bi bi-card-text"></i></span>
+        <textarea class="form-control" id="catatan" name="catatan" rows="2"
+            placeholder="Catatan tambahan" required></textarea>
+        <div class="invalid-feedback">Catatan wajib diisi.</div>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const radioAkun = document.getElementById("kontakAkun");
+    const radioBerbeda = document.getElementById("kontakBerbeda");
+    const formKontakBerbeda = document.getElementById("formKontakBerbeda");
+
+    function toggleFormKontak() {
+        if (radioBerbeda.checked) {
+            formKontakBerbeda.style.display = "block";
+        } else {
+            formKontakBerbeda.style.display = "none";
+        }
+    }
+
+    radioAkun.addEventListener("change", toggleFormKontak);
+    radioBerbeda.addEventListener("change", toggleFormKontak);
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const radioTersimpan = document.getElementById("alamatTersimpan");
+    const radioBaru = document.getElementById("alamatBaru");
+    const pilihanTersimpan = document.getElementById("pilihanAlamatTersimpan");
+    const formBaru = document.getElementById("formAlamatBaru");
+
+    function toggleAlamat() {
+        if (radioBaru.checked) {
+            formBaru.style.display = "block";
+            pilihanTersimpan.style.display = "none";
+        } else {
+            formBaru.style.display = "none";
+            pilihanTersimpan.style.display = "block";
+        }
+    }
+
+    radioTersimpan.addEventListener("change", toggleAlamat);
+    radioBaru.addEventListener("change", toggleAlamat);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const provinsiSelect = document.getElementById("provinsi");
+    const kabupatenSelect = document.getElementById("kabupaten");
+    const kecamatanSelect = document.getElementById("kecamatan");
+    const kelurahanSelect = document.getElementById("kelurahan");
+
+    // Load provinsi
+    fetch("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+        .then(res => res.json())
+        .then(data => {
+            data.forEach(prov => {
+                provinsiSelect.innerHTML += `<option value="${prov.id}">${prov.name}</option>`;
+            });
+        });
+
+    // Load kabupaten ketika provinsi dipilih
+    provinsiSelect.addEventListener("change", function () {
+        kabupatenSelect.innerHTML = `<option value="">Pilih Kabupaten/Kota</option>`;
+        kecamatanSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
+        kelurahanSelect.innerHTML = `<option value="">Pilih Kelurahan</option>`;
+
+        fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${this.value}.json`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(kab => {
+                    kabupatenSelect.innerHTML += `<option value="${kab.id}">${kab.name}</option>`;
+                });
+            });
+    });
+
+    // Load kecamatan ketika kabupaten dipilih
+    kabupatenSelect.addEventListener("change", function () {
+        kecamatanSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`;
+        kelurahanSelect.innerHTML = `<option value="">Pilih Kelurahan</option>`;
+
+        fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${this.value}.json`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(kec => {
+                    kecamatanSelect.innerHTML += `<option value="${kec.id}">${kec.name}</option>`;
+                });
+            });
+    });
+
+    // Load kelurahan ketika kecamatan dipilih
+    kecamatanSelect.addEventListener("change", function () {
+        kelurahanSelect.innerHTML = `<option value="">Pilih Kelurahan</option>`;
+        fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${this.value}.json`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(kel => {
+                    kelurahanSelect.innerHTML += `<option value="${kel.id}">${kel.name}</option>`;
+                });
+            });
+    });
+});
+</script>

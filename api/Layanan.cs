@@ -76,5 +76,12 @@ namespace appacd.api
             var layananList = await _layananRepository.JasaLayananDetailAsync(Id);
             return Ok(layananList);
         }
+
+        [HttpGet("PaketLangganan")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> PaketLangganan(string Id)
+        {
+            var layananList = await _layananRepository.LanggananJasaAsync(Id);
+            return Ok(layananList);
+        }
     }
 }

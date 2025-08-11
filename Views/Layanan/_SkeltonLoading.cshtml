@@ -1,0 +1,64 @@
+<style>
+  /* Skeleton base style */
+  .skeleton-item {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .skeleton-thumbnail {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 37%, #e0e0e0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+
+  .skeleton-text {
+    height: 12px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 37%, #e0e0e0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+
+  .skeleton-text.short {
+    width: 80px;
+    margin-bottom: 6px;
+  }
+
+  .skeleton-text.long {
+    width: 140px;
+  }
+
+    @@keyframesshimmer {
+    0% {
+      background-position: -400px 0;
+    }
+    100% {
+      background-position: 400px 0;
+    }
+  }
+</style>
+
+
+    <!-- Skeleton item -->
+    <li class="skeleton-item">
+      <div class="skeleton-thumbnail"></div>
+      <div class="skeleton-text short"></div>
+      <div class="skeleton-text long"></div>
+    </li>
+    <li class="skeleton-item">
+      <div class="skeleton-thumbnail"></div>
+      <div class="skeleton-text short"></div>
+      <div class="skeleton-text long"></div>
+    </li>
+    <li class="skeleton-item">
+      <div class="skeleton-thumbnail"></div>
+      <div class="skeleton-text short"></div>
+      <div class="skeleton-text long"></div>
+    </li>
+  

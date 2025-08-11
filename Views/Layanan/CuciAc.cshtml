@@ -1,0 +1,299 @@
+@{
+    ViewData["Title"] = "Layanan";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Layanan - Cuci AC";
+}
+<style>
+    /* Wizard container */
+    .wizard-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        position: relative;
+        padding: 0 10px;
+    }
+
+    /* Garis penghubung */
+    .wizard-steps::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #e5e7eb;
+        z-index: 0;
+    }
+
+    /* Step item */
+    .wizard-step {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        flex: 1;
+    }
+
+    /* Nomor step */
+    .step-number {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        background-color: #d1d5db;
+        color: #fff;
+        border-radius: 50%;
+        margin: auto;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Nama step */
+    .step-title {
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    /* Step aktif */
+    .wizard-step.active .step-number {
+        background-color: #2563eb;
+        transform: scale(1.1);
+    }
+    .wizard-step.active .step-title {
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    /* Step selesai */
+    .wizard-step.completed .step-number {
+        background-color: #16a34a;
+    }
+    .wizard-step.completed .step-title {
+        color: #16a34a;
+    }
+
+    /* Konten */
+    .wizard-content {
+        background: #fff;
+        border-radius: 6px;
+        padding: 15px;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        transition: opacity 0.3s ease;
+        font-size: 14px;
+    }
+
+    /* Tombol navigasi */
+    .btn-wizard {
+        min-width: 100px;
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 14px;
+    }
+
+    .wizard-footer {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+    }
+</style>
+
+<div class="app-body">
+    <div class="container">
+        <div class="row pt-30">
+            <div class="wizard-steps">
+                <div class="wizard-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Layanan</div>
+                </div>
+                <div class="wizard-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Jadwal</div>
+                </div>
+                <div class="wizard-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Properti</div>
+                </div>
+                <div class="wizard-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Alamat</div>
+                </div>
+                <div class="wizard-step" data-step="5">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Bayar</div>
+                </div>
+            </div>
+
+            <form id="wizardForm">
+                <!-- STEP 1 -->
+                <div class="wizard-content" data-step="1" style="position: relative; min-height: 200px;">
+                    <div class="pb-30" id="sessionJasaLayanan">
+                        @await Html.PartialAsync("_JasaLayananV2")
+                    </div>
+
+                    <!-- Tombol di pojok kanan bawah -->
+                    <div class="wizard-footer">
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div class="wizard-content d-none" data-step="2">
+                    <div class="main-title text-left d-flex align-items-center mb-3">
+                        <h5 class="mb-0 fw-6 b-color">Pilih Jadwal *</h5>
+                    </div>
+                    <div class="pb-10" id="sessionBerlangganan">
+                        @await Html.PartialAsync("_berlangganan")
+                    </div>
+                    <div class="pb-10" id="sessionWaktuKunjunganReguler">
+                        @await Html.PartialAsync("_WaktuKunjunganReguler")
+                    </div>
+                    <div class="d-flex justify-content-between pt-30">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3 -->
+                <div class="wizard-content d-none" data-step="3">
+                    <div class="pb-30" id="sessionJenisProperti">
+                        @await Html.PartialAsync("_JenisProperti")
+                    </div>
+                    <div class="d-flex justify-content-between pt-30">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                    
+                </div>
+
+                <!-- STEP 4 -->
+                <div class="wizard-content d-none" data-step="4">
+                    <div class="pb-30" id="sessionDataPelanggan">
+                        @await Html.PartialAsync("_DataPelanggan")
+                    </div>
+                    <div class="d-flex justify-content-between pt-30">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                    
+                </div>
+
+                <div class="wizard-content d-none" data-step="5">
+                    <div class="pb-30" id="sessionPaymentMethod">
+                        @await Html.PartialAsync("_PilihMetodaPembayaran")
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
+                        <button type="submit" class="btn btn-success btn-wizard">Checkout</button>
+                    </div>
+                    
+                </div>
+                
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+
+    function showStep(step) {
+        document.querySelectorAll('.wizard-content').forEach(el => {
+            el.classList.toggle('d-none', el.dataset.step != step);
+        });
+        document.querySelectorAll('.wizard-step').forEach(el => {
+            el.classList.remove('active', 'completed');
+            const stepNum = parseInt(el.dataset.step);
+            if (stepNum < step) {
+                el.classList.add('completed');
+            } else if (stepNum === step) {
+                el.classList.add('active');
+            }
+        });
+    }
+
+    document.querySelectorAll('.next-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            console.log(currentStep);
+            if(validasiStep(currentStep)){
+                if (currentStep < 5) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+    });
+
+    document.getElementById('wizardForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Form selesai dikirim!');
+    });
+
+    // Tampilkan step pertama saat load
+    showStep(currentStep);
+
+    function validasiStep(step) {
+        if (step === 1) {
+            var data = Storage.get("CartData");
+
+            // Pastikan data ada dan berupa array
+            if (Array.isArray(data) && data.length > 0) {
+                console.log(data);
+                return true; // Lolos validasi
+            } else {
+                alert("Silakan pilih layanan terlebih dahulu.");
+                return false; // Tidak lolos validasi
+            }
+        }
+        else if(step === 2){
+            if(RegAtauMember == "REG"){
+                var tanggalLayanan = $("#tanggalLayanan").val();
+                var jamLayanan = $("#jamLayanan").val();
+                if(tanggalLayanan != "" && jamLayanan != ""){
+                    var kunjunganreg ={
+                        tanggal : tanggalLayanan,
+                        jam : jamLayanan
+                    }
+                    Storage.set("REG",kunjunganreg);
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        else if(step === 3){
+            var properti = Storage.get("jenis_properti");
+            // Pastikan data ada dan berupa array
+            if (Array.isArray(properti) && properti.length > 0) {
+                console.log(properti);
+                return true; // Lolos validasi
+            } else {
+                alert("Silakan pilih properti terlebih dahulu.");
+                return false; // Tidak lolos validasi
+            }
+        }
+        else if(step ===4){
+            
+        }
+
+
+        // Jika tidak ada validasi khusus untuk step lain, langsung lolos
+        return true;
+    }
+</script>
