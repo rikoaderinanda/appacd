@@ -219,7 +219,6 @@
 
     document.querySelectorAll('.next-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            console.log(currentStep);
             if(validasiStep(currentStep)){
                 if (currentStep < 5) {
                     currentStep++;
@@ -250,13 +249,11 @@
     function validasiStep(step) {
         if (step === 1) {
             var data = Storage.get("CartData");
-
             // Pastikan data ada dan berupa array
-            if (Array.isArray(data) && data.length > 0) {
-                console.log(data);
+            if (Array.isArray(data) && data.length > 0 && data != null) {
                 return true; // Lolos validasi
             } else {
-                alert("Silakan pilih layanan terlebih dahulu.");
+                showToast("Silahkan pilih layanan");
                 return false; // Tidak lolos validasi
             }
         }
@@ -289,7 +286,7 @@
             }
         }
         else if(step ===4){
-            
+
         }
 
 
