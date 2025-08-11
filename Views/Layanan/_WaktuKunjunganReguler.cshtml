@@ -1,20 +1,62 @@
+<style>
+    .jadwal-card {
+        background-color: #fff;
+        transition: box-shadow 0.2s ease;
+    }
+    .jadwal-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .tanggal-text {
+        font-size: 0.95rem;
+    }
 
-<div class="items-group">
-    <div class="form-group mb-3">
-        <label for="tanggalLayanan" class="form-label">Pilih Tanggal</label>
-        <input type="date" class="form-control" id="tanggalLayanan" name="TanggalLayanan" required>
+</style>
+<div class="pb-10" id="sessionWaktuKunjunganReguler">
+    <div class="main-title text-left d-flex align-items-center mb-3">
+        <h5 class="mb-0 fw-6 b-color">Pilih Jadwal *</h5>
     </div>
-    <div class="form-group">
-        <label for="jamLayanan" class="form-label">Pilih Jam</label>
-        <select class="form-control" id="jamLayanan" name="JamLayanan" required>
-            <option value="">-- Pilih Jam --</option>
-        </select>
+    <div class="items-group">
+        <div class="form-group mb-3">
+            <label for="tanggalLayanan" class="form-label">Pilih Tanggal</label>
+            <input type="date" class="form-control" id="tanggalLayanan" name="TanggalLayanan" required>
+        </div>
+        <div class="form-group">
+            <label for="jamLayanan" class="form-label">Pilih Jam</label>
+            <select class="form-control" id="jamLayanan" name="JamLayanan" required>
+                <option value="">-- Pilih Jam --</option>
+            </select>
+        </div>
     </div>
 </div>
 
+<div id="jadwalLangganan" style="display:none;">
+    <h5 class="fw-bold text-primary m-0 mb-3">
+        <i class="bi bi-calendar-check me-2"></i> Atur Jadwal Cuci AC Berlangganan
+    </h5>
+    <p class="text-muted small mb-3">
+        Pilih <strong>tanggal pertama</strong>, jadwal selanjutnya akan otomatis dibuat sesuai paket.
+        <span class="text-success fw-semibold">Tanggal bisa diubah manual.</span>
+    </p>
+    
+    <!-- Tanggal awal -->
+    <div class="mb-4">
+        <div class="input-group">
+            <span class="input-group-text bg-light"><i class="bi bi-calendar"></i></span>
+            <input type="date" id="tanggalAwal" class="form-control" placeholder="Tanggal Mulai">
+        </div>
+    </div>
+
+    <!-- List Jadwal -->
+    <div id="listJadwal" class="rounded-3" style="min-height: 80px;">
+        <p class="text-muted small m-0">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>
+    </div>
+</div>
+
+
 <script>
     const tanggalInput = document.getElementById("tanggalLayanan");
-    const jamSelect = document.getElementById("jamLayanan");
+    const tanggalInputAwalBerlangganan = document.getElementById("tanggalAwal");
+    
 
     // Set minimal tanggal = hari ini
     const today = new Date();
@@ -23,8 +65,11 @@
     const dd = String(today.getDate()).padStart(2, '0');
     const minDate = `${yyyy}-${mm}-${dd}`;
     tanggalInput.setAttribute("min", minDate);
+    tanggalInputAwalBerlangganan.setAttribute("min", minDate);
 
-    function generateJamOptions(startHour = 8, endHour = 17) {
+
+    function generateJamOptions(startHour = 8, endHour = 17, element) {
+        const jamSelect = document.getElementById(element);
         jamSelect.innerHTML = '<option value="">-- Pilih Jam --</option>';
         for (let hour = startHour; hour <= endHour; hour++) {
             const formattedHour = String(hour).padStart(2, '0') + ":00";
@@ -46,14 +91,98 @@
             if (startHour < 8) startHour = 8; // buka dari jam 08:00
             if (startHour > 17) startHour = 17; // tutup di jam 17:00
 
-            generateJamOptions(startHour, 17);
+            generateJamOptions(startHour, 17,"jamLayanan");
         } else {
             // Hari lain: jam kerja normal
-            generateJamOptions(8, 17);
+            generateJamOptions(8, 17,"jamLayanan");
         }
     });
 
 
     // Default saat load (tanggal belum dipilih)
-    generateJamOptions(8, 17);
+    generateJamOptions(8, 17,"jamLayanan");
+
+    document.getElementById('tanggalAwal').addEventListener('change', function () {
+        if (!paketDipilih) {
+            alert('Pilih paket langganan terlebih dahulu!');
+            this.value = "";
+            return;
+        }
+        generateJadwal(new Date(this.value));
+    });
+
+    function generateJadwal(tanggalMulai) {
+        const listJadwal = document.getElementById('listJadwal');
+        listJadwal.innerHTML = '';
+
+        const { total, interval } = paketSettings[paketDipilih] || {};
+
+        if (!total || !interval) {
+            listJadwal.innerHTML = `<p class="text-danger small m-0 p-3">Paket tidak dikenali.</p>`;
+            return;
+        }
+
+        for (let i = 0; i < total; i++) {
+            let tgl = new Date(tanggalMulai);
+            tgl.setMonth(tgl.getMonth() + (i * interval));
+
+            let fullDate = formatTanggal(tgl);
+
+            let item = document.createElement('div');
+            //item.classList.add('jadwal-item');
+            var tglAwalReadOnly = "";
+            if(i == 0){
+                tglAwalReadOnly = "disabled";
+            }
+            item.innerHTML = `
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="badge bg-primary rounded-circle fs-6 d-flex justify-content-center align-items-center" 
+                        style="width: 32px; height: 32px;">
+                            ${i + 1}
+                        </div>
+                        <div class="ms-2">
+                            <small class="text-muted d-block">Jadwal ke-${i + 1}</small>
+                            <div class="fw-bold text-dark tanggal-text">${fullDate}</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <input type="date" class="form-control form-control-sm tanggal-input"
+                                ${tglAwalReadOnly}
+                                value="${tgl.toISOString().split('T')[0]}"
+                                id="Tgl${i}"
+                                >
+                        </div>
+                        <div class="col-12">
+                            <select class="form-select form-select-sm" id="Jam${i}">
+                                <option value="">-- Pilih Jam --</option>
+                                <!-- Pilihan jam -->
+                            </select>
+                        </div>
+                    </div>
+                    <hr class="my-4" style="border-top:2px dashed #bbb;">
+                </div>
+            `;
+            
+
+            // Event ubah manual tanggal
+            item.querySelector('.tanggal-input').addEventListener('change', function () {
+                let newDate = new Date(this.value);
+                item.querySelector('.tanggal-text').textContent = formatTanggal(newDate);
+            });
+
+            listJadwal.appendChild(item);
+            document.getElementById(`Tgl${i}`).setAttribute("min", minDate);
+            generateJamOptions(8, 17,`Jam${i}`);
+        }
+    }
+    
+    function formatTanggal(date) {
+        let day = String(date.getDate()).padStart(2, '0');
+        let monthName = bulanIndo[date.getMonth()];
+        //return `${monthName}, ${day}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+        return `${monthName}`;
+    }
 </script>

@@ -62,84 +62,22 @@
 </style>
 
 <div class="items-group" style="display: none; animation: fadeIn 0.4s ease-in-out;" id="panelberlangganan">
-    <div class="alert alert-primary d-flex justify-content-between align-items-center mt-3 mb-3 shadow-sm rounded">
-        <h6 class="fw-bold mb-0">Berlangganan Cuci AC</h6>
+    <div class="alert alert-warning d-flex justify-content-between align-items-center mb-3 shadow-sm rounded">
+        <h6 class="fw-bold mb-0">Coba cek berlangganan</h6>
         <div class="form-check form-switch mb-0">
             <input class="form-check-input" type="checkbox" id="cekLangganan">
         </div>
     </div>
     <!-- Pilihan Paket -->
     <div id="paketLangganan" style="display: none; animation: fadeIn 0.4s ease-in-out;" class="row g-3 mb-4">
-        
-        <div class="col-md-4">
-            <div class="card card-option border-primary shadow-sm h-100" data-value="3bulan">
-                <div class="card-body text-center">
-                    <h6 class="fw-bold">Paket Hemat 6 Bulan</h6>
-                    <p class="text-muted small">2x cuci/tahun (setiap 6 bulan sekali)</p>
-                    <h4 class="text-primary fw-bold">Rp 450.000<span class="fs-6 text-muted">/tahun</span></h4>
-                    <span class="badge bg-success">Hemat 5%</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card card-option border-success shadow-sm h-100" data-value="6bulan">
-                <div class="card-body text-center">
-                    <h6 class="fw-bold">Paket Rutin 3 Bulan</h6>
-                    <p class="text-muted small">4x cuci/tahun (setiap 3 bulan sekali)</p>
-                    <h4 class="text-primary fw-bold">Rp 850.000<span class="fs-6 text-muted">/tahun</span></h4>
-                    <span class="badge bg-success">Hemat 10%</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card card-option border-danger shadow-sm h-100" data-value="tahunan">
-                <div class="card-body text-center">
-                    <h6 class="fw-bold">Paket Intensif Bulanan</h6>
-                    <p class="text-muted small">12x cuci/tahun (setiap bulan)</p>
-                    <h4 class="text-primary fw-bold">Rp 2.400.000<span class="fs-6 text-muted">/tahun</span></h4>
-                    <span class="badge bg-success">Hemat 15%</span>
-                </div>
-            </div>
-        </div>
     </div>
-    <!-- Jadwal -->
-    <!-- Jadwal -->
-    <div id="jadwalLangganan" class="mt-4" style="display: none;">
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body">
-                <h5 class="fw-bold text-primary m-0 mb-3">
-                    <i class="bi bi-calendar-check me-2"></i> Atur Jadwal Cuci AC
-                </h5>
-                <p class="text-muted small mb-3">
-                    Pilih <strong>tanggal pertama</strong>, jadwal selanjutnya akan otomatis dibuat sesuai paket.
-                    <span class="text-success fw-semibold">Tanggal bisa diubah manual.</span>
-                </p>
-                
-                <!-- Tanggal awal -->
-                <div class="mb-4">
-                    <label for="tanggalAwal" class="form-label fw-semibold">
-                        <i class="bi bi-calendar-event me-1"></i> Tanggal Mulai
-                    </label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="bi bi-calendar"></i></span>
-                        <input type="date" id="tanggalAwal" class="form-control">
-                    </div>
-                </div>
-
-                <!-- List Jadwal -->
-                <div id="listJadwal" class="rounded-3" style="min-height: 80px;">
-                    <p class="text-muted small m-0">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 <script>
-    var RegAtauMember="REG";
+    
     var $;
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -153,17 +91,21 @@
     // Toggle paket & jadwal
     document.getElementById("cekLangganan").addEventListener("change", function () {
         const paket = document.getElementById("paketLangganan");
-        const jadwal = document.getElementById("jadwalLangganan");
         paket.style.display = this.checked ? "flex" : "none";
+        
+        const jadwal = document.getElementById("jadwalLangganan");
         jadwal.style.display = this.checked ? "flex" : "none";
         
         if(this.checked){
+            //$("#jadwalLangganan").show();
             $("#sessionWaktuKunjunganReguler").hide();
             RegAtauMember = "MEMBER";
         }
         else{
+            //$("#jadwalLangganan").hide();
             $("#sessionWaktuKunjunganReguler").show();
             RegAtauMember = "REG";
+            DataPaket = null;
         }
     });
 
@@ -183,11 +125,21 @@
     document.getElementById("paketLangganan").addEventListener("click", function (e) {
         const card = e.target.closest('.card-option');
         if (!card) return;
-
+        
         document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
 
         paketDipilih = card.getAttribute('data-value');
+        TotalHargaAkhir = card.getAttribute('data-total');
+
+        DataPaket = {
+            id:card.getAttribute('data-id'),
+            nama_paket: card.getAttribute('data-nama_paket'),
+            harga_satuan:card.getAttribute('data-harga_satuan'),
+            qty:card.getAttribute('data-qty'),
+            periode:paketDipilih,
+            total:TotalHargaAkhir
+        }
 
         // Tampilkan pengaturan jadwal
         document.getElementById('jadwalLangganan').style.display = 'block';
@@ -199,60 +151,6 @@
         document.getElementById('listJadwal').innerHTML =
             `<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`;
     });
-
-    document.getElementById('tanggalAwal').addEventListener('change', function () {
-        if (!paketDipilih) {
-            alert('Pilih paket langganan terlebih dahulu!');
-            this.value = "";
-            return;
-        }
-        generateJadwal(new Date(this.value));
-    });
-
-    function generateJadwal(tanggalMulai) {
-        const listJadwal = document.getElementById('listJadwal');
-        listJadwal.innerHTML = '';
-
-        const { total, interval } = paketSettings[paketDipilih] || {};
-
-        if (!total || !interval) {
-            listJadwal.innerHTML = `<p class="text-danger small m-0 p-3">Paket tidak dikenali.</p>`;
-            return;
-        }
-
-        for (let i = 0; i < total; i++) {
-            let tgl = new Date(tanggalMulai);
-            tgl.setMonth(tgl.getMonth() + (i * interval));
-
-            let fullDate = formatTanggal(tgl);
-
-            let item = document.createElement('div');
-            item.classList.add('jadwal-item');
-            item.innerHTML = `
-                <div class="jadwal-num">${i + 1}</div>
-                <div>
-                    <div class="fw-semibold tanggal-text">${fullDate}</div>
-                    <small class="text-muted">Jadwal ke-${i + 1}</small>
-                </div>
-                <input type="date" class="form-control form-control-sm ms-2 tanggal-input" 
-                    value="${tgl.toISOString().split('T')[0]}" style="max-width:150px">
-            `;
-
-            // Event ubah manual tanggal
-            item.querySelector('.tanggal-input').addEventListener('change', function () {
-                let newDate = new Date(this.value);
-                item.querySelector('.tanggal-text').textContent = formatTanggal(newDate);
-            });
-
-            listJadwal.appendChild(item);
-        }
-    }
-
-    function formatTanggal(date) {
-        let day = String(date.getDate()).padStart(2, '0');
-        let monthName = bulanIndo[date.getMonth()];
-        return `${monthName}, ${day}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-    }
 
     function LoadDataPaket(cart) {
         
@@ -268,7 +166,14 @@
 
                     return `
                         <div class="col-md-4">
-                            <div class="card card-option shadow-sm h-100" data-value="${item.periode}">
+                            <div class="card card-option shadow-sm h-100" 
+                                data-value="${item.periode}" 
+                                data-total="${TotalPaket}"
+                                data-id ="${item.id}"
+                                data-nama_paket ="${item.nama_paket}"
+                                data-harga_satuan = "${harga}"
+                                data-qty="${item.frekuensi}"
+                                >
                                 <div class="card-body text-center">
                                     <h6 class="fw-bold">${item.nama_paket}</h6>
                                     <p class="text-muted small">${item.deskripsi}</p>

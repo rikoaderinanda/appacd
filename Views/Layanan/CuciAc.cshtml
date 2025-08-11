@@ -133,7 +133,8 @@
                 <div class="wizard-content" data-step="1" style="position: relative; min-height: 200px;">
                     <div class="pb-30" id="sessionJasaLayanan">
                         @await Html.PartialAsync("_JasaLayananV2")
-                    </div>
+                        @await Html.PartialAsync("_berlangganan")
+                    </div>                    
 
                     <!-- Tombol di pojok kanan bawah -->
                     <div class="wizard-footer">
@@ -143,15 +144,10 @@
 
                 <!-- STEP 2 -->
                 <div class="wizard-content d-none" data-step="2">
-                    <div class="main-title text-left d-flex align-items-center mb-3">
-                        <h5 class="mb-0 fw-6 b-color">Pilih Jadwal *</h5>
-                    </div>
-                    <div class="pb-10" id="sessionBerlangganan">
-                        @await Html.PartialAsync("_berlangganan")
-                    </div>
-                    <div class="pb-10" id="sessionWaktuKunjunganReguler">
-                        @await Html.PartialAsync("_WaktuKunjunganReguler")
-                    </div>
+                    
+                    
+                    @await Html.PartialAsync("_WaktuKunjunganReguler")
+                    
                     <div class="d-flex justify-content-between pt-30">
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
                         <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
@@ -201,6 +197,11 @@
 
 <script>
     let currentStep = 1;
+    let cartData = [];
+    let RegAtauMember="REG";
+    let TotalHargaAkhir = 0;
+    let DataPaket = null;
+    
 
     function showStep(step) {
         document.querySelectorAll('.wizard-content').forEach(el => {
@@ -248,14 +249,34 @@
 
     function validasiStep(step) {
         if (step === 1) {
-            var data = Storage.get("CartData");
+            console.log(cartData);
+            console.log(RegAtauMember);
+            console.log(TotalHargaAkhir);
+            console.log(DataPaket);
+            //var data = Storage.get("CartData");
             // Pastikan data ada dan berupa array
-            if (Array.isArray(data) && data.length > 0 && data != null) {
-                return true; // Lolos validasi
-            } else {
+            if (Array.isArray(cartData) && cartData.length > 0 && cartData != null) {
+                if(RegAtauMember == "MEMBER"){
+                    if(paketDipilih != null && paketDipilih != ""){
+                        return true; // Lolos validasi
+                    }
+                    else
+                    {
+                        showToast("Silahkan Pilih Paket jika ingin berlangganan");
+                        return false; // Tidak lolos validasi
+                    }
+                }
+                else
+                {
+                    return true; // Lolos validasi
+                }
+                
+            } 
+            else {
                 showToast("Silahkan pilih layanan");
-                return false; // Tidak lolos validasi
+                return false;    
             }
+            
         }
         else if(step === 2){
             if(RegAtauMember == "REG"){
@@ -270,8 +291,12 @@
                     return true;
                 }
                 else{
+                    showToast("Silahkan isi jadwal kunjungan");
                     return false;
                 }
+            }
+            else if(RegAtauMember == "MEMBER"){
+                
             }
         }
         else if(step === 3){
@@ -281,7 +306,7 @@
                 console.log(properti);
                 return true; // Lolos validasi
             } else {
-                alert("Silakan pilih properti terlebih dahulu.");
+                showToast("Silakan pilih properti terlebih dahulu.");
                 return false; // Tidak lolos validasi
             }
         }

@@ -182,7 +182,7 @@
 
     function initHandleEventButtonPlusMinus(){
             let totalQty = 0;
-            let cartData = [];
+            
             document.querySelectorAll(".plus").forEach(function (btn) {
                 btn.addEventListener("click", function () {
                     let input = this.parentElement.querySelector("input");
@@ -210,10 +210,10 @@
                     let total = harga * currentValue;
                     this.closest(".cart-counter")
                         .querySelector(".total-harga").textContent = formatRupiah(total);
+                    
                     const totalHarga = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
                     $("#TotalHargaReguler").text(formatRupiah(totalHarga));
-                    
-                    Storage.set("CartData",cartData);
+                    TotalHargaAkhir = totalHarga;
                     ShowHideBerlangganan(totalQty);
                     
                 });
@@ -249,11 +249,15 @@
                                 qty: currentValue
                             });
                         }
-                        Storage.set("CartData",cartData);
+                        //Storage.set("CartData",cartData);
                         ShowHideBerlangganan(totalQty);
                         let total = harga * currentValue;
                         this.closest(".cart-counter")
                             .querySelector(".total-harga").textContent = formatRupiah(total);
+
+                        const totalHarga = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+                        $("#TotalHargaReguler").text(formatRupiah(totalHarga));
+                        TotalHargaAkhir = totalHarga;
                     }
                 });
             });
@@ -262,8 +266,8 @@
 
     function ShowHideBerlangganan(totalQty){
         if(totalQty>0){
-            var cart = Storage.get("CartData");
-            LoadDataPaket(cart);
+            //var cart = Storage.get("CartData");
+            LoadDataPaket(cartData);
             // Reset input tanggal
             document.getElementById('tanggalAwal').value = '';
 
