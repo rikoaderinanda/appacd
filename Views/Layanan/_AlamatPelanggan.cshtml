@@ -52,6 +52,7 @@
 const btnTambah = document.getElementById('btnTambahAlamat');
 const formTambah = document.getElementById('formTambahAlamat');
 const btnSimpan = document.getElementById('btnSimpanAlamat');
+
 btnTambah.addEventListener('click', () => {
 if (formTambah.style.display === 'none') {
     formTambah.style.display = 'block';
@@ -65,50 +66,30 @@ if (formTambah.style.display === 'none') {
 });
 
 btnSimpan.addEventListener('click', () => {
-// Ambil nilai input
-const judul = document.getElementById('inputJudul').value.trim();
-const alamat = document.getElementById('inputAlamat').value.trim();
-
-const provinsi = document.getElementById('selectProvinsi').value.trim();
-const kota = document.getElementById('selectKota').value.trim();
-const kecamatan = document.getElementById('selectKecamatan').value.trim();
-const kelurahan = document.getElementById('selectKelurahan').value.trim();
-
-// Buat elemen label baru dengan struktur yang sama
-const newLabel = document.createElement('label');
-newLabel.className = 'list-group-item d-flex align-items-start position-relative';
-
-newLabel.innerHTML = `
-    <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" value="${judul}">
-    <div class="d-flex flex-column w-100">
-    <div class="fw-bold mb-1">${judul}</div>
-    <div class="d-flex align-items-center mb-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
-        <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
-        <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-        </svg>
-        <div class="fw-semibold">${alamat}</div>
-    </div>
-    <small class="text-muted mb-1">Kelurahan ${kelurahan}, Kecamatan ${kecamatan}</small>
-    <small class="text-muted">Kota ${kota}, Provinsi ${provinsi}</small>
-    </div>
-    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Hapus"></button>
-`;
-
-// Tambah event handler tombol hapus di label baru
-const btnHapus = newLabel.querySelector('.btn-close');
-btnHapus.addEventListener('click', () => {
-    newLabel.remove();
+    simpanAlamat();
 });
 
-document.getElementById('ListAlamat').appendChild(newLabel);
-
-// Reset dan sembunyikan form + tombol simpan, ubah tombol tambah jadi "Tambah Alamat"
-formTambah.style.display = 'none';
-btnSimpan.style.display = 'none';
-btnTambah.textContent = 'Tambah Alamat';
+$(document).on('click', 'input[name="pilihAlamat"]', function() {
+    var selectedValue = $(this).val();
+    var values = selectedValue.split(':');
+    var _id = values[0];
+    var _judul = values[1];
+    var _alamat = values[2];
+    var _kelurahan_nama = values[3];
+    var _kecamatan_nama = values[4];
+    var _kota_nama = values[5];
+    var _provinsi_nama = values[6];
+    
+    AlamatPelanggan = {
+        id : _id,
+        udul:_judul,
+        alamat:_alamat,
+        kelurahan_nama: _kelurahan_nama,
+        kecamatan_nama:_kecamatan_nama,
+        kota_nama:_kota_nama,
+        provinsi_nama:_provinsi_nama
+    };
 });
-
 
 $(document).ready(function () {
     // Inisialisasi semua select2
@@ -122,6 +103,7 @@ $(document).ready(function () {
     const $kota = $('#selectKota');
     const $kecamatan = $('#selectKecamatan');
     const $kelurahan = $('#selectKelurahan');
+    
 
     loadAlamat();
     // Ambil provinsi saat halaman load
@@ -203,7 +185,9 @@ function loadAlamat(){
             var html = $.map(data, function (item) {
                 var scr =`
                     <label class="list-group-item d-flex align-items-start position-relative">
-                        <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" value="${item.id}">
+                        <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" 
+                        value="${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:${item.kota_nama}:${item.provinsi_nama}"
+                        >
                         <div class="d-flex flex-column w-100">
                             <div class="fw-bold mb-1">${item.judul}</div>
                             <div class="d-flex align-items-center mb-1">
@@ -216,12 +200,19 @@ function loadAlamat(){
                             <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
                             <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
                         </div>
-                        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Hapus"></button>
+                        <button type="button" 
+                            class="btn-close position-absolute top-0 end-0 m-2" aria-label="Hapus"
+                            onclick="deleteAlamat(${item.id})">
+                        </button>
                     </label>
                 `;
                 return scr;
             }).join('');
+            if(data.length == 0){
+                html = `<p class="text-center text-muted py-4">tidak ada alamat yang disimpan...</p>`;
+            }
             $("#ListAlamat").html(html);
+            AlamatPelanggan = null;
         },
         error: function () {
             $('#ListAlamat').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');
@@ -231,5 +222,70 @@ function loadAlamat(){
         },
         onComplete: function () {}
     });
+}
+
+function deleteAlamat(id){
+    callApi({
+        url: "/api/Layanan/DeleteAlamat/"+id,
+        method: 'DELETE',
+        success: function (res) {
+            loadAlamat();
+        },
+        error: function (err) {
+            Swal.fire('Gagal!', 'data gagal disimpan.', 'warning');
+        },
+        onBeforeSend : function () {
+            
+        },
+        onComplete : function () {
+            
+        }
+    });  
+}
+
+function simpanAlamat(){
+    // Ambil semua nilai dari form
+    const dataAlamat = {
+        id: 0, // kalau create baru bisa 0 atau null
+        judul: document.getElementById('inputJudul').value.trim(),
+        alamat: document.getElementById('inputAlamat').value.trim(),
+        provinsiCode: document.getElementById('selectProvinsi').value,
+        provinsiNama: document.getElementById('selectProvinsi').selectedOptions[0]?.text || '',
+        kotaCode: document.getElementById('selectKota').value,
+        kotaNama: document.getElementById('selectKota').selectedOptions[0]?.text || '',
+        kecamatanCode: document.getElementById('selectKecamatan').value,
+        kecamatanNama: document.getElementById('selectKecamatan').selectedOptions[0]?.text || '',
+        kelurahanCode: document.getElementById('selectKelurahan').value,
+        kelurahanNama: document.getElementById('selectKelurahan').selectedOptions[0]?.text || '',
+        idUser: IdUser
+    };
+
+    console.log(dataAlamat);
+    callApi({
+        url: "/api/Layanan/SimpanAlamat",
+        method: 'POST',
+        data:dataAlamat,
+        success: function (res) {
+            if(!res.success){
+                Swal.fire('Gagal!',res.message, 'warning');    
+            }
+            else{
+                formTambah.style.display = 'none';
+                btnSimpan.style.display = 'none';
+                btnTambah.textContent = 'Tambah Alamat';
+            }
+        },
+        error: function (err) {
+            Swal.fire('Gagal!', 'data gagal disimpan.'+err.message, 'warning');
+        },
+        onBeforeSend : function () {
+            $("#btnSimpanKontak").prop("disabled", true).text("Memproses...");
+        },
+        onComplete : function () {
+            // Reset dan sembunyikan form + tombol simpan, ubah tombol tambah jadi "Tambah Alamat"
+            
+            loadAlamat();
+        }
+    });  
 }
 </script>

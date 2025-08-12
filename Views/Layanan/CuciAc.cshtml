@@ -134,7 +134,7 @@
                 </div>
             </div>
 
-            <form id="wizardForm">
+            <div id="wizardForm">
                 <!-- STEP 1 -->
                 <div class="wizard-content" data-step="1" style="position: relative; min-height: 200px;">
                     <div class="pb-30" id="sessionJasaLayanan">
@@ -191,13 +191,11 @@
                     </div>
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="submit" class="btn btn-success btn-wizard">Checkout</button>
+                        <button type="button" class="btn btn-danger btn-wizard">Simpan dulu</button>
+                        <button type="button" class="btn btn-success btn-wizard">Checkout</button>
                     </div>
-                    
                 </div>
-                
-            </form>
-
+            </div>
         </div>
     </div>
 </div>
@@ -212,12 +210,15 @@
     let KunjunganMember = [];
     let JenisProperti = null;
     let kontakPelanggan = null;
+    let AlamatPelanggan = null;
     let IdUser = Storage.get('userId');
 
     function showStep(step) {
+        
         document.querySelectorAll('.wizard-content').forEach(el => {
             el.classList.toggle('d-none', el.dataset.step != step);
         });
+
         document.querySelectorAll('.wizard-step').forEach(el => {
             el.classList.remove('active', 'completed');
             const stepNum = parseInt(el.dataset.step);
@@ -242,7 +243,6 @@
 
     document.querySelectorAll('.prev-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            
             if (currentStep > 1) {
                 currentStep--;
                 showStep(currentStep);
@@ -357,11 +357,34 @@
             }
         }
         else if(step ===4){
-            
+            if(kontakPelanggan== null)
+            {
+                showToast("Silahkan pilih kontak yang akan dihubungi teknisi");
+                return false;
+            }
+            if(AlamatPelanggan== null){
+                showToast("Silahkan pilih Alamat yang akan dikunjungi teknisi");
+                return false;
+            }
+            var alldata = {
+                cartData : cartData,
+                RegAtauMember: RegAtauMember,
+                TotalHargaAkhir:TotalHargaAkhir,
+                DataPaket: DataPaket,
+                KunjunganReg:KunjunganReg,
+                KunjunganMember:KunjunganMember,
+                JenisProperti:JenisProperti,
+                kontakPelanggan:kontakPelanggan,
+                AlamatPelanggan:AlamatPelanggan,
+                IdUser:IdUser
+            }
+            console.log(alldata);
+            $("#listTransaksi").html("");
+            renderDataTransaksi(alldata);
         }
-
-
         // Jika tidak ada validasi khusus untuk step lain, langsung lolos
+        
+
         return true;
     }
 </script>

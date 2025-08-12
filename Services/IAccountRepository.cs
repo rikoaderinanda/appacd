@@ -15,6 +15,8 @@ namespace appacd.Services
         Task<bool> SimpanKontakAsync(Kontak data);
         Task<bool> DeleteKontak(string _id);
         Task<IEnumerable<dynamic?>> GetAlamatAsync(string IdUser);
+        Task<bool> DeleteAlanat(string _id);
+        Task<bool> SimpanAlamatAsync(AlamatPelanggan data);
     }
 
     public class AccountRepository : IAccountRepository
@@ -130,6 +132,71 @@ namespace appacd.Services
             return await _db.QueryAsync<dynamic>(sql, param);
         }
 
+        public async Task<bool> DeleteAlanat(string _id)
+        {
+            var query = "DELETE FROM alamat_pelanggan WHERE id = @Id::bigint;";
+            var result = await _db.ExecuteAsync(query, new { Id = _id });
+            return result > 0;
+        }
+
+        public async Task<bool> SimpanAlamatAsync(AlamatPelanggan data)
+        {
+            try
+            {
+                var sql = @"
+                    INSERT INTO alamat_pelanggan (
+                        judul,
+                        alamat,
+                        provinsi_code,
+                        provinsi_nama,
+                        kota_code,
+                        kota_nama,
+                        kecamatan_code,
+                        kecamatan_nama,
+                        kelurahan_code,
+                        kelurahan_nama,
+                        id_user
+                    ) VALUES (
+                        @judul,
+                        @alamat,
+                        @provinsi_code,
+                        @provinsi_nama,
+                        @kota_code,
+                        @kota_nama,
+                        @kecamatan_code,
+                        @kecamatan_nama,
+                        @kelurahan_code,
+                        @kelurahan_nama,
+                        @id_user
+                    )
+                    ON CONFLICT (id_user, judul, alamat) DO NOTHING;
+                ";
+
+                var param = new
+                {
+                    judul = data.Judul,
+                    alamat = data.Alamat,
+                    provinsi_code = data.ProvinsiCode,
+                    provinsi_nama = data.ProvinsiNama,
+                    kota_code = data.KotaCode,
+                    kota_nama = data.KotaNama,
+                    kecamatan_code = data.KecamatanCode,
+                    kecamatan_nama = data.KecamatanNama,
+                    kelurahan_code = data.KelurahanCode,
+                    kelurahan_nama = data.KelurahanNama,
+                    id_user = data.IdUser
+                };
+
+                var affectedRows = await _db.ExecuteAsync(sql, param);
+                return affectedRows > 0;
+            }
+            catch (Exception ex)
+            {
+                // Log exception jika kamu pakai logger
+                // _logger.LogError(ex, "Error updating invoice status for ID: {Id}", id);
+                return false; // bisa juga throw lagi kalau ingin controller yang menangani
+            }
+        }
     }
 
     

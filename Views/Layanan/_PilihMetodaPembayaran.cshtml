@@ -46,39 +46,22 @@
         object-fit: contain;
     }
 </style>
-<div class="position-relative">
-    <strong>Detail Transaksi</strong>
+<div class="position-relative" style="margin-bottom:20px;">
+    <strong >Detail Transaksi</strong>
     <a id="toggleDetailBtn" href="#"
         class="btn btn-sm position-absolute top-0 end-0">
         <i id="toggleIcon" class="bi bi-chevron-down"></i>
     </a>
 </div>
 
-<hr class="my-4" style="border-top: 2px dashed #bbb;">
-
 <!-- List Transaksi -->
-<div id="listTransaksi" class="mb-3" style="display:none;">
-    <!-- Contoh Item -->
-    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-        <div>
-            <div class="fw-bold">Cuci AC 0.5 - 2 PK</div>
-            <small class="text-muted">Rp 80.000 x 2</small>
-        </div>
-        <div class="fw-bold">Rp 160.000</div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-        <div>
-            <div class="fw-bold">Cuci AC 0.5 - 2 PK</div>
-            <small class="text-muted">Rp 80.000 x 2</small>
-        </div>
-        <div class="fw-bold">Rp 160.000</div>
-    </div>
+<div id="listTransaksi" class="mb-3 mt-20" style="display:none;">
 </div>
 
 <!-- Total -->
-<div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm rounded-pill px-3 py-2">
-    <span class="fw-bold">Total:</span>
-    <span class="fw-bold text-primary fs-5" id="totalTransaksi">Rp 320.000</span>
+<div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm rounded-pill px-3 py-2 mt-20">
+    <span class="fw-bold">Total Transaksi:</span>
+    <span class="fw-bold text-primary fs-5" id="totalTransaksi"></span>
 </div>
 
 <!-- Metode Pembayaran -->
@@ -140,7 +123,106 @@
         });
     });
 
-    
+    function renderDataTransaksi(data){
+        let Total = 0;
+        if(data.RegAtauMember =="REG"){
+            var scr =`
+                <div class="fw-bold text-prima">Kunjungan Layanan Reguler</div>
+                <small class="text-muted">pada tanggal ${data.KunjunganReg.tanggal} jam ${data.KunjunganReg.jam}</small>
+            `;
+            $("#listTransaksi").append(scr);
+            $.map(data.cartData, function (item) {
+                var scr =`
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <div class="fw-bold">${item.nama}</div>
+                            <small class="text-muted">${formatRupiah(item.harga)} x ${item.qty}</small>
+                        </div>
+                        <div class="fw-bold">${formatRupiah(item.harga*item.qty)}</div>
+                    </div>
+                `;
+                $("#listTransaksi").append(scr);
+                Total = Total + (item.harga*item.qty);
+            });
+            $("#listTransaksi").append(`
+                <div class="d-flex justify-content-between align-items-center mt-30">
+                    <div>      
+                        <div class="fw-bold">Sub Total</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(Total)}</div>
+                </div>
+            `);
+            var scr =`
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <div>
+                        <div class="fw-bold">Biaya properti : ${data.JenisProperti.nama_jenis}</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(data.JenisProperti.harga)}</div>
+                </div>
+            `;
+            $("#listTransaksi").append(scr);
+            Total = Total + (data.JenisProperti.harga);
+        }
+        else{
+            $("#listTransaksi").append(`<p class="fw-bold text-prima">Berlangganan : ${data.DataPaket.nama_paket} <p>`);
+           
+            $.map(data.KunjunganMember, function (idx) {
+                var scr =`
+                    <div class="fw-bold text-prima">Kunjungan ke-${idx.idx+1}</div>
+                    <small class="text-muted">pada tanggal ${idx.tgl} jam ${idx.jam}</small>
+                `;
+                $("#listTransaksi").append(scr);
+                $.map(data.cartData, function (item) {
+                    var scr =`
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                            <div>      
+                                <div class="fw-bold">${item.nama}</div>
+                                <small class="text-muted">${formatRupiah(item.harga)} x ${item.qty}</small>
+                            </div>
+                            <div class="fw-bold">${formatRupiah(item.harga*item.qty)}</div>
+                        </div>
+                    `;
+                    $("#listTransaksi").append(scr);
+                    Total = Total + (item.harga*item.qty);
+                });
+                $("#listTransaksi").append(`<div class="mt-4 mb-3"></div>`);
+            });
+
+            $("#listTransaksi").append(`
+                <div class="d-flex justify-content-between align-items-center mt-30">
+                    <div>      
+                        <div class="fw-bold">Sub Total</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(Total)}</div>
+                </div>
+            `);
+
+            let diskon = Total - data.DataPaket.total;
+            $("#listTransaksi").append(`
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>      
+                        <div class="fw-bold">Diskon berlangganan</div>
+                    </div>
+                    <div class="fw-bold">-${formatRupiah(diskon)}</div>
+                </div>
+            `);
+            Total = Total - diskon;
+            var scr =`
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <div>
+                        <div class="fw-bold">Biaya properti : ${data.JenisProperti.nama_jenis}</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(data.JenisProperti.harga)}</div>
+                </div>
+            `;
+            $("#listTransaksi").append(scr);
+            Total = Total + (data.JenisProperti.harga);
+            
+        }
+        
+
+        $("#totalTransaksi").text(formatRupiah(Total));
+    }
 
     function updateTotalTransaksi(total) {
         document.getElementById("totalTransaksi").textContent = formatRupiah(total);

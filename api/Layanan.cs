@@ -135,5 +135,41 @@ namespace appacd.api
             var layananList = await _accRepo.GetAlamatAsync(Id);
             return Ok(layananList);
         }
+
+        [HttpDelete("DeleteAlamat/{id}")]
+        public async Task<IActionResult> DeleteAlamat([FromRoute] string id)
+        {
+            try
+            {
+                var res = await _accRepo.DeleteAlanat(id);
+                return Ok(new { message = "Delete data berhasil", success = res });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan", error = ex.Message });
+            }
+        }
+
+        [HttpPost("SimpanAlamat")]
+        public async Task<IActionResult> SimpanAlamat([FromBody] AlamatPelanggan request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new { message = "model tidak valid." });
+            }
+            try
+            {
+                var Resid = await _accRepo.SimpanAlamatAsync(request);
+                if (Resid)
+                {
+                    return Ok(new { message = "Simpan Kontak berhasil", success = Resid });
+                }
+                return Ok(new { message = "Data kontak already exist", success = Resid });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menghapus pemesanan", success = false, error = ex.Message });
+            }
+        }
     }
 }

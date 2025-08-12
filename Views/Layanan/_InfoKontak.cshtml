@@ -172,7 +172,14 @@ function LoadDataKontak(){
                     `;
                     return scr;
                 }).join('');
+
+                if(data.length == 0){
+                    html = `
+                        <p class="text-center text-muted py-4">tidak ada kontak yang disimpan...</p>
+                    `;
+                }
                 $("#ListKontak").html(html);
+                kontakPelanggan = null;
             },
             error: function () {
                 $('#ListKontak').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');
