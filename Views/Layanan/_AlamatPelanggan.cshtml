@@ -1,0 +1,235 @@
+<label class="form-label fw-bold">Pilih Alamat</label>
+<!-- List ALAMAT -->
+<div class="list-group mb-3" id="ListAlamat">
+</div>
+
+<!-- Form Tambah Alamat (hidden awalnya) -->
+<div id="formTambahAlamat" class="mb-3" style="display: none;">
+    <div class="mb-2">
+        <label for="inputJudul" class="form-label">Judul Alamat</label>
+        <input type="text" class="form-control" id="inputJudul" placeholder="Misal: Alamat Rumah">
+    </div>
+    <div class="mb-2">
+        <label for="inputAlamat" class="form-label">Alamat</label>
+        <input type="text" class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10">
+    </div>
+    <div class="mb-2">
+        <label for="selectProvinsi" class="form-label">Provinsi</label>
+        <select id="selectProvinsi" class="form-control form-select select2">
+            <option value="">Pilih Provinsi</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="selectKota" class="form-label">Kota / Kabupaten</label>
+        <select id="selectKota" class="form-control form-select select2" disabled>
+            <option value="">Pilih Kota / Kabupaten</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="selectKecamatan" class="form-label">Kecamatan</label>
+        <select id="selectKecamatan" class="form-control form-select select2" disabled>
+            <option value="">Pilih Kecamatan</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="selectKelurahan" class="form-label">Kelurahan / Desa</label>
+        <select id="selectKelurahan" class="form-control form-select select2" disabled>
+            <option value="">Pilih Kelurahan / Desa</option>
+        </select>
+    </div>
+</div>
+
+<!-- Tombol Simpan & Tambah/Batal -->
+<div class="d-flex flex-column mb-3">
+  <button id="btnSimpanAlamat" type="button" class="btn btn-success mb-2" style="display: none;">Simpan</button>
+  <button id="btnTambahAlamat" type="button" class="btn btn-primary">Tambah Alamat</button>
+</div>
+
+<script>
+const btnTambah = document.getElementById('btnTambahAlamat');
+const formTambah = document.getElementById('formTambahAlamat');
+const btnSimpan = document.getElementById('btnSimpanAlamat');
+btnTambah.addEventListener('click', () => {
+if (formTambah.style.display === 'none') {
+    formTambah.style.display = 'block';
+    btnSimpan.style.display = 'inline-block';
+    btnTambah.textContent = 'Batal';
+} else {
+    formTambah.style.display = 'none';
+    btnSimpan.style.display = 'none';
+    btnTambah.textContent = 'Tambah Alamat';
+}
+});
+
+btnSimpan.addEventListener('click', () => {
+// Ambil nilai input
+const judul = document.getElementById('inputJudul').value.trim();
+const alamat = document.getElementById('inputAlamat').value.trim();
+
+const provinsi = document.getElementById('selectProvinsi').value.trim();
+const kota = document.getElementById('selectKota').value.trim();
+const kecamatan = document.getElementById('selectKecamatan').value.trim();
+const kelurahan = document.getElementById('selectKelurahan').value.trim();
+
+// Buat elemen label baru dengan struktur yang sama
+const newLabel = document.createElement('label');
+newLabel.className = 'list-group-item d-flex align-items-start position-relative';
+
+newLabel.innerHTML = `
+    <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" value="${judul}">
+    <div class="d-flex flex-column w-100">
+    <div class="fw-bold mb-1">${judul}</div>
+    <div class="d-flex align-items-center mb-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+        <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
+        <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+        </svg>
+        <div class="fw-semibold">${alamat}</div>
+    </div>
+    <small class="text-muted mb-1">Kelurahan ${kelurahan}, Kecamatan ${kecamatan}</small>
+    <small class="text-muted">Kota ${kota}, Provinsi ${provinsi}</small>
+    </div>
+    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Hapus"></button>
+`;
+
+// Tambah event handler tombol hapus di label baru
+const btnHapus = newLabel.querySelector('.btn-close');
+btnHapus.addEventListener('click', () => {
+    newLabel.remove();
+});
+
+document.getElementById('ListAlamat').appendChild(newLabel);
+
+// Reset dan sembunyikan form + tombol simpan, ubah tombol tambah jadi "Tambah Alamat"
+formTambah.style.display = 'none';
+btnSimpan.style.display = 'none';
+btnTambah.textContent = 'Tambah Alamat';
+});
+
+
+$(document).ready(function () {
+    // Inisialisasi semua select2
+    $('.select2').select2({
+        width: '100%',
+        placeholder: 'Cari...',
+        allowClear: true
+    });
+
+    const $provinsi = $('#selectProvinsi');
+    const $kota = $('#selectKota');
+    const $kecamatan = $('#selectKecamatan');
+    const $kelurahan = $('#selectKelurahan');
+
+    loadAlamat();
+    // Ambil provinsi saat halaman load
+    fetch('/api/Wilayah/provinces')
+        .then(res => res.json())
+        .then(data => {
+            $provinsi.empty().append('<option value="">Pilih Provinsi</option>');
+            data.data.forEach(prov => {
+                $provinsi.append(`<option value="${prov.code}">${prov.name}</option>`);
+            });
+            $provinsi.prop('disabled', false).trigger('change');
+        });
+
+    // Saat provinsi dipilih → ambil kota
+    $provinsi.on('change', function () {
+        const provCode = $(this).val();
+        $kota.empty().append('<option value="">Pilih Kota / Kabupaten</option>').prop('disabled', !provCode);
+        $kecamatan.empty().append('<option value="">Pilih Kecamatan</option>').prop('disabled', true);
+        $kelurahan.empty().append('<option value="">Pilih Kelurahan / Desa</option>').prop('disabled', true);
+
+        if (!provCode) return;
+
+        fetch(`/api/Wilayah/regencies/${provCode}`)
+            .then(res => res.json())
+            .then(data => {
+                data.data.forEach(kota => {
+                    $kota.append(`<option value="${kota.code}">${kota.name}</option>`);
+                });
+                $kota.trigger('change');
+                $kota.select2('open');
+            });
+    });
+
+    // Saat kota dipilih → ambil kecamatan
+    $kota.on('change', function () {
+        const kotaCode = $(this).val();
+        $kecamatan.empty().append('<option value="">Pilih Kecamatan</option>').prop('disabled', !kotaCode);
+        $kelurahan.empty().append('<option value="">Pilih Kelurahan / Desa</option>').prop('disabled', true);
+
+        if (!kotaCode) return;
+
+        fetch(`/api/Wilayah/districts/${kotaCode}`)
+            .then(res => res.json())
+            .then(data => {
+                data.data.forEach(kec => {
+                    $kecamatan.append(`<option value="${kec.code}">${kec.name}</option>`);
+                });
+                $kecamatan.trigger('change');
+                $kecamatan.select2('open');
+            });
+    });
+
+    // Saat kecamatan dipilih → ambil kelurahan
+    $kecamatan.on('change', function () {
+        const kecCode = $(this).val();
+        $kelurahan.empty().append('<option value="">Pilih Kelurahan / Desa</option>').prop('disabled', !kecCode);
+
+        if (!kecCode) return;
+
+        fetch(`/api/Wilayah/villages/${kecCode}`)
+            .then(res => res.json())
+            .then(data => {
+                data.data.forEach(kel => {
+                    $kelurahan.append(`<option value="${kel.code}">${kel.name}</option>`);
+                });
+                $kelurahan.trigger('change');
+                $kelurahan.select2('open');
+            });
+    });
+});
+
+function loadAlamat(){
+    callApi({
+        url: '/api/Layanan/ListAlamat?Id='+IdUser,
+        method: 'GET',
+        success: function (data) {
+            console.log(data);
+            
+            var html = $.map(data, function (item) {
+                var scr =`
+                    <label class="list-group-item d-flex align-items-start position-relative">
+                        <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" value="${item.id}">
+                        <div class="d-flex flex-column w-100">
+                            <div class="fw-bold mb-1">${item.judul}</div>
+                            <div class="d-flex align-items-center mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
+                                <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                </svg>
+                                <div class="fw-semibold">${item.alamat}</div>
+                            </div>
+                            <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
+                            <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
+                        </div>
+                        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Hapus"></button>
+                    </label>
+                `;
+                return scr;
+            }).join('');
+            $("#ListAlamat").html(html);
+        },
+        error: function () {
+            $('#ListAlamat').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');
+        },
+        onBeforeSend: function () {
+            $('#ListAlamat').html('<p class="text-center text-muted py-4">sedang memuat data ...</p>');
+        },
+        onComplete: function () {}
+    });
+}
+</script>

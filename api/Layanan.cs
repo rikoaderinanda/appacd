@@ -15,10 +15,12 @@ namespace appacd.api
         /// Provides methods for accessing and manipulating Layanan data storage.
         /// </summary>
         private readonly ILayananRepository _layananRepository;
+        private readonly IAccountRepository _accRepo;
 
-        public LayananController(ILayananRepository layananRepository)
+        public LayananController(ILayananRepository layananRepository, IAccountRepository accRepo)
         {
             _layananRepository = layananRepository;
+            _accRepo = accRepo;
         }
 
         [HttpGet("GetLayanan")]
@@ -81,6 +83,56 @@ namespace appacd.api
         public async Task<ActionResult<IEnumerable<dynamic>>> PaketLangganan(string Id)
         {
             var layananList = await _layananRepository.LanggananJasaAsync(Id);
+            return Ok(layananList);
+        }
+
+        [HttpGet("ListKontakUser")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> ListKontakUser(string Id)
+        {
+            var layananList = await _accRepo.GetListKontakAsync(Id);
+            return Ok(layananList);
+        }
+
+        [HttpPost("SimpanKontak")]
+        public async Task<IActionResult> SimpanKontak([FromBody] Kontak request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new { message = "model tidak valid." });
+            }
+            try
+            {
+                var Resid = await _accRepo.SimpanKontakAsync(request);
+                if (Resid)
+                {
+                    return Ok(new { message = "Simpan Kontak berhasil", success = Resid });
+                }
+                return Ok(new { message = "Data kontak already exist", success = Resid });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menghapus pemesanan", success = false, error = ex.Message });
+            }
+        }
+
+        [HttpDelete("DeleteKontak/{id}")]
+        public async Task<IActionResult> DeleteKontak([FromRoute] string id)
+        {
+            try
+            {
+                var res = await _accRepo.DeleteKontak(id);
+                return Ok(new { message = "Delete data berhasil", success = res });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan", error = ex.Message });
+            }
+        }
+
+        [HttpGet("ListAlamat")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> ListAlamat(string Id)
+        {
+            var layananList = await _accRepo.GetAlamatAsync(Id);
             return Ok(layananList);
         }
     }

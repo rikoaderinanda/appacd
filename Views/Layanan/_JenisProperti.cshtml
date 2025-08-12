@@ -33,15 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('change', 'input[name="JenisProperti"]', function () {
         const jenisProperti = $(this).val();
         const [nama, harga, id] = jenisProperti.split(':');
-        var j = [];
-        j.push({
+        
+        JenisProperti = {
             nama_jenis: nama,
             harga: Number(harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
             id: id
-        });
+        };
 
         // Simpan ke localStorage
-        Storage.set('jenis_properti', j);
+        //Storage.set('jenis_properti', j);
         //$('#totalHargaPesanan').text('Rp ' + CalculateTotal().toLocaleString() || '0');
 
         // Tampilkan alert jika properti adalah apartment
@@ -67,7 +67,8 @@ function loadDataProperti(){
                     <div class="col-12 d-flex justify-content-between align-items-center border rounded p-2 mb-0">
                         <span>${item.nama_jenis}</span>
                         <span>Rp ${Number(item.harga).toLocaleString('id-ID')}<span>
-                            <input class="form-check-input ms-2" type="radio" id="properti${item.id}"
+                            <input class="form-check-input ms-2" type="radio" 
+                                id="properti${item.id}"
                                 name="JenisProperti" value="${item.nama_jenis}:${item.harga}:${item.id}">
                         </span></span>
                     </div>
@@ -77,12 +78,6 @@ function loadDataProperti(){
 
             $('#listJenisProperti').html(html);
             lazyAnimateItems("listJenisProperti");
-            var jenisProperti = Storage.get('jenis_properti') || [];
-            if (jenisProperti.length > 0) {
-                // Set radio button yang sesuai dengan jenis properti yang disimpan
-                $('input[name="JenisProperti"][value="' + jenisProperti[0].nama_jenis + ':' + jenisProperti[0].harga + ':' + jenisProperti[0].id + '"]').prop('checked', true);
-
-            }
         },
         error: function (err) {
             alert('Error: ' + err);

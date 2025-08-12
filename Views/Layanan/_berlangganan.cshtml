@@ -100,12 +100,16 @@
             //$("#jadwalLangganan").show();
             $("#sessionWaktuKunjunganReguler").hide();
             RegAtauMember = "MEMBER";
+            document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
+            TotalHargaAkhir = 0;
+            paketDipilih = null;
         }
         else{
             //$("#jadwalLangganan").hide();
             $("#sessionWaktuKunjunganReguler").show();
             RegAtauMember = "REG";
             DataPaket = null;
+            TotalHargaAkhir = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
         }
     });
 

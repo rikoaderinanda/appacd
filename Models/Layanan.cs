@@ -17,4 +17,13 @@ namespace appacd.Models
 
         public DateTime Created_At { get; set; }
     }
+
+    public class Kontak
+    {
+        public int Id { get; set; }             // serial4 (auto-increment)
+        public DateTime CreateAt { get; set; }  // timestamp
+        public long UserId { get; set; }        // int8 (bigint)
+        public string NamaKontak { get; set; }  // varchar
+        public string NomorKontak { get; set; } // varchar
+    }
 }

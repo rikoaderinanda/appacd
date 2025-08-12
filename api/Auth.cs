@@ -120,5 +120,7 @@ namespace appacd.api
                 return StatusCode(500, "Terjadi kesalahan pada server, " + ex.Message);
             }
         }
+    
+        
     }
 }

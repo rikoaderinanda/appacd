@@ -81,6 +81,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "https://localhost:7298",
+            "https://localhost:7245",
             "https://mitraacd.onrender.com"
             )
               .AllowAnyHeader()

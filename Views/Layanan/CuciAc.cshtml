@@ -4,6 +4,12 @@
     ViewData["Footer"] = "3";
     ViewData["HeaderName"] = "Layanan - Cuci AC";
 }
+<!-- CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <style>
     /* Wizard container */
     .wizard-steps {
@@ -123,7 +129,7 @@
                     <div class="step-title">Alamat</div>
                 </div>
                 <div class="wizard-step" data-step="5">
-                    <div class="step-number">4</div>
+                    <div class="step-number">5</div>
                     <div class="step-title">Bayar</div>
                 </div>
             </div>
@@ -169,7 +175,8 @@
                 <!-- STEP 4 -->
                 <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionDataPelanggan">
-                        @await Html.PartialAsync("_DataPelanggan")
+                        @await Html.PartialAsync("_InfoKontak")
+                        @await Html.PartialAsync("_AlamatPelanggan")
                     </div>
                     <div class="d-flex justify-content-between pt-30">
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
@@ -201,7 +208,11 @@
     let RegAtauMember="REG";
     let TotalHargaAkhir = 0;
     let DataPaket = null;
-    
+    let KunjunganReg = null;
+    let KunjunganMember = [];
+    let JenisProperti = null;
+    let kontakPelanggan = null;
+    let IdUser = Storage.get('userId');
 
     function showStep(step) {
         document.querySelectorAll('.wizard-content').forEach(el => {
@@ -239,10 +250,10 @@
         });
     });
 
-    document.getElementById('wizardForm').addEventListener('submit', function(e) {
+    @* document.getElementById('wizardForm').addEventListener('submit', function(e) {
         e.preventDefault();
         alert('Form selesai dikirim!');
-    });
+    }); *@
 
     // Tampilkan step pertama saat load
     showStep(currentStep);
@@ -262,7 +273,7 @@
                     }
                     else
                     {
-                        showToast("Silahkan Pilih Paket jika ingin berlangganan");
+                        showToast("Silahkan pilih Paket jika ingin berlangganan");
                         return false; // Tidak lolos validasi
                     }
                 }
@@ -283,11 +294,11 @@
                 var tanggalLayanan = $("#tanggalLayanan").val();
                 var jamLayanan = $("#jamLayanan").val();
                 if(tanggalLayanan != "" && jamLayanan != ""){
-                    var kunjunganreg ={
+                    KunjunganReg ={
                         tanggal : tanggalLayanan,
                         jam : jamLayanan
                     }
-                    Storage.set("REG",kunjunganreg);
+                    console.log(KunjunganReg);
                     return true;
                 }
                 else{
@@ -296,14 +307,49 @@
                 }
             }
             else if(RegAtauMember == "MEMBER"){
-                
+                KunjunganMember = [];
+                console.log(DataPaket.qty);
+                var tanggalAwal = $("#tanggalAwal").val();
+                if(tanggalAwal!= "" && tanggalAwal!= null){
+                    for (let i = 0; i < DataPaket.qty; i++) {
+                        var _tgl = $(`#Tgl${i}`).val();
+                        var _jam = $(`#Jam${i}`).val();
+                        if(_tgl!= "" && _jam!=""){
+                            KunjunganMember.push({
+                                idx:i,
+                                tgl:_tgl,
+                                jam:_jam
+                            });   
+                        }
+                        else
+                        {
+                            showToast("Silahkan diisi jadwal tanggal dan jam berlangganan");
+                            return false;
+                        }
+                    }
+                    
+                    if(KunjunganMember.length>0){
+                        console.log(KunjunganMember)
+                        return true;
+                    }
+                    else
+                    {
+                        showToast("Silahkan diisi jadwal tanggal dan jam berlangganan");
+                        return false;
+                    }
+                }
+                else
+                {
+                    showToast("Silahkan input tanggal awal untuk berlangganan");
+                    return false;
+                }
             }
         }
         else if(step === 3){
-            var properti = Storage.get("jenis_properti");
+            //var properti = Storage.get("jenis_properti");
             // Pastikan data ada dan berupa array
-            if (Array.isArray(properti) && properti.length > 0) {
-                console.log(properti);
+            if (JenisProperti!= null) {
+                console.log(JenisProperti);
                 return true; // Lolos validasi
             } else {
                 showToast("Silakan pilih properti terlebih dahulu.");
@@ -311,7 +357,7 @@
             }
         }
         else if(step ===4){
-
+            
         }
 
 
