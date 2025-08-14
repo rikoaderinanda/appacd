@@ -11,7 +11,11 @@
     </div>
     <div class="mb-2">
         <label for="inputAlamat" class="form-label">Alamat</label>
-        <input type="text" class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10">
+        <textarea type="text" 
+            class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10"
+            rows="3"
+            >
+        </textarea>
     </div>
     <div class="mb-2">
         <label for="selectProvinsi" class="form-label">Provinsi</label>
@@ -82,7 +86,7 @@ $(document).on('click', 'input[name="pilihAlamat"]', function() {
     
     AlamatPelanggan = {
         id : _id,
-        udul:_judul,
+        judul:_judul,
         alamat:_alamat,
         kelurahan_nama: _kelurahan_nama,
         kecamatan_nama:_kecamatan_nama,
@@ -104,7 +108,6 @@ $(document).ready(function () {
     const $kecamatan = $('#selectKecamatan');
     const $kelurahan = $('#selectKelurahan');
     
-
     loadAlamat();
     // Ambil provinsi saat halaman load
     fetch('/api/Wilayah/provinces')
@@ -180,7 +183,7 @@ function loadAlamat(){
         url: '/api/Layanan/ListAlamat?Id='+IdUser,
         method: 'GET',
         success: function (data) {
-            console.log(data);
+            //console.log(data);
             
             var html = $.map(data, function (item) {
                 var scr =`
@@ -260,7 +263,7 @@ function simpanAlamat(){
         idUser: IdUser
     };
 
-    console.log(dataAlamat);
+    //console.log(dataAlamat);
     callApi({
         url: "/api/Layanan/SimpanAlamat",
         method: 'POST',

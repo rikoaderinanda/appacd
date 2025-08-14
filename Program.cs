@@ -32,8 +32,24 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "API",
+        Title = "API ACD Customer",
         Version = "v1"
+    });
+    c.SwaggerDoc("transaksi", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API Transaksi",
+        Version = "v1"
+    });
+    // Filter supaya dokumen "transaksi" hanya memuat controller dengan GroupName = "transaksi"
+    c.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        if (string.IsNullOrWhiteSpace(apiDesc.GroupName))
+        {
+            // Kalau endpoint tidak punya GroupName, taruh di "v1"
+            return docName == "v1";
+        }
+
+        return string.Equals(apiDesc.GroupName, docName, StringComparison.OrdinalIgnoreCase);
     });
     c.EnableAnnotations();
 });
@@ -49,6 +65,7 @@ builder.Services.AddScoped<IPemesananRepository, PemesananRepository>();
 builder.Services.AddScoped<IPerangkatRepository, PerangkatRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ITransactionRepo, TransactionRepo>();
 
 
 builder.Services.AddHttpClient<ITripayRepository, TripayRepository>();
@@ -112,6 +129,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+    c.SwaggerEndpoint("/swagger/transaksi/swagger.json", "API Transaksi");
     c.RoutePrefix = "swagger"; // akses Swagger di /swagger
 });
 

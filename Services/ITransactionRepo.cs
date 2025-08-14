@@ -1,0 +1,112 @@
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
+using appacd.Models;
+using Dapper;
+using Newtonsoft.Json;
+
+namespace appacd.Services
+{
+    public interface ITransactionRepo
+    {
+        Task<int> SimpanAsync(LogTransaction data);
+        Task<IEnumerable<dynamic>> GetCart_ByUserId(string id);
+        Task<bool> DeleteCart(string _id);
+    }
+    public class TransactionRepo : ITransactionRepo
+    {
+        private readonly IDbConnection _db;
+
+        public TransactionRepo(IDbConnection db)
+        {
+            _db = db;
+        }
+
+        public async Task<int> SimpanAsync(LogTransaction data)
+        {
+            var query =@"
+                INSERT INTO 
+                log_transaction 
+                (
+                    create_by_id_user,
+                    kategori_layanan,
+                    jenis_layanan,
+                    total_transaksi,
+                    status,
+                    status_deskripsi,
+                    jenis_properti,
+                    kontak_pelanggan,
+                    alamat_pelanggan,
+                    kunjungan,
+                    cart_item,
+                    paket_member
+                ) 
+                VALUES 
+                (
+                    @CreateByIdUser,
+                    @KategoriLayanan,
+                    @JenisLayanan,
+                    @TotalTransaksi,
+                    @Status,
+                    @StatusDeskripsi,
+                    @JenisProperti::jsonb,
+                    @kontakPelanggan::jsonb,
+                    @AlamatPelanggan::jsonb,
+                    @kunjungan::jsonb,
+                    @cartItem::jsonb,
+                    @paketMember::jsonb
+                )
+                RETURNING id;
+            ";
+            var param = new
+            {
+                CreateByIdUser = data.CreateByIdUser,
+                KategoriLayanan = data.KategoriLayanan,
+                JenisLayanan = data.JenisLayanan,
+                TotalTransaksi = data.TotalTransaksi,
+                Status = data.Status,
+                StatusDeskripsi = data.StatusDeskripsi,
+                JenisProperti = JsonConvert.SerializeObject(data.JenisProperti),
+                kontakPelanggan = JsonConvert.SerializeObject(data.kontakPelanggan),
+                AlamatPelanggan = JsonConvert.SerializeObject(data.alamatPelanggan),
+                kunjungan = JsonConvert.SerializeObject(data.kunjungan),
+                cartItem = JsonConvert.SerializeObject(data.cartItem),
+                paketMember = JsonConvert.SerializeObject(data.paketMember)
+            };
+            
+            int Id = await _db.ExecuteScalarAsync<int>(query, param);
+            return Id;
+        }
+
+        public async Task<IEnumerable<dynamic>> GetCart_ByUserId(string id)
+        {
+            var sql = @"
+                SELECT
+                    lt.id,
+                    lt.kategori_layanan,
+                    lt.jenis_layanan,
+                    lt.total_transaksi,
+                    (cart_item::jsonb)->'Reguler' AS cart_items,
+                    lt.jenis_properti::jsonb AS properti,
+                    paket_member::jsonb AS paket
+                FROM log_transaction lt 
+                WHERE lt.create_by_id_user = @Id::bigint 
+                AND status = 0
+                ORDER BY id DESC;
+            ";
+
+            var param = new { Id = id };
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+
+            return JsonColumnParser.ParseJsonColumns(result);
+        }
+
+        public async Task<bool> DeleteCart(string _id)
+        {
+            var query = "DELETE FROM log_transaction WHERE id = @Id::bigint;";
+            var result = await _db.ExecuteAsync(query, new { Id = _id });
+            return result > 0;
+        }
+        
+    }
+}

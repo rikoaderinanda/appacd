@@ -75,18 +75,6 @@
 </div>
 
 <script>
-    
-    var $;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        if (typeof window.jQuery === 'undefined') {
-            console.error('jQuery is not loaded.');
-            return;
-        }
-        $ = window.jQuery;
-
-        //LoadDataPaket();
-    });
 
     // Toggle paket & jadwal
     document.getElementById("cekLangganan").addEventListener("change", function () {
@@ -103,13 +91,17 @@
             document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
             TotalHargaAkhir = 0;
             paketDipilih = null;
+            KunjunganReg = null;
+            
         }
         else{
             //$("#jadwalLangganan").hide();
             $("#sessionWaktuKunjunganReguler").show();
             RegAtauMember = "REG";
-            DataPaket = null;
-            TotalHargaAkhir = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+            paketDipilih = null;
+            cartMember = null;
+            KunjunganMember = [];
+            TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.after_diskon * item.qty), 0);
         }
     });
 
@@ -119,11 +111,6 @@
     ];
 
     let paketDipilih = null;
-    const paketSettings = {
-        "6bulan": { total: 2, interval: 6 },
-        "3bulan": { total: 4, interval: 3 },
-        "tahunan": { total: 12, interval: 1 }
-    };
 
     // Event delegation untuk card-option
     document.getElementById("paketLangganan").addEventListener("click", function (e) {
@@ -132,18 +119,28 @@
         
         document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-
+        TotalHargaAkhir = 0;
         paketDipilih = card.getAttribute('data-value');
-        TotalHargaAkhir = card.getAttribute('data-total');
 
-        DataPaket = {
+        let diskon = card.getAttribute('data-diskon');
+        let interval = card.getAttribute('data-interval');
+        let qty_member = card.getAttribute('data-qty');
+        
+        let totalHarga = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
+        
+        TotalHargaAkhir = (totalHarga - ((totalHarga*diskon)/100))*qty_member;
+        paketMember = {
             id:card.getAttribute('data-id'),
+            nama_layanan: card.getAttribute('data-nama_layanan'),
             nama_paket: card.getAttribute('data-nama_paket'),
-            harga_satuan:card.getAttribute('data-harga_satuan'),
-            qty:card.getAttribute('data-qty'),
+            qty:qty_member,
+            interval:interval,
             periode:paketDipilih,
+            diskon:card.getAttribute('data-diskon'),
+            deskripsi:card.getAttribute('data-deskripsi'),
             total:TotalHargaAkhir
         }
+        
 
         // Tampilkan pengaturan jadwal
         document.getElementById('jadwalLangganan').style.display = 'block';
@@ -156,27 +153,37 @@
             `<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`;
     });
 
-    function LoadDataPaket(cart) {
-        
-        let totalHarga = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+    function LoadcartMember(cart) {
+        let totalHarga = cart.reduce((sum, item) => sum + (item.sub_total), 0);
+        let diskon = cart.reduce((sum, item) => sum + (item.diskon * item.qty), 0);
         let Qty = cart.reduce((sum, item) => sum + (item.qty), 0);
+
+        console.log(cart);
         callApi({
             url: '/api/Layanan/PaketLangganan?Id=@ViewData["Id"]',
             method: 'GET',
             success: function (data) {
                 var html = $.map(data, function (item) {
-                    let harga = totalHarga - ((totalHarga*item.harga)/100);
+                    let diskon_berlangganan = ((totalHarga*item.diskon_persen)/100)
+                    let harga = totalHarga - diskon_berlangganan;
+                    
                     let TotalPaket = harga * item.frekuensi;
 
-                    return `
+                    let hemat = diskon_berlangganan*item.frekuensi;
+                    var scr =`
                         <div class="col-md-4">
                             <div class="card card-option shadow-sm h-100" 
+                                data-id ="${item.id}"
+                                data-nama_layanan ="${item.nama_layanan}"
+                                data-nama_paket ="${item.nama_paket}"
+                                data-qty="${item.frekuensi}"
+                                data-periode="${item.periode}"
+                                data-diskon = "${item.diskon_persen}"
+                                data-deskripsi="${item.deskripsi}"
+                                data-interval="${item.interval}"
                                 data-value="${item.periode}" 
                                 data-total="${TotalPaket}"
-                                data-id ="${item.id}"
-                                data-nama_paket ="${item.nama_paket}"
                                 data-harga_satuan = "${harga}"
-                                data-qty="${item.frekuensi}"
                                 >
                                 <div class="card-body text-center">
                                     <h6 class="fw-bold">${item.nama_paket}</h6>
@@ -185,11 +192,14 @@
                                         ${formatRupiah(TotalPaket)}
                                         <span class="fs-6 text-muted">/tahun</span>
                                     </h4>
-                                    <span class="badge bg-success">Hemat ${item.harga}%</span>
+                                    <span class="badge bg-success">Hemat ${formatRupiah(hemat)}</span>
                                 </div>
                             </div>
                         </div>
                     `;
+                    //console.log(scr);
+                    return scr;
+                    
                 }).join('');
                 $("#paketLangganan").html(html);
             },

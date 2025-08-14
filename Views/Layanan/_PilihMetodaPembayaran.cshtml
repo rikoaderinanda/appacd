@@ -80,15 +80,7 @@
 <div class="accordion mt-4 mb-3" id="channelAccordion"></div>
 
 <script>
-    let $;
-
     document.addEventListener('DOMContentLoaded', function () {
-        if (typeof window.jQuery === 'undefined') {
-            console.error('jQuery is not loaded.');
-            return;
-        }
-
-        $ = window.jQuery;
 
         // Set total awal
         updateTotalTransaksi(185000);
@@ -125,24 +117,26 @@
 
     function renderDataTransaksi(data){
         let Total = 0;
-        if(data.RegAtauMember =="REG"){
+        if(data.jenisLayanan =="REG"){
             var scr =`
                 <div class="fw-bold text-prima">Kunjungan Layanan Reguler</div>
-                <small class="text-muted">pada tanggal ${data.KunjunganReg.tanggal} jam ${data.KunjunganReg.jam}</small>
+                <small class="text-muted">pada tanggal ${data.kunjungan.Reguler.tanggal} jam ${data.kunjungan.Reguler.jam}</small>
             `;
             $("#listTransaksi").append(scr);
-            $.map(data.cartData, function (item) {
+
+            $.map(data.cartItem.Reguler, function (item) {
                 var scr =`
                     <div class="d-flex justify-content-between align-items-center border-bottom py-2">
                         <div>
                             <div class="fw-bold">${item.nama}</div>
-                            <small class="text-muted">${formatRupiah(item.harga)} x ${item.qty}</small>
+                            <small class="text-muted">${formatRupiah(item.after_diskon)} x ${item.qty}</small>
                         </div>
-                        <div class="fw-bold">${formatRupiah(item.harga*item.qty)}</div>
+                        <div class="fw-bold">${formatRupiah(item.after_diskon*item.qty)}</div>
                     </div>
                 `;
                 $("#listTransaksi").append(scr);
-                Total = Total + (item.harga*item.qty);
+                
+                Total = Total + (item.after_diskon*item.qty);
             });
             $("#listTransaksi").append(`
                 <div class="d-flex justify-content-between align-items-center mt-30">
@@ -155,35 +149,41 @@
             var scr =`
                 <div class="d-flex justify-content-between align-items-center border-bottom">
                     <div>
-                        <div class="fw-bold">Biaya properti : ${data.JenisProperti.nama_jenis}</div>
+                        <div class="fw-bold">Biaya properti : ${data.jenisProperti.nama_jenis}</div>
                     </div>
-                    <div class="fw-bold">${formatRupiah(data.JenisProperti.harga)}</div>
+                    <div class="fw-bold">${formatRupiah(data.jenisProperti.harga)}</div>
                 </div>
             `;
             $("#listTransaksi").append(scr);
-            Total = Total + (data.JenisProperti.harga);
+            Total = Total + (data.jenisProperti.harga);
         }
-        else{
-            $("#listTransaksi").append(`<p class="fw-bold text-prima">Berlangganan : ${data.DataPaket.nama_paket} <p>`);
-           
-            $.map(data.KunjunganMember, function (idx) {
+        else if(data.jenisLayanan =="MEMBER"){
+            $("#listTransaksi").append(`
+                <p class="fw-bold text-prima mb-0">
+                    Berlangganan : ${data.paketMember.nama_paket} 
+                    <br>
+                    <small class="text-muted">${data.paketMember.deskripsi}</small>
+                <p>
+            `);
+            
+            $.map(data.kunjungan.Member, function (idx) {
                 var scr =`
-                    <div class="fw-bold text-prima">Kunjungan ke-${idx.idx+1}</div>
+                    <div class="fw-bold text-prima">Kunjungan ke-${idx.idx}</div>
                     <small class="text-muted">pada tanggal ${idx.tgl} jam ${idx.jam}</small>
                 `;
                 $("#listTransaksi").append(scr);
-                $.map(data.cartData, function (item) {
+                $.map(data.cartItem.Reguler, function (item) {
                     var scr =`
                         <div class="d-flex justify-content-between align-items-center border-bottom py-2">
                             <div>      
                                 <div class="fw-bold">${item.nama}</div>
-                                <small class="text-muted">${formatRupiah(item.harga)} x ${item.qty}</small>
+                                <small class="text-muted">${formatRupiah(item.after_diskon)} x ${item.qty}</small>
                             </div>
-                            <div class="fw-bold">${formatRupiah(item.harga*item.qty)}</div>
+                            <div class="fw-bold">${formatRupiah(item.after_diskon*item.qty)}</div>
                         </div>
                     `;
                     $("#listTransaksi").append(scr);
-                    Total = Total + (item.harga*item.qty);
+                    Total = Total + (item.after_diskon*item.qty);
                 });
                 $("#listTransaksi").append(`<div class="mt-4 mb-3"></div>`);
             });
@@ -196,8 +196,8 @@
                     <div class="fw-bold">${formatRupiah(Total)}</div>
                 </div>
             `);
-
-            let diskon = Total - data.DataPaket.total;
+            
+            let diskon = ((Total*data.paketMember.diskon)/100);
             $("#listTransaksi").append(`
                 <div class="d-flex justify-content-between align-items-center">
                     <div>      
@@ -210,17 +210,15 @@
             var scr =`
                 <div class="d-flex justify-content-between align-items-center border-bottom">
                     <div>
-                        <div class="fw-bold">Biaya properti : ${data.JenisProperti.nama_jenis}</div>
+                        <div class="fw-bold">Biaya properti : ${data.jenisProperti.nama_jenis}</div>
                     </div>
-                    <div class="fw-bold">${formatRupiah(data.JenisProperti.harga)}</div>
+                    <div class="fw-bold">${formatRupiah(data.jenisProperti.harga)}</div>
                 </div>
             `;
             $("#listTransaksi").append(scr);
-            Total = Total + (data.JenisProperti.harga);
+            Total = Total + (data.jenisProperti.harga);
             
         }
-        
-
         $("#totalTransaksi").text(formatRupiah(Total));
     }
 

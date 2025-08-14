@@ -86,11 +86,6 @@ $(document).on('click', 'input[name="pilihKontak"]', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof window.jQuery === 'undefined') {
-        console.error('jQuery is not loaded.');
-        return;
-    }
-    $ = window.jQuery;
     LoadDataKontak();
 });
 
@@ -148,12 +143,12 @@ btnSimpanKontak.addEventListener("click", function () {
 });
 
 function LoadDataKontak(){
-    //console.log(IdUser);
+    var _Id = Storage.get('userId');
     callApi({
-            url: '/api/Layanan/ListKontakUser?Id='+IdUser,
+            url: '/api/Layanan/ListKontakUser?Id='+_Id,
             method: 'GET',
             success: function (data) {
-                console.log(data);
+                //console.log(data);
                 var html = $.map(data, function (item) {
                     var scr = `
                         <label class="list-group-item d-flex align-items-start position-relative">

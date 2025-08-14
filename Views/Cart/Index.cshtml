@@ -5,6 +5,40 @@
     ViewData["HeaderName"] = "Keranjang - Pesanan Anda";
     ViewData["SelectedFooter"] = "Cart";
 }
+<style>
+.accordion-minimal {
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  font-size: small;
+}
+.accordion-collapse ul {
+    padding-left: 0; /* hilangkan padding list */
+    margin-left: 0;
+    width: 100%;
+}
+
+.accordion-collapse li {
+    display: flex;
+    justify-content: space-between; /* item kiri, harga kanan */
+    padding: 0;
+}
+
+.accordion-minimal:focus {
+  box-shadow: none;
+}
+.accordion-icon {
+  transition: transform 0.3s ease;
+}
+.accordion-button.collapsed .accordion-icon {
+  transform: rotate(0deg);
+}
+.accordion-button:not(.collapsed) .accordion-icon {
+  transform: rotate(90deg);
+}
+</style>
 
 <!-- App Body Start -->
 <div class="app-body pb-30">
@@ -26,6 +60,7 @@
 
 <script>
     var $;
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -50,6 +85,136 @@
     }
 
     function LoadListCart() {
+        var user = getUserInfo();
+        callApi({
+            url: '/api/Transaction/GetCart_ByUserId?Id=' + user.id,
+            method: 'GET',
+            success: function (data) {
+                console.log(data);
+                var html = "";
+
+                if (!data || data.length === 0) {
+                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
+                    $('#ListPemesanan').html(html);
+                }
+                else {
+                    html = $.map(data, function (item) {
+                        var dtPesanan = '';
+                        let TotalReg = 0;
+                        item.cart_items.forEach(p => {
+                            dtPesanan = dtPesanan +
+                                `<li class="d-flex justify-content-between border-bottom">
+                                    <span>${p.nama} &times; ${p.qty}</span>
+                                    <span class="text-muted">${formatRupiah(p.sub_total)}</span>
+                                </li>
+                                `
+                                ;
+                            TotalReg = TotalReg+p.sub_total;
+                        });
+                        
+                        dtPesanan = dtPesanan +
+                        `
+                            <li class="d-flex justify-content-between border-bottom">
+                                <span>Biaya Properti ${item.properti.nama_jenis}</span>
+                                <span class="text-muted">${formatRupiah(item.properti.harga)}</span>
+                            </li>
+                        `
+                        ;
+
+                        var paket = '';
+                        if(Object.keys(item.paket).length > 0){
+                            paket = `
+
+                                <p class="d-flex justify-content-between">
+                                    <span>${item.paket.deskripsi}</span>
+                                    <span>${formatRupiah(TotalReg*item.paket.qty)}</span>
+                                </p>
+                                <p class="d-flex justify-content-between">
+                                    <span>Diskon berlangganan</span>
+                                    <span>- ${formatRupiah(((TotalReg*item.paket.qty)*item.paket.diskon)/100)}</span>
+                                </p>
+                                <strong class="d-flex justify-content-between">
+                                    <span>Total Transaksi</span>
+                                    <span class="">${formatRupiah(item.paket.total)}</span>
+                                </strong>
+
+                            `;
+                        }
+                        else
+                        {
+                            paket = `
+                            <strong class="d-flex justify-content-between pt-20">
+                                <span>Total Transaksi</span>
+                                <span class="">${formatRupiah(item.total_transaksi)}</span>
+                            </strong>`;
+                        }
+                        
+
+                        var scr = "";
+                        scr =`
+                            <div class="card position-relative p-3">
+                                <!-- Header Pesanan -->
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="card-title mb-1 fw-bold">
+                                            <span class="text-primary">ACD - ${formatToSixDigits(item.id)}</span>
+                                        </h5>
+                                        <p class="card-text mb-0">
+                                            Total Pesanan:
+                                            <span class="fw-semibold text-success">${formatRupiah(item.total_transaksi)}</span>
+                                        </p>
+                                    </div>
+
+                                    <!-- Tombol Delete -->
+                                    <button onclick="DeletePesanan(${item.id});" class="btn btn-outline-danger btn-sm"
+                                        style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-trash" style="font-size: 1rem;"></i>
+                                    </button>
+
+                                    <!-- Tombol Detail -->
+                                    <button onclick="DetailPesanan(${item.id});" class="btn btn-outline-primary btn-sm"
+                                        style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Accordion Detail Order -->
+                                <div class="mt-1 w-100">
+                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                        aria-expanded="true" aria-controls="collapseOrder">
+                                        <span class="me-2 accordion-icon">▶</span>
+                                        <strong class="text-muted">Detail Order</strong>
+                                    </button>
+
+                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100">
+                                        <ul class="list-unstyled mb-0" style="font-size: small;">
+                                            ${dtPesanan}
+                                        </ul>
+                                        ${paket}
+                                    </div>
+                                </div>
+                            </div>
+
+                        `;
+                        
+                        return scr;
+                    }).join('');
+
+                    $('#ListPemesanan').html(html);
+                }
+            },
+            error: function (err) {
+                $('#ListPemesanan').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+                @* alert('Error: ' + err); *@
+            },
+            onBeforeSend: function () {
+                $('#ListPemesanan').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+        });
+    }
+
+    function LoadListCartV1() {
         var user = getUserInfo();
         callApi({
             url: '/api/Pemesanan/GetPemesanan?Id=' + user.id,
@@ -207,11 +372,8 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 callApi({
-                    url: '/api/Pemesanan/HapusPemesanan',
-                    method: 'POST',
-                    data: {
-                        Id: IdPemesanan
-                    },
+                    url: '/api/Transaction/DeleteCart/'+IdPemesanan,
+                    method: 'DELETE',
                     success: function (data) {
                         Swal.fire('Dihapus!', 'Pesanan berhasil dihapus.', 'success');
                         LoadListCart();
@@ -225,6 +387,5 @@
             }
         });
     }
-
 
 </script>

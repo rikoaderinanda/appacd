@@ -35,16 +35,10 @@
 </div>
 
 <script>
-    var $;
+    
     
     document.addEventListener('DOMContentLoaded', function () {
-        if (typeof window.jQuery === 'undefined') {
-        console.error('jQuery is not loaded.');
-        return;
-        }
-        $ = window.jQuery;
       
-        Storage.remove("CartData");
         (async () => {
             try {
 
@@ -161,7 +155,9 @@
                                     <button class="btn btn-outline-primary minus" type="button">-</button>
                                     <input type="text" class="form-control text-center" 
                                         value="0" 
-                                        data-harga=${hargaAkhir} 
+                                        data-diskon=${item.diskon}
+                                        data-harga=${item.harga_satuan}
+                                        data-after_diskon=${hargaAkhir}
                                         data-detaillayanan=${encodeURIComponent(item.nama_detail_jasa)}
                                         data-id=${item.id}
                                         >
@@ -179,7 +175,42 @@
         initHandleEventButtonPlusMinus();
 
     }
-
+    
+    function setCart(data){
+        
+        let existingItem = cartReguler.find(item => item.nama === data.detaillayanan);
+        if (existingItem) {
+            if (data.qty == 0) {
+                let index = cartReguler.findIndex(item => item.nama === data.detaillayanan);
+                if (index !== -1) {
+                    cartReguler.splice(index, 1);
+                }
+            } 
+            else {
+                existingItem.qty = data.qty;
+                existingItem.harga = data.harga;
+                existingItem.diskon = data.diskon;
+                existingItem.after_diskon = data.after_diskon;
+                existingItem.sub_total = data.subtotal;
+            }
+        } else 
+        {
+            cartReguler.push({
+                id: data.id,
+                nama: data.detaillayanan,
+                harga: data.harga,
+                diskon: data.diskon,
+                after_diskon: data.after_diskon,
+                qty: data.qty,
+                sub_total: data.subtotal
+            });
+        }
+        console.log(cartReguler);
+        const totalHarga = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
+        $("#TotalHargaReguler").text(formatRupiah(totalHarga));
+        TotalHargaAkhir = totalHarga;
+        ShowHideBerlangganan(data.totalQty);
+    }
     function initHandleEventButtonPlusMinus(){
             let totalQty = 0;
             
@@ -187,34 +218,32 @@
                 btn.addEventListener("click", function () {
                     let input = this.parentElement.querySelector("input");
                     let harga = parseInt(input.dataset.harga) || 0;
+                    let diskon = parseInt(input.dataset.diskon) || 0;
+                    let after_diskon = parseInt(input.dataset.after_diskon) || 0;
+                    
                     let currentValue = parseInt(input.value) || 0;
                     var detaillayanan = decodeURIComponent(input.dataset.detaillayanan);
                     let _id = parseInt(input.dataset.id);
                     currentValue++;
-                    input.value = currentValue;
                     totalQty++;
+                    input.value = currentValue;
                     
-                    // Cek apakah layanan ini sudah ada di cartData
-                    let existingItem = cartData.find(item => item.nama === detaillayanan);
-                    if (existingItem) {
-                        existingItem.qty = currentValue; // update qty sesuai input terbaru
-                    } else {
-                        cartData.push({
-                            id: _id,
-                            nama: detaillayanan,
-                            harga: harga,
-                            qty: currentValue
-                        });
-                    }
 
-                    let total = harga * currentValue;
-                    this.closest(".cart-counter")
-                        .querySelector(".total-harga").textContent = formatRupiah(total);
-                    
-                    const totalHarga = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
-                    $("#TotalHargaReguler").text(formatRupiah(totalHarga));
-                    TotalHargaAkhir = totalHarga;
-                    ShowHideBerlangganan(totalQty);
+                    let _subtotal = (after_diskon*currentValue);
+
+                    var dataSetCart =
+                    {
+                        id:_id,
+                        harga : harga,
+                        diskon : diskon,
+                        after_diskon : after_diskon,
+                        qty: currentValue,
+                        detaillayanan: detaillayanan,
+                        subtotal:_subtotal,
+                        totalQty:totalQty
+                    }
+                    setCart(dataSetCart);
+                    this.closest(".cart-counter").querySelector(".total-harga").textContent = formatRupiah(_subtotal);
                     
                 });
             });
@@ -223,41 +252,33 @@
                 btn.addEventListener("click", function () {
                     let input = this.parentElement.querySelector("input");
                     let harga = parseInt(input.dataset.harga) || 0;
+                    let diskon = parseInt(input.dataset.diskon) || 0;
+                    let after_diskon = parseInt(input.dataset.after_diskon) || 0;
+
                     let currentValue = parseInt(input.value) || 0;
                     var detaillayanan = decodeURIComponent(input.dataset.detaillayanan);
+                    
                     let _id = parseInt(input.dataset.id);
                     if (currentValue > 0) {
                         currentValue--;
                         input.value = currentValue;
                         totalQty--;
                         
-                        // Cek apakah layanan ini sudah ada di cartData
-                        let existingItem = cartData.find(item => item.nama === detaillayanan);
-                        if (existingItem) {
-                            if(currentValue == 0){
-                                let index = cartData.findIndex(item => item.nama === detaillayanan);
-                                if (index !== -1) {
-                                    cartData.splice(index, 1);
-                                }
-                            }
-                            existingItem.qty = currentValue; // update qty sesuai input terbaru
-                        } else {
-                            cartData.push({
-                                id: _id,
-                                nama: detaillayanan,
-                                harga: harga,
-                                qty: currentValue
-                            });
-                        }
-                        //Storage.set("CartData",cartData);
-                        ShowHideBerlangganan(totalQty);
-                        let total = harga * currentValue;
-                        this.closest(".cart-counter")
-                            .querySelector(".total-harga").textContent = formatRupiah(total);
+                        let _subtotal = (after_diskon*currentValue);
 
-                        const totalHarga = cartData.reduce((sum, item) => sum + (item.harga * item.qty), 0);
-                        $("#TotalHargaReguler").text(formatRupiah(totalHarga));
-                        TotalHargaAkhir = totalHarga;
+                        var dataSetCart =
+                        {
+                            id:_id,
+                            harga : harga,
+                            diskon : diskon,
+                            after_diskon : after_diskon,
+                            qty: currentValue,
+                            detaillayanan: detaillayanan,
+                            subtotal:_subtotal,
+                            totalQty:totalQty
+                        }
+                        setCart(dataSetCart);
+                        this.closest(".cart-counter").querySelector(".total-harga").textContent = formatRupiah(_subtotal);
                     }
                 });
             });
@@ -266,8 +287,8 @@
 
     function ShowHideBerlangganan(totalQty){
         if(totalQty>0){
-            //var cart = Storage.get("CartData");
-            LoadDataPaket(cartData);
+            //var cart = Storage.get("cartReguler");
+            LoadcartMember(cartReguler);
             // Reset input tanggal
             document.getElementById('tanggalAwal').value = '';
 

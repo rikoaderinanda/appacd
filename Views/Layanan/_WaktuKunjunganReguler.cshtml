@@ -114,8 +114,9 @@
     function generateJadwal(tanggalMulai) {
         const listJadwal = document.getElementById('listJadwal');
         listJadwal.innerHTML = '';
-
-        const { total, interval } = paketSettings[paketDipilih] || {};
+        const total = paketMember.qty;
+        const interval = paketMember.interval;
+        //const { total, interval } = paketSettings[paketDipilih] || {};
 
         if (!total || !interval) {
             listJadwal.innerHTML = `<p class="text-danger small m-0 p-3">Paket tidak dikenali.</p>`;
