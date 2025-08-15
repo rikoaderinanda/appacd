@@ -2,13 +2,12 @@
     ViewData["Title"] = "Layanan";
     ViewData["Header"] = "2";
     ViewData["Footer"] = "3";
-    ViewData["HeaderName"] = "Layanan - Cuci AC";
+    ViewData["HeaderName"] = "Layanan - Relokasi";
 }
 <!-- CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 
 <style>
     /* Wizard container */
@@ -90,6 +89,7 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         transition: opacity 0.3s ease;
         font-size: 14px;
+        padding-bottom: 30px;
     }
 
     /* Tombol navigasi */
@@ -114,22 +114,26 @@
             <div class="wizard-steps">
                 <div class="wizard-step active" data-step="1">
                     <div class="step-number">1</div>
-                    <div class="step-title">Layanan</div>
+                    <div class="step-title">Keluhan</div>
                 </div>
                 <div class="wizard-step" data-step="2">
                     <div class="step-number">2</div>
-                    <div class="step-title">Jadwal</div>
+                    <div class="step-title">Biaya Survey</div>
                 </div>
                 <div class="wizard-step" data-step="3">
                     <div class="step-number">3</div>
-                    <div class="step-title">Properti</div>
+                    <div class="step-title">Jadwal</div>
                 </div>
                 <div class="wizard-step" data-step="4">
                     <div class="step-number">4</div>
-                    <div class="step-title">Alamat</div>
+                    <div class="step-title">Properti</div>
                 </div>
                 <div class="wizard-step" data-step="5">
                     <div class="step-number">5</div>
+                    <div class="step-title">Alamat</div>
+                </div>
+                <div class="wizard-step" data-step="6">
+                    <div class="step-number">6</div>
                     <div class="step-title">Bayar</div>
                 </div>
             </div>
@@ -137,23 +141,30 @@
             <div id="wizardForm">
                 <!-- STEP 1 -->
                 <div class="wizard-content" data-step="1" style="position: relative; min-height: 200px;">
-                    <div class="" id="sessionJasaLayanan">
-                        @await Html.PartialAsync("_JasaLayananV2")
-                        @await Html.PartialAsync("_berlangganan")
+                    <div class="pb-30" id="sessionJasaLayanan">
+                        @* @await Html.PartialAsync("_Perbaikan_Keluhan") *@
                     </div>                    
 
                     <!-- Tombol di pojok kanan bawah -->
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between pt-30">
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                </div>
+                <!-- STEP 2 -->
+                <div class="wizard-content" data-step="2" style="position: relative; min-height: 200px;">
+                    @await Html.PartialAsync("_Perbaikan_BiayaSurvey")
+
+                    <div class="d-flex justify-content-between pt-30">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
                         <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
                     </div>
                 </div>
 
                 <!-- STEP 2 -->
-                <div class="wizard-content d-none" data-step="2">
-                    
-                    
-                    @await Html.PartialAsync("_WaktuKunjunganReguler")
+                <div class="wizard-content d-none" data-step="3">
+                    @* @await Html.PartialAsync("_Perbaikan_Jadwal") *@
+                    @* @await Html.PartialAsync("_WaktuKunjunganReguler") *@
                     
                     <div class="d-flex justify-content-between pt-30">
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
@@ -162,7 +173,7 @@
                 </div>
 
                 <!-- STEP 3 -->
-                <div class="wizard-content d-none" data-step="3">
+                <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
                     </div>
@@ -174,7 +185,7 @@
                 </div>
 
                 <!-- STEP 4 -->
-                <div class="wizard-content d-none" data-step="4">
+                <div class="wizard-content d-none" data-step="5">
                     <div class="pb-30" id="sessionDataPelanggan">
                         @await Html.PartialAsync("_InfoKontak")
                         @await Html.PartialAsync("_AlamatPelanggan")
@@ -186,7 +197,7 @@
                     
                 </div>
 
-                <div class="wizard-content d-none" data-step="5">
+                <div class="wizard-content d-none" data-step="6">
                     <div class="pb-30" id="sessionPaymentMethod">
                         @await Html.PartialAsync("_PilihMetodaPembayaran")
                     </div>
@@ -200,25 +211,17 @@
         </div>
     </div>
 </div>
-
 <script>
     var $;
     let currentStep = 1;
-    
-    let RegAtauMember="REG";
-    let TotalHargaAkhir = 0;
-    
-    let cartReguler = [];
-    let cartMember = [];
-
-    let paketMember = {};
-
-    let KunjunganReg = {};
-    let KunjunganMember = [];
+    let IdUser;
+    let Keluhan = [];
+    let BiayaSurvey = {};
+    let Kunjungan = {};
     let JenisProperti = {};
     let kontakPelanggan = {};
     let AlamatPelanggan = {};
-    let IdUser;
+    let cartReguler = [];
 
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
@@ -229,7 +232,7 @@
         eventstep_btn();
         showStep(currentStep);
     });
-    
+
     function showStep(step) {
 
         document.querySelectorAll('.wizard-content').forEach(el => {
@@ -247,11 +250,13 @@
         });
     }
 
-    function eventstep_btn(){
+    function eventstep_btn()
+    {
+
         document.querySelectorAll('.next-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 if(validasiStep(currentStep)){
-                    if (currentStep < 5) {
+                    if (currentStep < 6) {
                         currentStep++;
                         showStep(currentStep);
                     }
@@ -268,116 +273,62 @@
             });
         });
     }
-
     function validasiStep(step) {
         if (step === 1) {
-            console.log(cartReguler);
-            console.log(RegAtauMember);
-            console.log(TotalHargaAkhir);
-            console.log(cartMember);
-            //var data = Storage.get("cartReguler");
-            // Pastikan data ada dan berupa array
-            if (Array.isArray(cartReguler) && cartReguler.length > 0 && cartReguler != null) {
-                if(RegAtauMember == "MEMBER"){
-                    if(paketDipilih != null && paketDipilih != ""){
-                        return true; // Lolos validasi
-                    }
-                    else
-                    {
-                        showToast("Silahkan pilih Paket jika ingin berlangganan");
-                        return false; // Tidak lolos validasi
-                    }
-                }
-                else
-                {
-                    return true; // Lolos validasi
-                }
-                
-            } 
-            else {
-                showToast("Silahkan pilih layanan");
-                return false;    
+            if(Keluhan.length > 0){
+                return true;
             }
-            
+            else{
+                showToast("Silahkan pilih keluhan");
+            }
         }
-        else if(step === 2){
-            if(RegAtauMember == "REG"){
-                var tanggalLayanan = $("#tanggalLayanan").val();
-                var jamLayanan = $("#jamLayanan").val();
-                if(tanggalLayanan != "" && jamLayanan != ""){
-                    KunjunganReg =
-                    {
-                        tanggal : tanggalLayanan,
-                        jam : jamLayanan
-                    }
-                    console.log(KunjunganReg);
-                    return true;
-                }
-                else{
-                    showToast("Silahkan isi jadwal kunjungan");
-                    return false;
-                }
+        else if (step === 2) {
+            if(!isEmptyObject(BiayaSurvey)){
+                console.log(BiayaSurvey);
+                return true;
             }
-            else if(RegAtauMember == "MEMBER"){
-                KunjunganMember = [];
-                var tanggalAwal = $("#tanggalAwal").val();
-                if(tanggalAwal!= "" && tanggalAwal!= null){
-                    for (let i = 0; i < paketMember.qty; i++) {
-                        var _tgl = $(`#Tgl${i}`).val();
-                        var _jam = $(`#Jam${i}`).val();
-                        if(_tgl!= "" && _jam!=""){
-                            KunjunganMember.push({
-                                idx:i+1,
-                                tgl:_tgl,
-                                jam:_jam
-                            });   
-                        }
-                        else
-                        {
-                            showToast("Silahkan diisi jadwal tanggal dan jam berlangganan");
-                            return false;
-                        }
-                    }
-                    
-                    if(KunjunganMember.length>0){
-                        console.log(KunjunganMember);
-                        return true;
-                    }
-                    else
-                    {
-                        showToast("Silahkan diisi jadwal tanggal dan jam berlangganan");
-                        return false;
-                    }
-                }
-                else
-                {
-                    showToast("Silahkan input tanggal awal untuk berlangganan");
-                    return false;
-                }
+            else{
+                showToast("Silahkan ceklist setuju jika ingin melanjutkan");
             }
-            
         }
-        else if(step === 3){
-            if (JenisProperti!= null) {
-                console.log(JenisProperti);
+        else if (step === 3) {
+            var tanggalLayanan = $("#tanggalLayanan").val();
+            var jamLayanan = $("#jamLayanan").val();
+            if(tanggalLayanan != "" && jamLayanan != ""){
+                Kunjungan =
+                {
+                    tanggal : tanggalLayanan,
+                    jam : jamLayanan
+                }
+                console.log(Kunjungan);
+                return true;
+            }
+            else{
+                showToast("Silahkan isi jadwal kunjungan");
+            }
+        }
+        else if (step === 4) {
+            if(!isEmptyObject(JenisProperti)){
                 var user = getUserInfo();
                 if (!isValidUser(user)) {
                     $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
                     $("#btnClsModalLogin").show();
                     $('#ModalLogin').modal('show');
-                    return false;
                 }
                 else {
                     IdUser = user.id;
                     loadAlamat();
+                    LoadDataKontak();
+                    return true;
                 }
-                return true; // Lolos validasi
-            } else {
+            }
+            else
+            {
                 showToast("Silakan pilih properti terlebih dahulu.");
-                return false; // Tidak lolos validasi
             }
         }
-        else if(step ===4){
+        else if (step === 5) {
+            console.log(kontakPelanggan);
             if(isEmptyObject(kontakPelanggan))
             {
                 showToast("Silahkan pilih kontak yang akan dihubungi teknisi");
@@ -388,117 +339,52 @@
                 return false;
             }
 
-            var alldata =
-            {
-                id: 0,
-                createByIdUser: IdUser,
-                kategoriLayanan: "CUCI AC",
-                jenisLayanan: RegAtauMember,
-                totalTransaksi: TotalHargaAkhir,
-                status: 0,
-                statusDeskripsi: "DRAFT",
-                jenisProperti: JenisProperti,
-                kontakPelanggan:kontakPelanggan,
-                alamatPelanggan": AlamatPelanggan,
-                kunjungan: {
-                    Reguler: KunjunganReg,
-                    Member: KunjunganMember
-                },
-                cartItem: {
-                    Reguler: cartReguler,
-                    Member: cartMember
-                },
-                paketMember:paketMember
-            }
-            console.log(alldata);
+            
+
+            
+
             $("#listTransaksi").html("");
-            renderDataTransaksi(alldata);
+            console.log(getDataAll());
+            renderDataTransaksi(getDataAll());
+            return true;
         }
-        // Jika tidak ada validasi khusus untuk step lain, langsung lolos
-        return true;
-    }
-
-    function SimpanDulu(){
-        
-        var alldata =
-        {
-            id: 0,
-            createByIdUser: IdUser,
-            kategoriLayanan: "CUCI AC",
-            jenisLayanan: RegAtauMember,
-            totalTransaksi: TotalHargaAkhir,
-            status: 0,
-            statusDeskripsi: "DRAFT",
-            jenisProperti: JenisProperti,
-            kontakPelanggan:kontakPelanggan,
-            alamatPelanggan": AlamatPelanggan,
-            kunjungan: {
-                Reguler: KunjunganReg,
-                Member: KunjunganMember
-            },
-            cartItem: {
-                Reguler: cartReguler,
-                Member: cartMember
-            },
-            paketMember:paketMember
-        }
-
-        callApi({
-            url: '/api/Transaction/SimpanDulu',
-            method: 'POST',
-            data:alldata,
-            success: function (res) {
-                console.log(res);
-                @* {
-                    "message": "Pemesanan berhasil disimpan",
-                    "id": 46
-                } *@
-                Swal.fire({
-                    title: '<strong>🎉 Berhasil Disimpan!</strong>',
-                    html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
-                    icon: 'success',
-                    showConfirmButton: true,
-                    confirmButtonText: 'Lihat Keranjang',
-                    customClass: {
-                        popup: 'rounded-4 shadow-lg',
-                        title: 'fw-bold text-success',
-                        confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
-                    },
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInDown'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    }
-                }).then(() => {
-                    window.location.href = '@Url.Action("Index", "Cart")';
-                });
-            },
-            error: function (err) {
-                alert("Gagal: " + err);
-            },
-            onBeforeSend: function () {
-                $("#btn_simpandulu").prop("disabled", true).text("Memproses...");
-            },
-            onComplete: function () {
-                $("#btn_simpandulu").prop("disabled", false).text("Simpan Dulu");
-            }
-        });
-    }
-
-    function CloseModalLogin() {
-        //window.location.href = '@Url.Action("Index", "Home")';
-        $('#ModalLogin').modal('hide');
+        return false;
     }
 
     function gotoBack(){
         window.location.href = '@Url.Action("Index", "Home")';
     }
 
+    function getDataAll(){
+        setCartReg(BiayaSurvey);
+        var alldata =
+        {
+            id: 0,
+            createByIdUser: IdUser,
+            kategoriLayanan: "PERBAIKAN AC",
+            jenisLayanan: "REG",
+            totalTransaksi: BiayaSurvey.harga,
+            status: 0,
+            statusDeskripsi: "DRAFT",
+            jenisProperti: JenisProperti,
+            kontakPelanggan:kontakPelanggan,
+            alamatPelanggan: AlamatPelanggan,
+            kunjungan: {
+                Reguler: Kunjungan,
+                Member: {}
+            },
+            cartItem: {
+                Reguler: cartReguler,
+                Member: {}
+            },
+            paketMember:{}
+        }
+        return alldata;
+    }
+
     function renderDataTransaksi(data){
         let Total = 0;
-        if(data.jenisLayanan =="REG"){
-            var scr =`
+        var scr =`
                 <div class="fw-bold text-prima">Kunjungan Layanan Reguler</div>
                 <small class="text-muted">pada tanggal ${data.kunjungan.Reguler.tanggal} jam ${data.kunjungan.Reguler.jam}</small>
             `;
@@ -536,70 +422,81 @@
             `;
             $("#listTransaksi").append(scr);
             Total = Total + (data.jenisProperti.harga);
-        }
-        else if(data.jenisLayanan =="MEMBER"){
-            $("#listTransaksi").append(`
-                <p class="fw-bold text-prima mb-0">
-                    Berlangganan : ${data.paketMember.nama_paket} 
-                    <br>
-                    <small class="text-muted">${data.paketMember.deskripsi}</small>
-                <p>
-            `);
-            
-            $.map(data.kunjungan.Member, function (idx) {
-                var scr =`
-                    <div class="fw-bold text-prima">Kunjungan ke-${idx.idx}</div>
-                    <small class="text-muted">pada tanggal ${idx.tgl} jam ${idx.jam}</small>
-                `;
-                $("#listTransaksi").append(scr);
-                $.map(data.cartItem.Reguler, function (item) {
-                    var scr =`
-                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                            <div>      
-                                <div class="fw-bold">${item.nama}</div>
-                                <small class="text-muted">${formatRupiah(item.after_diskon)} x ${item.qty}</small>
-                            </div>
-                            <div class="fw-bold">${formatRupiah(item.after_diskon*item.qty)}</div>
-                        </div>
-                    `;
-                    $("#listTransaksi").append(scr);
-                    Total = Total + (item.after_diskon*item.qty);
-                });
-                $("#listTransaksi").append(`<div class="mt-4 mb-3"></div>`);
-            });
-
-            $("#listTransaksi").append(`
-                <div class="d-flex justify-content-between align-items-center mt-30">
-                    <div>      
-                        <div class="fw-bold">Sub Total</div>
-                    </div>
-                    <div class="fw-bold">${formatRupiah(Total)}</div>
-                </div>
-            `);
-            
-            let diskon = ((Total*data.paketMember.diskon)/100);
-            $("#listTransaksi").append(`
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>      
-                        <div class="fw-bold">Diskon berlangganan</div>
-                    </div>
-                    <div class="fw-bold">-${formatRupiah(diskon)}</div>
-                </div>
-            `);
-            Total = Total - diskon;
-            var scr =`
-                <div class="d-flex justify-content-between align-items-center border-bottom">
-                    <div>
-                        <div class="fw-bold">Biaya properti : ${data.jenisProperti.nama_jenis}</div>
-                    </div>
-                    <div class="fw-bold">${formatRupiah(data.jenisProperti.harga)}</div>
-                </div>
-            `;
-            $("#listTransaksi").append(scr);
-            Total = Total + (data.jenisProperti.harga);
-            
-        }
-        $("#totalTransaksi").text(formatRupiah(Total));
+            $("#totalTransaksi").text(formatRupiah(Total));
     }
 
+    function setCartReg(data)
+    {
+        let existingItem = cartReguler.find(item => item.nama === data.nama);
+        if (existingItem) {
+            if (data.qty == 0) {
+                let index = cartReguler.findIndex(item => item.nama === data.nama);
+                if (index !== -1) {
+                    cartReguler.splice(index, 1);
+                }
+            } 
+            else {
+                existingItem.qty = data.qty;
+                existingItem.harga = data.harga;
+                existingItem.diskon = data.diskon;
+                existingItem.after_diskon = data.after_diskon;
+                existingItem.sub_total = data.subtotal;
+            }
+        } else 
+        {
+            cartReguler.push({
+                id: data.id,
+                nama: data.nama,
+                harga: data.harga,
+                diskon: data.diskon,
+                after_diskon: data.after_diskon,
+                qty: data.qty,
+                sub_total: data.subtotal
+            });
+        }
+    }
+
+    function SimpanDulu(){
+        callApi({
+            url: '/api/Transaction/SimpanDulu',
+            method: 'POST',
+            data:getDataAll(),
+            success: function (res) {
+                //console.log(res);
+                @* {
+                    "message": "Pemesanan berhasil disimpan",
+                    "id": 46
+                } *@
+                Swal.fire({
+                    title: '<strong>🎉 Berhasil Disimpan!</strong>',
+                    html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Lihat Keranjang',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg',
+                        title: 'fw-bold text-success',
+                        confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then(() => {
+                    window.location.href = '@Url.Action("Index", "Cart")';
+                });
+            },
+            error: function (err) {
+                alert("Gagal: " + err);
+            },
+            onBeforeSend: function () {
+                $("#btn_simpandulu").prop("disabled", true).text("Memproses...");
+            },
+            onComplete: function () {
+                $("#btn_simpandulu").prop("disabled", false).text("Simpan Dulu");
+            }
+        });
+    }
 </script>

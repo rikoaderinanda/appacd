@@ -85,10 +85,6 @@ $(document).on('click', 'input[name="pilihKontak"]', function() {
     };
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    LoadDataKontak();
-});
-
 btnNewKontak.addEventListener("click", function () {
     if (formKontak.style.display === "none" || formKontak.style.display === "") {
         // Munculkan form
@@ -143,9 +139,8 @@ btnSimpanKontak.addEventListener("click", function () {
 });
 
 function LoadDataKontak(){
-    var _Id = Storage.get('userId');
     callApi({
-            url: '/api/Layanan/ListKontakUser?Id='+_Id,
+            url: '/api/Layanan/ListKontakUser?Id='+IdUser,
             method: 'GET',
             success: function (data) {
                 //console.log(data);
@@ -174,7 +169,7 @@ function LoadDataKontak(){
                     `;
                 }
                 $("#ListKontak").html(html);
-                kontakPelanggan = null;
+                kontakPelanggan = {};
             },
             error: function () {
                 $('#ListKontak').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');

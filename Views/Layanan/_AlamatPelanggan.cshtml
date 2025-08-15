@@ -108,7 +108,7 @@ $(document).ready(function () {
     const $kecamatan = $('#selectKecamatan');
     const $kelurahan = $('#selectKelurahan');
     
-    loadAlamat();
+    
     // Ambil provinsi saat halaman load
     fetch('/api/Wilayah/provinces')
         .then(res => res.json())
@@ -215,7 +215,7 @@ function loadAlamat(){
                 html = `<p class="text-center text-muted py-4">tidak ada alamat yang disimpan...</p>`;
             }
             $("#ListAlamat").html(html);
-            AlamatPelanggan = null;
+            AlamatPelanggan = {};
         },
         error: function () {
             $('#ListAlamat').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');

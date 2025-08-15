@@ -1,0 +1,66 @@
+<div class="pb-10" id="sessionWaktuKunjunganReguler">
+    <div class="main-title text-left d-flex align-items-center mb-3">
+        <h5 class="mb-0 fw-6 b-color">Pilih Jadwal *</h5>
+    </div>
+    <div class="items-group">
+        <div class="form-group mb-3">
+            <label for="tanggalLayanan" class="form-label">Pilih Tanggal</label>
+            <input type="date" class="form-control" id="tanggalLayanan" name="TanggalLayanan" required>
+        </div>
+        <div class="form-group">
+            <label for="jamLayanan" class="form-label">Pilih Jam</label>
+            <select class="form-control" id="jamLayanan" name="JamLayanan" required>
+                <option value="">-- Pilih Jam --</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<script>
+    var $ = window.jQuery;
+    const tanggalInput = document.getElementById("tanggalLayanan");
+    // Set minimal tanggal = hari ini
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const minDate = `${yyyy}-${mm}-${dd}`;
+    tanggalInput.setAttribute("min", minDate);
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }  
+    });
+    
+    tanggalInput.addEventListener("change", () => {
+        const selectedDate = tanggalInput.value;
+        const now = new Date();
+
+        if (selectedDate === minDate) {
+            // Minimal 2 jam setelah sekarang
+            let startHour = now.getHours() + 2;
+
+            if (startHour < 8) startHour = 8; // buka dari jam 08:00
+            if (startHour > 17) startHour = 17; // tutup di jam 17:00
+
+            generateJamOptions(startHour, 17,"jamLayanan");
+        } else {
+            // Hari lain: jam kerja normal
+            generateJamOptions(8, 17,"jamLayanan");
+        }
+    });
+
+    function generateJamOptions(startHour = 8, endHour = 17, element) {
+        const jamSelect = document.getElementById(element);
+        jamSelect.innerHTML = '<option value="">-- Pilih Jam --</option>';
+        for (let hour = startHour; hour <= endHour; hour++) {
+            const formattedHour = String(hour).padStart(2, '0') + ":00";
+            const option = document.createElement("option");
+            option.value = formattedHour;
+            option.textContent = formattedHour;
+            jamSelect.appendChild(option);
+        }
+    }
+</script>

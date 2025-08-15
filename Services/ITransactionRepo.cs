@@ -12,6 +12,7 @@ namespace appacd.Services
         Task<int> SimpanAsync(LogTransaction data);
         Task<IEnumerable<dynamic>> GetCart_ByUserId(string id);
         Task<bool> DeleteCart(string _id);
+        Task<IEnumerable<dynamic>> GetDetail_ById(string id);
     }
     public class TransactionRepo : ITransactionRepo
     {
@@ -76,6 +77,31 @@ namespace appacd.Services
             
             int Id = await _db.ExecuteScalarAsync<int>(query, param);
             return Id;
+        }
+
+        public async Task<IEnumerable<dynamic>> GetDetail_ById(string id)
+        {
+            var sql = @"
+                SELECT
+                    lt.id,
+                    lt.kategori_layanan,
+                    lt.jenis_layanan,
+                    lt.total_transaksi,
+                    (cart_item::jsonb)->'Reguler' AS cart_items,
+                    lt.jenis_properti::jsonb AS properti,    
+                    lt.kontak_pelanggan::jsonb as kontak,
+                    lt.alamat_pelanggan::jsonb as alamat_pelanggan,
+                    lt.kunjungan::jsonb as kunjungan,
+                    paket_member::jsonb AS paket,
+                    create_by_id_user
+                FROM log_transaction lt 
+                WHERE lt.id = @Id::bigint;
+            ";
+
+            var param = new { Id = id };
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+
+            return JsonColumnParser.ParseJsonColumns(result);
         }
 
         public async Task<IEnumerable<dynamic>> GetCart_ByUserId(string id)

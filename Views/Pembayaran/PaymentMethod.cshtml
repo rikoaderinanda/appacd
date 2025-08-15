@@ -1,0 +1,373 @@
+@{
+    ViewData["Title"] = "Status";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Detail Transaksi";
+}
+<style>
+    /* ===== Styling Channel Payment ===== */
+    .payment-channel-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .channel-card {
+        position: relative;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 0;
+        background: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.1s ease-in-out;
+        flex: 1 1 150px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .channel-card:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    }
+
+    .channel-card input[type="radio"]:checked + .channel-content {
+        border: 2px solid #0d6efd;
+        border-radius: 8px;
+        padding: 2px;
+        background-color: #f0f8ff;
+    }
+
+    .channel-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+        border-radius: 8px;
+        transition: 0.1s;
+    }
+
+    .channel-content img {
+        max-height: 60px;
+        max-width: 100px;
+        object-fit: contain;
+    }
+
+</style>
+<div class="app-body">
+    <div class="container">
+        <div class="row pt-30">
+            <div class="pb-30" id="sessionPaymentMethod">
+                <div id="IdTransaksi" class="position-relative"></div>
+                
+                <!-- Accordion Detail Order -->
+                <div class="position-relative" style="margin-bottom:10px;">
+                    <strong >Detail Transaksi</strong>
+                    <a id="toggleDetailBtn" href="javascript:void(0)"
+                        class="btn btn-sm position-absolute top-0 end-0">
+                        <i id="toggleIcon" class="bi bi-chevron-down"></i>
+                    </a>
+                </div>
+
+                <!-- List Transaksi -->
+                <div id="listTransaksi" class="card-text mb-3" style="display:none;">
+                </div>
+
+                <!-- Total -->
+                <div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm rounded-pill px-3 py-2 mt-20">
+                    <span class="fw-bold">Total Transaksi:</span>
+                    <span class="fw-bold text-primary fs-5" id="totalTransaksi">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </span>
+                </div>
+
+                <!-- Metode Pembayaran -->
+                <strong>Metode Pembayaran</strong>
+                <div class="position-relative mb-4 mt-2">
+                    <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" 
+                        type="text" placeholder="Cari" id="searchInput">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <button type="button"
+                        class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                        onclick="GetChannelPembayaran()" title="Segarkan">
+                        <i class="bi bi-arrow-clockwise text-primary"></i>
+                    </button>
+                </div>
+
+                <div class="accordion mt-4 mb-3" id="channelAccordion"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    <div class="container p-0">
+        <div class="row">
+            <div class="col">
+                <a href="app-cart.html" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
+                        class="bi bi-credit-card me-2"></i>Bayar</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+
+        var data = Storage.get("DataTrx");
+        console.log(data);
+        if(data!= null){
+            renderDataTransaksi(data);
+        }
+
+        const savedChannels = Storage.get("ChannelPayment");
+        if (savedChannels) {
+            SetChannelPembayaranV2(savedChannels, "");
+        } else {
+            GetChannelPembayaran();
+        }
+        // Event search
+        $('#searchInput').on('keydown', function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const keyword = $(this).val().trim();
+                const ChannelPayment = Storage.get("ChannelPayment");
+                $('#btnCheckout').fadeOut();
+
+                SetChannelPembayaranV2(ChannelPayment, keyword || "");
+            }
+        });
+        // Toggle detail transaksi
+        document.getElementById("toggleDetailBtn").addEventListener("click", function () {
+            const list = document.getElementById("listTransaksi");
+            const icon = document.getElementById("toggleIcon");
+            const isHidden = list.style.display === "none";
+
+            list.style.display = isHidden ? "block" : "none";
+            icon.className = isHidden ? "bi bi-chevron-up" : "bi bi-chevron-down";
+        });
+    });
+
+    function renderDataTransaksi(data){
+        let Total = 0;
+        console.log(data);
+        if(data.jenis_layanan == "MEMBER")
+        {
+            regmember = `<span class="text-danger">Berlangganan</span>`;
+        }
+        else{
+            regmember = `<span class="text-dark">Reguler</span>`;
+        }
+        $("#IdTransaksi").html(`
+            <div>
+                <h5 class="card-title mb-1 fw-bold">
+                    <span class="text-primary">ACD - ${formatToSixDigits(data.id)}</span>
+                </h5>
+                <button onclick="editTransaksi(${data.id})" 
+                        class="btn btn-outline-primary btn-sm position-absolute top-0 end-0"
+                        style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-pencil" style="font-size: 1rem;"></i>
+                </button>
+            </div>
+            <p class="card-text mb-0">
+                <span class="text-dark">Layanan ${data.kategori_layanan}</span>
+                <span class="fw-semibold text-success">${regmember}</span>
+            </p>
+        `);
+        if(data.jenisLayanan =="REG"){
+            var scr =`
+                <div class="fw-bold text-prima">Kunjungan Layanan Reguler</div>
+                <small class="text-muted">pada tanggal ${data.kunjungan.Reguler.tanggal} jam ${data.kunjungan.Reguler.jam}</small>
+            `;
+            $("#listTransaksi").append(scr);
+
+            $.map(data.cartItem.Reguler, function (item) {
+                var scr =`
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <div>
+                            <div class="fw-bold">${item.nama}</div>
+                            <small class="text-muted">${formatRupiah(item.after_diskon)} x ${item.qty}</small>
+                        </div>
+                        <div class="fw-bold">${formatRupiah(item.after_diskon*item.qty)}</div>
+                    </div>
+                `;
+                $("#listTransaksi").append(scr);
+                
+                Total = Total + (item.after_diskon*item.qty);
+            });
+
+            $("#listTransaksi").append(`
+                <div class="d-flex justify-content-between align-items-center mt-30">
+                    <div>      
+                        <div class="fw-bold">Sub Total</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(Total)}</div>
+                </div>
+            `);
+            var scr =`
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold">Biaya properti : ${data.jenisProperti.nama_jenis}</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(data.jenisProperti.harga)}</div>
+                </div>
+            `;
+            $("#listTransaksi").append(scr);
+            Total = Total + (data.jenisProperti.harga);
+        }
+        else if(data.jenisLayanan =="MEMBER"){
+            console.log(data);
+            $("#listTransaksi").append(`
+                <p class="fw-bold text-prima mb-0">
+                    Berlangganan : ${data.paketMember.nama_paket} 
+                    <br>
+                    <small class="text-muted">${data.paketMember.deskripsi}</small>
+                <p>
+            `);
+            
+            $.map(data.kunjungan.Member, function (idx) {
+                var scr =`
+                    <div class="fw-bold text-prima">Kunjungan ke-${idx.idx}</div>
+                    <small class="text-muted">pada tanggal ${idx.tgl} jam ${idx.jam}</small>
+                `;
+                $("#listTransaksi").append(scr);
+                $.map(data.cartItem.Reguler, function (item) {
+                    var scr =`
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                            <div>      
+                                <div class="fw-bold">${item.nama}</div>
+                                <small class="text-muted">${formatRupiah(item.after_diskon)} x ${item.qty}</small>
+                            </div>
+                            <div class="fw-bold">${formatRupiah(item.after_diskon*item.qty)}</div>
+                        </div>
+                    `;
+                    $("#listTransaksi").append(scr);
+                    Total = Total + (item.after_diskon*item.qty);
+                });
+                $("#listTransaksi").append(`<div class="mt-4 mb-3"></div>`);
+            });
+
+            $("#listTransaksi").append(`
+                <div class="d-flex justify-content-between align-items-center mt-30">
+                    <div>      
+                        <div class="fw-bold">Sub Total</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(Total)}</div>
+                </div>
+            `);
+            
+            let diskon = ((Total*data.paketMember.diskon)/100);
+            $("#listTransaksi").append(`
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>      
+                        <div class="fw-bold">Diskon berlangganan</div>
+                    </div>
+                    <div class="fw-bold">-${formatRupiah(diskon)}</div>
+                </div>
+            `);
+            Total = Total - diskon;
+            var scr =`
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold">Biaya properti : ${data.jenisProperti.nama_jenis}</div>
+                    </div>
+                    <div class="fw-bold">${formatRupiah(data.jenisProperti.harga)}</div>
+                </div>
+            `;
+            $("#listTransaksi").append(scr);
+            Total = Total + (data.jenisProperti.harga);
+            
+        }
+        $("#totalTransaksi").text(formatRupiah(Total));
+    }
+
+    function GetChannelPembayaran() {
+        callApi({
+            url: `/api/Tripay/GetPaymentChannelsV2`,
+            method: 'GET',
+            success: function (res) {
+                Storage.set("ChannelPayment", res);
+                SetChannelPembayaranV2(res, "");
+            },
+            error: function () {
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+            },
+            onBeforeSend: function () {
+                $('#channelAccordion').html('<p class="text-center text-muted py-4">Sedang memuat data...</p>');
+            }
+        });
+    }
+    
+    function SetChannelPembayaranV2(res, cari) {
+        if (cari === "") $("#searchInput").val("");
+
+        // Grouping berdasarkan "group"
+        const grouped = {};
+        const regex = cari ? new RegExp(cari, "i") : null;
+
+        res.forEach(item => {
+            if (!regex || regex.test(item.name)) {
+                if (!grouped[item.group]) grouped[item.group] = [];
+                grouped[item.group].push(item);
+            }
+        });
+
+        const accordion = $("#channelAccordion");
+        accordion.empty();
+
+        let idx = 0;
+        Object.keys(grouped).forEach(group => {
+            const collapseId = `collapse-${idx}`;
+            const headerId = `heading-${idx}`;
+
+            const items = grouped[group].map(item => `
+                <div class="payment-channel-list">
+                    <label class="channel-card">
+                        <input type="radio" name="payment_channel" value="${item.code}" class="form-check-input d-none" />
+                        <div class="channel-content">
+                            <img src="${item.icon_url}" alt="${item.name}" width="80">
+                        </div>
+                    </label>
+                </div>
+            `).join("");
+
+            const section = `
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="${headerId}">
+                        <button class="accordion-button" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#${collapseId}" 
+                                aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+                            ${group}
+                        </button>
+                    </h2>
+                    <div id="${collapseId}" 
+                         class="accordion-collapse collapse ${cari ? 'show' : ''}" 
+                         aria-labelledby="${headerId}" data-bs-parent="#channelAccordion">
+                        <div class="accordion-body">
+                            ${items}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            accordion.append(section);
+            idx++;
+        });
+    }
+
+    function gotoBack(){
+        window.history.back();
+        //window.location.href = '@Url.Action("Index", "Home")';
+    }
+
+    function editTransaksi (id){
+
+    }
+</script>

@@ -38,6 +38,20 @@ namespace appacd.Controllers
             return View();
         }
 
+        [Route("Layanan/Perbaikan")]
+        public async Task<IActionResult> Perbaikan()
+        {
+            ViewData["Id"] = 7;
+            return View();
+        }
+
+        [Route("Layanan/Relokasi")]
+        public async Task<IActionResult> Relokasi()
+        {
+            ViewData["Id"] = 13;
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

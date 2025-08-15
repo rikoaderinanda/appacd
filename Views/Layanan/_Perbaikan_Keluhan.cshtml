@@ -1,18 +1,23 @@
+<style>
+    .main-title h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
 
+.main-title p {
+    font-size: 0.9rem;
+    color: #6c757d; /* abu-abu Bootstrap */
+}
+</style>
+<div class="main-title text-left mb-4">
+  <h5 class="mb-1 fw-bold text-primary">Perbaikan AC</h5>
+  <p class="text-muted small mb-0">Beritahu kami masalah AC agar teknisi siap dengan solusi</p>
+</div>
 <div class="items-group">
     <div class="form-group">
         <div class="row g-2">
             <!-- Loading skeletons -->
             <div id="ItemKeluhanMasalah">
-                @for (int i = 0; i < 2; i++)
-                {
-                    <div class="col-12 mb-2">
-                        <div class="skeleton skeleton-text" style="height: 16px; width: 90%; margin-bottom: 6px;"></div>
-                        <div class="skeleton skeleton-text" style="height: 16px; width: 80%; margin-bottom: 6px;"></div>
-                        <div class="skeleton skeleton-text" style="height: 16px; width: 70%;"></div>
-                    </div>
-                }
-                
             </div>
             <div class="col-12 d-flex flex-column p-0 wrapper" style="margin-left:5px;">
                 <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2 mr-3" style="margin-top:-5px;">
@@ -30,20 +35,15 @@
         </div>
     </div>
 </div>
-
 <script>
+
     var $ = window.jQuery;
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
             return;
         }
-        
         LoadDataKeluhan();
-        $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
-            updateKeluhanLocalStorage();
-        });
-
         // Event: ketika checkbox "Lainnya" diubah atau textarea diketik
         $('#keluhan5').on('change', function () {
             if ($(this).is(':checked')) {
@@ -58,20 +58,22 @@
                 updateKeluhanLocalStorage();
             }
         });
-    });
-    
-    function updateKeluhanLocalStorage() {
-        var keluhanTerpilih = [];
 
+        $(document).on('change', '#ItemKeluhanMasalah input[type="checkbox"]', function () {
+            updateKeluhanLocalStorage();
+        });
+    });
+    function updateKeluhanLocalStorage() {
+        Keluhan = [];
         // Ambil semua checkbox yang dicentang
         $('#ItemKeluhanMasalah input[type="checkbox"]').each(function () {
             if ($(this).is(':checked')) {
-                var keluhan = $(this).closest('.d-flex').find('span').text().trim();
+                var jeniskeluhan = $(this).closest('.d-flex').find('span').text().trim();
                 var id = $(this).val();
-                keluhanTerpilih.push(
+                Keluhan.push(
                     {
                         "id":id,
-                        "val":keluhan
+                        "jeniskeluhan":jeniskeluhan
                     }
                 );
             }
@@ -81,18 +83,15 @@
         if ($('#keluhan5').is(':checked')) {
             var catatan = $('textarea[name="CatatanKeluhanLainnya"]').val();
             if (catatan && catatan.trim() !== '') {
-                keluhanTerpilih.push(
+                Keluhan.push(
                     {
                         "id":99,
-                        "val":catatan.trim()
+                        "jeniskeluhan":catatan.trim()
                     }
                 )
                     
             }
         }
-
-        // Simpan ke localStorage
-        Storage.set('keluhan', keluhanTerpilih);
     }
     function LoadDataKeluhan(){
         const Keluhan = Storage.get('keluhan');
@@ -100,15 +99,6 @@
             url: '/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]',
             method: 'GET',
             success: function (data) {
-                const panelKeluhan = document.getElementById("panelKeluhan");
-                console.log(data.length);
-                if(data.length > 0){
-                    panelKeluhan.style.display = "block";                    
-                }
-                else{
-                    panelKeluhan.style.display = "none";
-                }
-
                 var html = $.map(data, function (item) {
                     var scr = "";
                     if (item.typeinput == "checkbox") {
@@ -151,7 +141,13 @@
             },
             error: function (err) {
                 alert('Error: ' + err);
-            }
+            },
+            onBeforeSend: function () {
+                
+                $('#ItemKeluhanMasalah').html(`
+                    <p class="text-center text-muted py-4">sedang memuat data.....</p>`
+                );
+            },
         });
     }
 </script>

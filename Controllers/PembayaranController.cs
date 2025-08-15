@@ -13,6 +13,10 @@ public class PembayaranController : Controller
         _logger = logger;
     }
 
+    public IActionResult PaymentMethod(){
+        return View();
+    }
+
     public IActionResult Index()
     {
         return View();

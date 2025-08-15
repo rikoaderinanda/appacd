@@ -40,6 +40,14 @@ namespace appacd.api
             return Ok(res);
         }
 
+        [HttpGet("GetDetailTrx_ById")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetDetailTrx_ById(string id)
+        {
+            var res = await _repo.GetDetail_ById(id);
+            return Ok(res);
+        }
+
+
         [HttpDelete("DeleteCart/{id}")]
         public async Task<IActionResult> DeleteCart([FromRoute] string id)
         {

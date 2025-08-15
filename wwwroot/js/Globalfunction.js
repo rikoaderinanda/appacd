@@ -353,3 +353,21 @@ function getRandomLinearGradient(deg = 135) {
     const color2 = getRandomHexColor();
     return `linear-gradient(${deg}deg, ${color1}, ${color2})`;
 }
+
+function isEmptyObject(obj) {
+    return obj && typeof obj === 'object' && Object.keys(obj).length === 0;
+}
+
+function showSpinnerOnButton(btnId) {
+    const btn = $(`#${btnId}`);
+    btn.prop('disabled', true);
+    btn.html(`
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        `);
+}
+
+function resetButtonIcon(btnId) {
+    $(`#${btnId}`).prop('disabled', false).html(`
+        <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
+    `);
+}

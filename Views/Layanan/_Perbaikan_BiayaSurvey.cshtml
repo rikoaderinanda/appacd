@@ -1,0 +1,53 @@
+<div class="pb-30" id="sessionBiayaSurvey">
+    <div class="biaya-survey-card p-3 border rounded shadow-sm">
+        <h6 class="fw-bold mb-2 text-primary">Biaya Survey AC</h6>
+        <p class="text-muted small mb-3">
+            Survey dilakukan untuk memastikan kondisi AC, mengetahui jenis kerusakan, dan menentukan estimasi biaya perbaikan.
+        </p>
+        
+        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
+            <span class="fw-semibold">Biaya Survey</span>
+            <span class="fw-bold text-success fs-5">Rp 50.000</span>
+        </div>
+
+        <p class="mt-2 text-muted small">
+            Biaya ini hanya untuk survey perbaikan dan belum termasuk biaya perbaikan.
+            Biaya perbaikan akan diinformasikan melalui aplikasi ini
+            setelah teknisi melakukan diagnosa terhadap kerusakan AC Anda.
+        </p>
+    </div>
+
+    <!-- Checkbox persetujuan -->
+    <div class="form-check mt-3">
+        <input class="form-check-input" type="checkbox" id="setujuSurvey">
+        <label class="form-check-label" for="setujuSurvey">
+            Saya setuju untuk melanjutkan layanan dengan biaya survey di atas
+        </label>
+    </div>
+</div>
+
+<script>
+    var $ = window.jQuery;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+
+        $(document).on('change', '#setujuSurvey', function () {
+            BiayaSurvey = {};
+            if ($(this).is(':checked')) {
+                BiayaSurvey =
+                {
+                    id : 0,
+                    nama : "Biaya survey perbaikan AC",
+                    harga : 50000,
+                    diskon : 0,
+                    after_diskon : 50000,
+                    qty: 1,
+                    subtotal: 50000
+                }
+            }
+        });
+    });
+</script>
