@@ -231,8 +231,9 @@ function setUser(data){
     Storage.set('no_hp', "-");
     Storage.set('photo', data.user.picture);
     Storage.set("jwt", data.token);
-    //window.location.reload();
     $('#ModalLogin').modal('hide');
+    window.location.reload();
+    
 }
 
 </script>

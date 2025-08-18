@@ -114,24 +114,25 @@
             <div class="wizard-steps">
                 <div class="wizard-step active" data-step="1">
                     <div class="step-number">1</div>
-                    <div class="step-title">Keluhan</div>
+                    <div class="step-title">Alamat</div>
                 </div>
                 <div class="wizard-step" data-step="2">
                     <div class="step-number">2</div>
-                    <div class="step-title">Biaya Survey</div>
+                    <div class="step-title">Keluhan</div>
                 </div>
                 <div class="wizard-step" data-step="3">
                     <div class="step-number">3</div>
-                    <div class="step-title">Jadwal</div>
+                    <div class="step-title">Biaya Survey</div>
                 </div>
                 <div class="wizard-step" data-step="4">
                     <div class="step-number">4</div>
-                    <div class="step-title">Properti</div>
+                    <div class="step-title">Jadwal</div>
                 </div>
                 <div class="wizard-step" data-step="5">
                     <div class="step-number">5</div>
-                    <div class="step-title">Alamat</div>
+                    <div class="step-title">Properti</div>
                 </div>
+                
                 <div class="wizard-step" data-step="6">
                     <div class="step-number">6</div>
                     <div class="step-title">Bayar</div>
@@ -140,19 +141,32 @@
 
             <div id="wizardForm">
                 <!-- STEP 1 -->
-                <div class="wizard-content" data-step="1" style="position: relative; min-height: 200px;">
+                <div class="wizard-content d-none" data-step="1">
+                    <div class="pb-30" id="sessionDataPelanggan">
+                        @await Html.PartialAsync("_InfoKontak")
+                        @await Html.PartialAsync("_AlamatPelanggan")
+                    </div>
+                    <div class="d-flex justify-content-between pt-30">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                    
+                </div>
+
+                <!-- STEP 2 -->
+                <div class="wizard-content" data-step="2" style="position: relative; min-height: 200px;">
                     <div class="pb-30" id="sessionJasaLayanan">
                         @await Html.PartialAsync("_Perbaikan_Keluhan")
                     </div>                    
 
                     <!-- Tombol di pojok kanan bawah -->
                     <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
                         <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
                     </div>
                 </div>
-                <!-- STEP 2 -->
-                <div class="wizard-content" data-step="2" style="position: relative; min-height: 200px;">
+                <!-- STEP 3 -->
+                <div class="wizard-content" data-step="3" style="position: relative; min-height: 200px;">
                     @await Html.PartialAsync("_Perbaikan_BiayaSurvey")
 
                     <div class="d-flex justify-content-between pt-30">
@@ -161,8 +175,8 @@
                     </div>
                 </div>
 
-                <!-- STEP 2 -->
-                <div class="wizard-content d-none" data-step="3">
+                <!-- STEP 4 -->
+                <div class="wizard-content d-none" data-step="4">
                     @await Html.PartialAsync("_Perbaikan_Jadwal")
                     @* @await Html.PartialAsync("_WaktuKunjunganReguler") *@
                     
@@ -172,23 +186,10 @@
                     </div>
                 </div>
 
-                <!-- STEP 3 -->
-                <div class="wizard-content d-none" data-step="4">
+                <!-- STEP 5 -->
+                <div class="wizard-content d-none" data-step="5">
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
-                    </div>
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                    
-                </div>
-
-                <!-- STEP 4 -->
-                <div class="wizard-content d-none" data-step="5">
-                    <div class="pb-30" id="sessionDataPelanggan">
-                        @await Html.PartialAsync("_InfoKontak")
-                        @await Html.PartialAsync("_AlamatPelanggan")
                     </div>
                     <div class="d-flex justify-content-between pt-30">
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
@@ -232,6 +233,19 @@
         $ = window.jQuery;
         eventstep_btn();
         showStep(currentStep);
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+            return false;
+        }
+        else {
+            IdUser = user.id;
+            //setDataTrx();
+            loadAlamat();
+            LoadDataKontak();
+        }
     });
 
     function showStep(step) {
@@ -277,60 +291,6 @@
 
     function validasiStep(step) {
         if (step === 1) {
-            if(Keluhan.length > 0){
-                return true;
-            }
-            else{
-                showToast("Silahkan pilih keluhan");
-            }
-        }
-        else if (step === 2) {
-            if(!isEmptyObject(BiayaSurvey)){
-                console.log(BiayaSurvey);
-                return true;
-            }
-            else{
-                showToast("Silahkan ceklist setuju jika ingin melanjutkan");
-            }
-        }
-        else if (step === 3) {
-            var tanggalLayanan = $("#tanggalLayanan").val();
-            var jamLayanan = $("#jamLayanan").val();
-            if(tanggalLayanan != "" && jamLayanan != ""){
-                Kunjungan =
-                {
-                    tanggal : tanggalLayanan,
-                    jam : jamLayanan
-                }
-                console.log(Kunjungan);
-                return true;
-            }
-            else{
-                showToast("Silahkan isi jadwal kunjungan");
-            }
-        }
-        else if (step === 4) {
-            if(!isEmptyObject(JenisProperti)){
-                var user = getUserInfo();
-                if (!isValidUser(user)) {
-                    $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
-                    $("#btnClsModalLogin").show();
-                    $('#ModalLogin').modal('show');
-                }
-                else {
-                    IdUser = user.id;
-                    loadAlamat();
-                    LoadDataKontak();
-                    return true;
-                }
-            }
-            else
-            {
-                showToast("Silakan pilih properti terlebih dahulu.");
-            }
-        }
-        else if (step === 5) {
-            console.log(kontakPelanggan);
             if(isEmptyObject(kontakPelanggan))
             {
                 showToast("Silahkan pilih kontak yang akan dihubungi teknisi");
@@ -340,17 +300,45 @@
                 showToast("Silahkan pilih Alamat yang akan dikunjungi teknisi");
                 return false;
             }
-
             
-
-            
-
-            $("#listTransaksi").html("");
-            console.log(getDataAll());
-            renderDataTransaksi(getDataAll());
-            return true;
         }
-        return false;
+        else if (step === 2) {
+            if(Keluhan.length == 0){
+                showToast("Silahkan pilih keluhan");
+                return false;
+            }
+        }
+        else if (step === 3) {
+            if(isEmptyObject(BiayaSurvey)){
+                showToast("Silahkan ceklist setuju jika ingin melanjutkan");
+                return false;
+            }
+        }
+        else if (step === 4) {
+            var tanggalLayanan = $("#tanggalLayanan").val();
+            var jamLayanan = $("#jamLayanan").val();
+            if(tanggalLayanan == "" || jamLayanan == ""){
+                showToast("Silahkan isi jadwal kunjungan");
+                return false;
+            }
+            
+            Kunjungan =
+            {
+                tanggal : tanggalLayanan,
+                jam : jamLayanan
+            }
+            
+        }
+        else if (step === 5) {
+            if(isEmptyObject(JenisProperti)){
+                showToast("Silakan pilih properti terlebih dahulu.");
+                return false;
+            }
+            
+            $("#listTransaksi").html("");
+            renderDataTransaksi(getDataAll());
+        }
+        return true;
     }
 
     function gotoBack(){

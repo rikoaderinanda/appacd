@@ -93,18 +93,30 @@
     }
 
     /* Tombol navigasi */
-    .btn-wizard {
+    @* .btn-wizard {
         min-width: 100px;
         font-weight: 500;
         border-radius: 6px;
         padding: 6px 14px;
         font-size: 14px;
-    }
+    } *@
 
     .wizard-footer {
         position: absolute;
         bottom: 15px;
         right: 15px;
+    }
+
+    .btn-wizard {
+        border-radius: 12px;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+        padding: 0.6rem 1rem;
+    }
+
+    .btn-wizard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 </style>
 
@@ -142,9 +154,11 @@
                         @await Html.PartialAsync("_InfoKontak")
                         @await Html.PartialAsync("_AlamatPelanggan")
                     </div>
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-wizard flex-fill prev-btn" onclick="gotoBack()">
+                            <i class="bi bi-arrow-left"></i> Batal
+                        </button>
+                        <button type="button" class="btn btn-primary btn-wizard flex-fill  next-btn">Lanjut</button>
                     </div>
                     
                 </div>
@@ -156,9 +170,11 @@
                     </div>                    
 
                     <!-- Tombol di pojok kanan bawah -->
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-wizard flex-fill prev-btn">
+                            <i class="bi bi-arrow-left"></i> Kembali
+                        </button>
+                        <button type="button" class="btn btn-primary btn-wizard flex-fill next-btn">Lanjut</button>
                     </div>
                 </div>
 
@@ -168,9 +184,11 @@
                     
                     @await Html.PartialAsync("_WaktuKunjunganReguler")
                     
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-wizard flex-fill prev-btn">
+                            <i class="bi bi-arrow-left"></i> Kembali
+                        </button>
+                        <button type="button" class="btn btn-primary btn-wizard flex-fill next-btn">Lanjut</button>
                     </div>
                 </div>
 
@@ -179,9 +197,11 @@
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
                     </div>
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                   <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-wizard flex-fill prev-btn">
+                            <i class="bi bi-arrow-left"></i> Kembali
+                        </button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn flex-fill">Lanjut</button>
                     </div>
                     
                 </div>
@@ -192,11 +212,18 @@
                     <div class="pb-30" id="sessionPaymentMethod">
                         @await Html.PartialAsync("_PilihMetodaPembayaran")
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-danger btn-wizard" onclick="SimpanDulu()" id="btn_simpandulu">Simpan dulu</button>
-                        <button type="button" class="btn btn-success btn-wizard">Checkout</button>
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-wizard flex-fill prev-btn">
+                            <i class="bi bi-arrow-left"></i> Kembali
+                        </button>
+                        <button type="button" class="btn btn-warning btn-wizard flex-fill" onclick="SimpanDulu()" id="btn_simpandulu">
+                            <i class="bi bi-save"></i> Simpan Dulu
+                        </button>
+                        <button type="button" class="btn btn-success btn-wizard flex-fill">
+                            <i class="bi bi-check-circle"></i> Checkout
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
