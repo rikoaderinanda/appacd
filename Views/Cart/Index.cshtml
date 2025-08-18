@@ -111,14 +111,7 @@
                             TotalReg = TotalReg+p.sub_total;
                         });
                         
-                        dtPesanan = dtPesanan +
-                        `
-                            <li class="d-flex justify-content-between border-bottom">
-                                <span>Biaya Properti ${item.properti.nama_jenis}</span>
-                                <span class="text-muted">${formatRupiah(item.properti.harga)}</span>
-                            </li>
-                        `
-                        ;
+                        
 
                         var paket = '';
                         if(Object.keys(item.paket).length > 0){
@@ -133,20 +126,20 @@
                                     <span>- ${formatRupiah(((TotalReg*item.paket.qty)*item.paket.diskon)/100)}</span>
                                 </p>
                                 <strong class="d-flex justify-content-between">
-                                    <span>Total Transaksi</span>
+                                    <span>Sub Total </span>
                                     <span class="">${formatRupiah(item.paket.total)}</span>
                                 </strong>
 
                             `;
                         }
-                        else
+                        @* else
                         {
                             paket = `
                             <strong class="d-flex justify-content-between pt-20">
                                 <span>Total Transaksi</span>
                                 <span class="">${formatRupiah(item.total_transaksi)}</span>
                             </strong>`;
-                        }
+                        } *@
                         
                         let regmember ="";
                         if(item.jenis_layanan == "MEMBER")
@@ -156,6 +149,20 @@
                         else{
                             regmember = `<span class="text-dark">Reguler</span>`;
                         }
+                        
+                        paket = paket +
+                        `
+                            <p class="d-flex justify-content-between">
+                                <span>Biaya Properti ${item.properti.nama_jenis}</span>
+                                <span>${formatRupiah(item.properti.harga)}</span>
+                            </p>
+                            
+                            <strong class="d-flex justify-content-between pt-20">
+                                <span>Total Transaksi</span>
+                                <span class="">${formatRupiah(item.total_transaksi)}</span>
+                            </strong>
+                        `
+                        ;
                         var scr = "";
                         scr =`
                             <div class="card position-relative p-3">
@@ -447,7 +454,7 @@
                     },
                     paketMember: data[0].paket
                 };
-
+                console.log(alldata);
                 Storage.set("DataTrx", alldata);
                 window.location.href = '@Url.Action("PaymentMethod", "Pembayaran")';
             }

@@ -114,6 +114,7 @@
 <!-- Footer End -->
 <script>
     var $;
+    var dataTrx = {};
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -121,10 +122,9 @@
         }
         $ = window.jQuery;
 
-        var data = Storage.get("DataTrx");
-        console.log(data);
-        if(data!= null){
-            renderDataTransaksi(data);
+        dataTrx = Storage.get("DataTrx");
+        if(!isEmptyObject(dataTrx)){
+            renderDataTransaksi(dataTrx);
         }
 
         const savedChannels = Storage.get("ChannelPayment");
@@ -157,8 +157,7 @@
 
     function renderDataTransaksi(data){
         let Total = 0;
-        console.log(data);
-        if(data.jenis_layanan == "MEMBER")
+        if(data.jenisLayanan == "MEMBER")
         {
             regmember = `<span class="text-danger">Berlangganan</span>`;
         }
@@ -170,14 +169,14 @@
                 <h5 class="card-title mb-1 fw-bold">
                     <span class="text-primary">ACD - ${formatToSixDigits(data.id)}</span>
                 </h5>
-                <button onclick="editTransaksi(${data.id})" 
+                <button onclick="editTransaksi()" 
                         class="btn btn-outline-primary btn-sm position-absolute top-0 end-0"
                         style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
                     <i class="bi bi-pencil" style="font-size: 1rem;"></i>
                 </button>
             </div>
             <p class="card-text mb-0">
-                <span class="text-dark">Layanan ${data.kategori_layanan}</span>
+                <span class="text-dark">Layanan ${data.kategoriLayanan}</span>
                 <span class="fw-semibold text-success">${regmember}</span>
             </p>
         `);
@@ -367,7 +366,11 @@
         //window.location.href = '@Url.Action("Index", "Home")';
     }
 
-    function editTransaksi (id){
-
+    function editTransaksi (){
+        if(!isEmptyObject(dataTrx)){
+            if(dataTrx.kategoriLayanan=="CUCI AC"){
+                window.location.href = '@Url.Action("CuciAc", "Layanan")';
+            }
+        }
     }
 </script>

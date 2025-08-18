@@ -38,7 +38,6 @@
     
     
     document.addEventListener('DOMContentLoaded', function () {
-      
         (async () => {
             try {
 
@@ -153,7 +152,8 @@
                                 <p>Jumlah AC</p>
                                 <div class="input-group input-group-sm mb-2">
                                     <button class="btn btn-outline-primary minus" type="button">-</button>
-                                    <input type="text" class="form-control text-center" 
+                                    <input type="text" class="form-control text-center"
+                                        id = "InputQtyLayanan${item.id}" 
                                         value="0" 
                                         data-diskon=${item.diskon}
                                         data-harga=${item.harga_satuan}
@@ -163,7 +163,7 @@
                                         >
                                     <button class="btn btn-outline-primary plus" type="button">+</button>
                                 </div>
-                                <span class="total-harga fw-bold">${formatRupiah(0)}</span>
+                                <span class="total-harga fw-bold" id="SubTotal${item.id}">${formatRupiah(0)}</span>
                             </div>
                         </div>
                     </div>
@@ -209,8 +209,10 @@
         const totalHarga = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
         $("#TotalHargaReguler").text(formatRupiah(totalHarga));
         TotalHargaAkhir = totalHarga;
-        ShowHideBerlangganan(data.totalQty);
+        const totalQty = cartReguler.reduce((sum, item) => sum + (item.qty), 0);
+        ShowHideBerlangganan(totalQty);
     }
+    
     function initHandleEventButtonPlusMinus(){
             let totalQty = 0;
             

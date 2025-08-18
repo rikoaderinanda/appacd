@@ -56,7 +56,6 @@
 <script>
     const tanggalInput = document.getElementById("tanggalLayanan");
     const tanggalInputAwalBerlangganan = document.getElementById("tanggalAwal");
-    
 
     // Set minimal tanggal = hari ini
     const today = new Date();
@@ -98,9 +97,11 @@
         }
     });
 
-
+    document.addEventListener('DOMContentLoaded', function () {
+        generateJamOptions(8, 17,"jamLayanan");
+    });
     // Default saat load (tanggal belum dipilih)
-    generateJamOptions(8, 17,"jamLayanan");
+    
 
     document.getElementById('tanggalAwal').addEventListener('change', function () {
         if (!paketDipilih) {
@@ -175,6 +176,7 @@
             });
 
             listJadwal.appendChild(item);
+            
             document.getElementById(`Tgl${i}`).setAttribute("min", minDate);
             generateJamOptions(8, 17,`Jam${i}`);
         }

@@ -274,7 +274,7 @@
             });
         });
     }
-    
+
     function validasiStep(step) {
         if (step === 1) {
             if(Keluhan.length > 0){
@@ -379,7 +379,8 @@
                 Reguler: cartReguler,
                 Member: {}
             },
-            paketMember:{}
+            paketMember:{},
+            keluhanPerbaikan:Keluhan
         }
         return alldata;
     }
@@ -464,11 +465,6 @@
             method: 'POST',
             data:getDataAll(),
             success: function (res) {
-                //console.log(res);
-                @* {
-                    "message": "Pemesanan berhasil disimpan",
-                    "id": 46
-                } *@
                 Swal.fire({
                     title: '<strong>🎉 Berhasil Disimpan!</strong>',
                     html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',

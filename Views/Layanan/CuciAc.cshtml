@@ -114,20 +114,21 @@
             <div class="wizard-steps">
                 <div class="wizard-step active" data-step="1">
                     <div class="step-number">1</div>
-                    <div class="step-title">Layanan</div>
+                    <div class="step-title">Alamat</div>
                 </div>
                 <div class="wizard-step" data-step="2">
                     <div class="step-number">2</div>
-                    <div class="step-title">Jadwal</div>
+                    <div class="step-title">Layanan</div>
                 </div>
                 <div class="wizard-step" data-step="3">
                     <div class="step-number">3</div>
-                    <div class="step-title">Properti</div>
+                    <div class="step-title">Jadwal</div>
                 </div>
                 <div class="wizard-step" data-step="4">
                     <div class="step-number">4</div>
-                    <div class="step-title">Alamat</div>
+                    <div class="step-title">Properti</div>
                 </div>
+                
                 <div class="wizard-step" data-step="5">
                     <div class="step-number">5</div>
                     <div class="step-title">Bayar</div>
@@ -135,8 +136,20 @@
             </div>
 
             <div id="wizardForm">
-                <!-- STEP 1 -->
-                <div class="wizard-content" data-step="1" style="position: relative; min-height: 200px;">
+                <!-- STEP 1 Alamat dan Kontak-->
+                <div class="wizard-content d-none" data-step="1">
+                    <div class="pb-30" id="sessionDataPelanggan">
+                        @await Html.PartialAsync("_InfoKontak")
+                        @await Html.PartialAsync("_AlamatPelanggan")
+                    </div>
+                    <div class="d-flex justify-content-between pt-30">
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
+                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
+                    </div>
+                    
+                </div>
+                <!-- STEP 2 Jasa dan layanan-->
+                <div class="wizard-content" data-step="2" style="position: relative; min-height: 200px;">
                     <div class="" id="sessionJasaLayanan">
                         @await Html.PartialAsync("_JasaLayananV2")
                         @await Html.PartialAsync("_berlangganan")
@@ -144,13 +157,13 @@
 
                     <!-- Tombol di pojok kanan bawah -->
                     <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
+                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
                         <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
                     </div>
                 </div>
 
-                <!-- STEP 2 -->
-                <div class="wizard-content d-none" data-step="2">
+                <!-- STEP 3 Kunjungan Reguler -->
+                <div class="wizard-content d-none" data-step="3">
                     
                     
                     @await Html.PartialAsync("_WaktuKunjunganReguler")
@@ -161,8 +174,8 @@
                     </div>
                 </div>
 
-                <!-- STEP 3 -->
-                <div class="wizard-content d-none" data-step="3">
+                <!-- STEP 3 Jenis Properti-->
+                <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
                     </div>
@@ -173,18 +186,7 @@
                     
                 </div>
 
-                <!-- STEP 4 -->
-                <div class="wizard-content d-none" data-step="4">
-                    <div class="pb-30" id="sessionDataPelanggan">
-                        @await Html.PartialAsync("_InfoKontak")
-                        @await Html.PartialAsync("_AlamatPelanggan")
-                    </div>
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                    
-                </div>
+                
 
                 <div class="wizard-content d-none" data-step="5">
                     <div class="pb-30" id="sessionPaymentMethod">
@@ -204,6 +206,8 @@
 <script>
     var $;
     let currentStep = 1;
+
+    let IdTrx = 0;
     
     let RegAtauMember="REG";
     let TotalHargaAkhir = 0;
@@ -215,11 +219,14 @@
 
     let KunjunganReg = {};
     let KunjunganMember = [];
+
     let JenisProperti = {};
+
     let kontakPelanggan = {};
     let AlamatPelanggan = {};
+    let keluhanPerbaikan = [];
     let IdUser;
-
+    
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -228,10 +235,40 @@
         $ = window.jQuery;
         eventstep_btn();
         showStep(currentStep);
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+            return false;
+        }
+        else {
+            IdUser = user.id;
+            setDataTrx();
+            loadAlamat();
+            LoadDataKontak();
+        }
     });
     
-    function showStep(step) {
+    function setDataTrx(){
+        var DataTrx = Storage.get("DataTrx");
+        
+        if(!isEmptyObject(DataTrx) && DataTrx != null){
+            console.log(DataTrx);
+            kontakPelanggan = DataTrx.kontakPelanggan;
+            AlamatPelanggan = DataTrx.alamatPelanggan;
+            cartReguler = DataTrx.cartItem.Reguler;
+            KunjunganReg = DataTrx.kunjungan.Reguler;
+            KunjunganMember = DataTrx.kunjungan.Member;
+            JenisProperti = DataTrx.jenisProperti;
+            IdTrx = DataTrx.id;
+            TotalHargaAkhir = DataTrx.totalTransaksi;
+            paketMember = DataTrx.paketMember;
+            RegAtauMember = DataTrx.jenisLayanan;
+        }
+    }
 
+    function showStep(step) {
         document.querySelectorAll('.wizard-content').forEach(el => {
             el.classList.toggle('d-none', el.dataset.step != step);
         });
@@ -270,17 +307,57 @@
     }
 
     function validasiStep(step) {
-        if (step === 1) {
+        if(step === 1){
+            if(isEmptyObject(kontakPelanggan))
+            {
+                showToast("Silahkan pilih kontak yang akan dihubungi teknisi");
+                return false;
+            }
+            
+            if(isEmptyObject(AlamatPelanggan)){
+                showToast("Silahkan pilih Alamat yang akan dikunjungi teknisi");
+                return false;
+            }
+            let subtotal = 0;
+            cartReguler.forEach(item => {
+                $(`#InputQtyLayanan${item.id}`).val(item.qty);
+                $(`#SubTotal${item.id}`).text(formatRupiah(item.sub_total));
+                subtotal = subtotal + item.sub_total;
+            });
+            $(`#TotalHargaReguler`).text(formatRupiah(subtotal));
+
+            const totalQty = cartReguler.reduce((sum, item) => sum + (item.qty), 0);        
+            ShowHideBerlangganan(totalQty);
+            
+            if(!isEmptyObject(paketMember)){
+                document.getElementById("cekLangganan").checked = true;
+                document.getElementById("paketLangganan").style.display = "flex";
+                //document.getElementById("jadwalLangganan").style.display = "flex";
+                document.getElementById('jadwalLangganan').style.display = '';
+                //document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
+                //$(`#paket${paketMember.id}`).classList.add('active');
+                $('.card-option').removeClass('active');
+                $(`#paket${paketMember.id}`).addClass('active');
+            }
+            else
+            {
+                TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
+            }
+
+            console.log(TotalHargaAkhir);
+        }
+        if (step === 2 ) {
             console.log(cartReguler);
             console.log(RegAtauMember);
             console.log(TotalHargaAkhir);
             console.log(cartMember);
-            //var data = Storage.get("cartReguler");
-            // Pastikan data ada dan berupa array
             if (Array.isArray(cartReguler) && cartReguler.length > 0 && cartReguler != null) {
                 if(RegAtauMember == "MEMBER"){
                     if(paketDipilih != null && paketDipilih != ""){
-                        return true; // Lolos validasi
+                        console.log(paketMember);
+                        TotalHargaAkhir = paketMember.total;
+                        //console.log(TotalHargaAkhir);
+                        //return true; // Lolos validasi
                     }
                     else
                     {
@@ -290,7 +367,12 @@
                 }
                 else
                 {
-                    return true; // Lolos validasi
+                    if(!isEmptyObject(KunjunganReg) && KunjunganReg != null){
+                        $("#tanggalLayanan").val(KunjunganReg.tanggal);
+                        $("#jamLayanan").val(KunjunganReg.jam);
+                    }
+                    TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
+                    //return true; // Lolos validasi
                 }
                 
             } 
@@ -298,9 +380,9 @@
                 showToast("Silahkan pilih layanan");
                 return false;    
             }
-            
+            console.log(TotalHargaAkhir);
         }
-        else if(step === 2){
+        else if(step === 3){
             if(RegAtauMember == "REG"){
                 var tanggalLayanan = $("#tanggalLayanan").val();
                 var jamLayanan = $("#jamLayanan").val();
@@ -310,8 +392,18 @@
                         tanggal : tanggalLayanan,
                         jam : jamLayanan
                     }
-                    console.log(KunjunganReg);
-                    return true;
+
+                    if(!isEmptyObject(JenisProperti)){
+                        document.querySelector(
+                            `input[name="JenisProperti"][value="${JenisProperti.nama_jenis}:${JenisProperti.harga}:${JenisProperti.id}"]`
+                        ).checked = true;
+                        TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0)+JenisProperti.harga;
+                    }
+                    else
+                    {
+                        TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
+                    }
+                    //return true;
                 }
                 else{
                     showToast("Silahkan isi jadwal kunjungan");
@@ -340,8 +432,17 @@
                     }
                     
                     if(KunjunganMember.length>0){
-                        console.log(KunjunganMember);
-                        return true;
+                        if(!isEmptyObject(JenisProperti)){
+                            document.querySelector(
+                                `input[name="JenisProperti"][value="${JenisProperti.nama_jenis}:${JenisProperti.harga}:${JenisProperti.id}"]`
+                            ).checked = true;
+                            console.log(paketMember);
+                            TotalHargaAkhir = paketMember.total + JenisProperti.harga;
+                        }
+                        else{
+                            TotalHargaAkhir = paketMember.total;
+                        }
+                        //return true;
                     }
                     else
                     {
@@ -355,42 +456,26 @@
                     return false;
                 }
             }
-            
-        }
-        else if(step === 3){
-            if (JenisProperti!= null) {
-                console.log(JenisProperti);
-                var user = getUserInfo();
-                if (!isValidUser(user)) {
-                    $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
-                    $("#btnClsModalLogin").show();
-                    $('#ModalLogin').modal('show');
-                    return false;
-                }
-                else {
-                    IdUser = user.id;
-                    loadAlamat();
-                }
-                return true; // Lolos validasi
-            } else {
-                showToast("Silakan pilih properti terlebih dahulu.");
-                return false; // Tidak lolos validasi
-            }
+            console.log(TotalHargaAkhir);
         }
         else if(step ===4){
-            if(isEmptyObject(kontakPelanggan))
+            console.log(JenisProperti);
+            if (JenisProperti== null && isEmptyObject(JenisProperti)) {
+                showToast("Silakan pilih properti terlebih dahulu.");
+                return false; // Lolos validasi
+            }
+            if(RegAtauMember =="REG"){
+                TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0)+JenisProperti.harga;
+            }
+            else
             {
-                showToast("Silahkan pilih kontak yang akan dihubungi teknisi");
-                return false;
+                TotalHargaAkhir = paketMember.total + JenisProperti.harga;
             }
-            if(isEmptyObject(AlamatPelanggan)){
-                showToast("Silahkan pilih Alamat yang akan dikunjungi teknisi");
-                return false;
-            }
+            //TotalHargaAkhir = TotalHargaAkhir + JenisProperti.harga;
 
             var alldata =
             {
-                id: 0,
+                id: IdTrx,
                 createByIdUser: IdUser,
                 kategoriLayanan: "CUCI AC",
                 jenisLayanan: RegAtauMember,
@@ -408,7 +493,8 @@
                     Reguler: cartReguler,
                     Member: cartMember
                 },
-                paketMember:paketMember
+                paketMember:paketMember,
+                keluhanPerbaikan:keluhanPerbaikan
             }
             console.log(alldata);
             $("#listTransaksi").html("");
@@ -422,7 +508,7 @@
         
         var alldata =
         {
-            id: 0,
+            id: IdTrx,
             createByIdUser: IdUser,
             kategoriLayanan: "CUCI AC",
             jenisLayanan: RegAtauMember,
@@ -440,9 +526,10 @@
                 Reguler: cartReguler,
                 Member: cartMember
             },
-            paketMember:paketMember
+            paketMember:paketMember,
+            keluhanPerbaikan:keluhanPerbaikan
         }
-
+        console.log(alldata);
         callApi({
             url: '/api/Transaction/SimpanDulu',
             method: 'POST',
@@ -494,7 +581,6 @@
     function gotoBack(){
         window.location.href = '@Url.Action("Index", "Home")';
     }
-
 
     function renderDataTransaksi(data){
         let Total = 0;

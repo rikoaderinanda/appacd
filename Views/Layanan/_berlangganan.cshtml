@@ -92,7 +92,8 @@
             TotalHargaAkhir = 0;
             paketDipilih = null;
             KunjunganReg = null;
-            
+            TotalHargaReguler = cartReguler.reduce((sum, item) => sum + (item.after_diskon * item.qty), 0);
+            $(`#TotalHargaReguler`).text(formatRupiah(TotalHargaReguler));
         }
         else{
             //$("#jadwalLangganan").hide();
@@ -101,7 +102,9 @@
             paketDipilih = null;
             cartMember = null;
             KunjunganMember = [];
-            TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.after_diskon * item.qty), 0);
+            TotalHargaReguler = cartReguler.reduce((sum, item) => sum + (item.after_diskon * item.qty), 0);
+            $(`#TotalHargaReguler`).text(formatRupiah(TotalHargaReguler));
+            paketMember = {};
         }
     });
 
@@ -173,6 +176,7 @@
                     var scr =`
                         <div class="col-md-4">
                             <div class="card card-option shadow-sm h-100" 
+                                id = "paket${item.id}"
                                 data-id ="${item.id}"
                                 data-nama_layanan ="${item.nama_layanan}"
                                 data-nama_paket ="${item.nama_paket}"
@@ -202,6 +206,37 @@
                     
                 }).join('');
                 $("#paketLangganan").html(html);
+                if(!isEmptyObject(paketMember)){
+                    console.log(KunjunganMember);
+                    console.log(paketMember);
+                    document.querySelectorAll('.card-option').forEach(c => c.classList.remove('active'));
+                    const el = document.querySelector(`#paket${paketMember.id}`);
+                    el.classList.add('active');
+                    paketDipilih = el.getAttribute('data-value');
+                    document.getElementById('jadwalLangganan').style.display = '';
+                    $("#sessionWaktuKunjunganReguler").hide();
+                    // Reset input tanggal
+                    if(KunjunganMember.length>0){
+                        generateJadwal(new Date(KunjunganMember[0].tgl));
+                        document.getElementById('tanggalAwal').value = KunjunganMember[0].tgl;
+                        
+                        KunjunganMember.forEach((item, i) => {
+                            console.log(`Tgl${(item.idx-1)}`);
+                            document.getElementById(`Tgl${(item.idx-1)}`).value = item.tgl;
+                            document.getElementById(`Tgl${(item.idx-1)}`).setAttribute("min", minDate);
+                            generateJamOptions(8, 17,`Jam${(item.idx-1)}`);
+                            document.getElementById(`Jam${(item.idx-1)}`).value = item.jam;
+                        });
+                        
+                    }
+                    else{
+                        document.getElementById('tanggalAwal').value = '';
+                    }
+
+                    // Kosongkan list jadwal
+                    @* document.getElementById('listJadwal').innerHTML =
+                        `<p class="text-muted small m-0 p-3">Jadwal akan muncul setelah memilih paket & tanggal mulai.</p>`; *@
+                }
             },
             error: function () {
                 $('#paketLangganan').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');

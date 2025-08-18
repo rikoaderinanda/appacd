@@ -72,6 +72,10 @@ const btnNewKontak = document.getElementById("btnNewKontak");
 const btnSimpanKontak = document.getElementById("btnSimpanKontak");
 const formKontak = document.getElementById("formKontak");
 
+document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.checked = false;
+});
+
 $(document).on('click', 'input[name="pilihKontak"]', function() {
     var selectedValue = $(this).val();
     var values = selectedValue.split(':');
@@ -143,7 +147,7 @@ function LoadDataKontak(){
             url: '/api/Layanan/ListKontakUser?Id='+IdUser,
             method: 'GET',
             success: function (data) {
-                //console.log(data);
+                console.log(data);
                 var html = $.map(data, function (item) {
                     var scr = `
                         <label class="list-group-item d-flex align-items-start position-relative">
@@ -169,7 +173,14 @@ function LoadDataKontak(){
                     `;
                 }
                 $("#ListKontak").html(html);
-                kontakPelanggan = {};
+                if(!isEmptyObject(kontakPelanggan)){
+                    document.querySelector(
+                        `input[name="pilihKontak"][value="${kontakPelanggan.id}:${kontakPelanggan.nama}:${kontakPelanggan.nomor}"]`
+                    ).checked = true;
+                }
+                else{
+                    kontakPelanggan = {};
+                }
             },
             error: function () {
                 $('#ListKontak').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');

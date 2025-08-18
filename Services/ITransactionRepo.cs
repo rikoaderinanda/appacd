@@ -25,10 +25,10 @@ namespace appacd.Services
 
         public async Task<int> SimpanAsync(LogTransaction data)
         {
-            var query =@"
-                INSERT INTO 
-                log_transaction 
+            var query = @"
+                INSERT INTO log_transaction 
                 (
+                    id,
                     create_by_id_user,
                     kategori_layanan,
                     jenis_layanan,
@@ -40,10 +40,12 @@ namespace appacd.Services
                     alamat_pelanggan,
                     kunjungan,
                     cart_item,
-                    paket_member
+                    paket_member,
+                    keluhan_perbaikan
                 ) 
                 VALUES 
                 (
+                    NULLIF(@Id, 0), -- kalau 0 => NULL (biar auto generate)
                     @CreateByIdUser,
                     @KategoriLayanan,
                     @JenisLayanan,
@@ -51,16 +53,32 @@ namespace appacd.Services
                     @Status,
                     @StatusDeskripsi,
                     @JenisProperti::jsonb,
-                    @kontakPelanggan::jsonb,
+                    @KontakPelanggan::jsonb,
                     @AlamatPelanggan::jsonb,
-                    @kunjungan::jsonb,
-                    @cartItem::jsonb,
-                    @paketMember::jsonb
+                    @Kunjungan::jsonb,
+                    @CartItem::jsonb,
+                    @PaketMember::jsonb,
+                    @KeluhanPerbaikan::jsonb
                 )
+                ON CONFLICT (id) DO UPDATE SET
+                    kategori_layanan   = EXCLUDED.kategori_layanan,
+                    jenis_layanan      = EXCLUDED.jenis_layanan,
+                    total_transaksi    = EXCLUDED.total_transaksi,
+                    status             = EXCLUDED.status,
+                    status_deskripsi   = EXCLUDED.status_deskripsi,
+                    jenis_properti     = EXCLUDED.jenis_properti,
+                    kontak_pelanggan   = EXCLUDED.kontak_pelanggan,
+                    alamat_pelanggan   = EXCLUDED.alamat_pelanggan,
+                    kunjungan          = EXCLUDED.kunjungan,
+                    cart_item          = EXCLUDED.cart_item,
+                    paket_member       = EXCLUDED.paket_member,
+                    keluhan_perbaikan  = EXCLUDED.keluhan_perbaikan
                 RETURNING id;
             ";
+
             var param = new
             {
+                Id = data.Id,
                 CreateByIdUser = data.CreateByIdUser,
                 KategoriLayanan = data.KategoriLayanan,
                 JenisLayanan = data.JenisLayanan,
@@ -68,16 +86,18 @@ namespace appacd.Services
                 Status = data.Status,
                 StatusDeskripsi = data.StatusDeskripsi,
                 JenisProperti = JsonConvert.SerializeObject(data.JenisProperti),
-                kontakPelanggan = JsonConvert.SerializeObject(data.kontakPelanggan),
+                KontakPelanggan = JsonConvert.SerializeObject(data.kontakPelanggan),
                 AlamatPelanggan = JsonConvert.SerializeObject(data.alamatPelanggan),
-                kunjungan = JsonConvert.SerializeObject(data.kunjungan),
-                cartItem = JsonConvert.SerializeObject(data.cartItem),
-                paketMember = JsonConvert.SerializeObject(data.paketMember)
+                Kunjungan = JsonConvert.SerializeObject(data.kunjungan),
+                CartItem = JsonConvert.SerializeObject(data.cartItem),
+                PaketMember = JsonConvert.SerializeObject(data.paketMember),
+                KeluhanPerbaikan = JsonConvert.SerializeObject(data.keluhanPerbaikan)
             };
-            
+
             int Id = await _db.ExecuteScalarAsync<int>(query, param);
             return Id;
         }
+
 
         public async Task<IEnumerable<dynamic>> GetDetail_ById(string id)
         {

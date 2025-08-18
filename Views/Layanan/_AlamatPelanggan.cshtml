@@ -183,8 +183,6 @@ function loadAlamat(){
         url: '/api/Layanan/ListAlamat?Id='+IdUser,
         method: 'GET',
         success: function (data) {
-            //console.log(data);
-            
             var html = $.map(data, function (item) {
                 var scr =`
                     <label class="list-group-item d-flex align-items-start position-relative">
@@ -215,7 +213,14 @@ function loadAlamat(){
                 html = `<p class="text-center text-muted py-4">tidak ada alamat yang disimpan...</p>`;
             }
             $("#ListAlamat").html(html);
-            AlamatPelanggan = {};
+            if(!isEmptyObject(AlamatPelanggan)){
+                document.querySelector(
+                    `input[name="pilihAlamat"][value="${AlamatPelanggan.id}:${AlamatPelanggan.judul}:${AlamatPelanggan.alamat}:${AlamatPelanggan.kelurahan_nama}:${AlamatPelanggan.kecamatan_nama}:${AlamatPelanggan.kota_nama}:${AlamatPelanggan.provinsi_nama}"]`
+                ).checked = true;
+            }
+            else{
+                AlamatPelanggan = {};
+            }
         },
         error: function () {
             $('#ListAlamat').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');

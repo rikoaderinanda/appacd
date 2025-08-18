@@ -19,6 +19,7 @@ namespace appacd.Models
         public object? kunjungan { get; set; } //Json data
         public object? cartItem { get; set; } //json data
         public object? paketMember { get; set; } //json data
+        public object? keluhanPerbaikan { get; set; } //json data
 
     }
 }
