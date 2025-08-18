@@ -460,7 +460,7 @@
         }
         else if(step ===4){
             console.log(JenisProperti);
-            if (JenisProperti== null && isEmptyObject(JenisProperti)) {
+            if (JenisProperti== null || isEmptyObject(JenisProperti)) {
                 showToast("Silakan pilih properti terlebih dahulu.");
                 return false; // Lolos validasi
             }

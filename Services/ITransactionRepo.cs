@@ -25,56 +25,66 @@ namespace appacd.Services
 
         public async Task<int> SimpanAsync(LogTransaction data)
         {
-            var query = @"
-                INSERT INTO log_transaction 
-                (
-                    id,
-                    create_by_id_user,
-                    kategori_layanan,
-                    jenis_layanan,
-                    total_transaksi,
-                    status,
-                    status_deskripsi,
-                    jenis_properti,
-                    kontak_pelanggan,
-                    alamat_pelanggan,
-                    kunjungan,
-                    cart_item,
-                    paket_member,
-                    keluhan_perbaikan
-                ) 
-                VALUES 
-                (
-                    NULLIF(@Id, 0), -- kalau 0 => NULL (biar auto generate)
-                    @CreateByIdUser,
-                    @KategoriLayanan,
-                    @JenisLayanan,
-                    @TotalTransaksi,
-                    @Status,
-                    @StatusDeskripsi,
-                    @JenisProperti::jsonb,
-                    @KontakPelanggan::jsonb,
-                    @AlamatPelanggan::jsonb,
-                    @Kunjungan::jsonb,
-                    @CartItem::jsonb,
-                    @PaketMember::jsonb,
-                    @KeluhanPerbaikan::jsonb
-                )
-                ON CONFLICT (id) DO UPDATE SET
-                    kategori_layanan   = EXCLUDED.kategori_layanan,
-                    jenis_layanan      = EXCLUDED.jenis_layanan,
-                    total_transaksi    = EXCLUDED.total_transaksi,
-                    status             = EXCLUDED.status,
-                    status_deskripsi   = EXCLUDED.status_deskripsi,
-                    jenis_properti     = EXCLUDED.jenis_properti,
-                    kontak_pelanggan   = EXCLUDED.kontak_pelanggan,
-                    alamat_pelanggan   = EXCLUDED.alamat_pelanggan,
-                    kunjungan          = EXCLUDED.kunjungan,
-                    cart_item          = EXCLUDED.cart_item,
-                    paket_member       = EXCLUDED.paket_member,
-                    keluhan_perbaikan  = EXCLUDED.keluhan_perbaikan
-                RETURNING id;
-            ";
+            string query;
+
+            if (data.Id == 0) // INSERT baru
+            {
+                query = @"
+                    INSERT INTO log_transaction 
+                    (
+                        create_by_id_user,
+                        kategori_layanan,
+                        jenis_layanan,
+                        total_transaksi,
+                        status,
+                        status_deskripsi,
+                        jenis_properti,
+                        kontak_pelanggan,
+                        alamat_pelanggan,
+                        kunjungan,
+                        cart_item,
+                        paket_member,
+                        keluhan_perbaikan
+                    ) 
+                    VALUES 
+                    (
+                        @CreateByIdUser,
+                        @KategoriLayanan,
+                        @JenisLayanan,
+                        @TotalTransaksi,
+                        @Status,
+                        @StatusDeskripsi,
+                        @JenisProperti::jsonb,
+                        @KontakPelanggan::jsonb,
+                        @AlamatPelanggan::jsonb,
+                        @Kunjungan::jsonb,
+                        @CartItem::jsonb,
+                        @PaketMember::jsonb,
+                        @KeluhanPerbaikan::jsonb
+                    )
+                    RETURNING id;";
+            }
+            else // UPDATE existing
+            {
+                query = @"
+                    UPDATE log_transaction
+                    SET
+                        kategori_layanan   = @KategoriLayanan,
+                        jenis_layanan      = @JenisLayanan,
+                        total_transaksi    = @TotalTransaksi,
+                        status             = @Status,
+                        status_deskripsi   = @StatusDeskripsi,
+                        jenis_properti     = @JenisProperti::jsonb,
+                        kontak_pelanggan   = @KontakPelanggan::jsonb,
+                        alamat_pelanggan   = @AlamatPelanggan::jsonb,
+                        kunjungan          = @Kunjungan::jsonb,
+                        cart_item          = @CartItem::jsonb,
+                        paket_member       = @PaketMember::jsonb,
+                        keluhan_perbaikan  = @KeluhanPerbaikan::jsonb,
+                        updated_at         = now()
+                    WHERE id = @Id
+                    RETURNING id;";
+            }
 
             var param = new
             {
