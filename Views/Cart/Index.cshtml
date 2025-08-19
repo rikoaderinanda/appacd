@@ -187,7 +187,8 @@
                                     </button>
 
                                     <!-- Tombol Detail -->
-                                    <button onclick="DetailPesanan(${item.id});" class="btn btn-outline-primary btn-sm"
+                                    <button onclick="DetailPesanan(${item.id},"btnDetail${item.id}");" class="btn btn-outline-primary btn-sm"
+                                        id="btnDetail${item.id}"
                                         style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
                                         <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
                                     </button>
@@ -404,66 +405,4 @@
             }
         });
     }
-
-    async function getDataTransaksi(id) {
-        return new Promise((resolve, reject) => {
-            callApi({
-                url: `/api/Transaction/GetDetailTrx_ById?id=` + id,
-                method: 'GET',
-                success: function (res) {
-                    resolve(res); // kembalikan data API
-                },
-                error: function () {
-                    Swal.fire('Gagal!', 'Proses gagal.', 'warning');
-                    reject('API Error');
-                },
-                onBeforeSend: function () {
-                    const btn = $(`#btnDelete${id}`);
-                    btn.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`);
-                    btn.prop('disabled', true);
-                    @* $('#channelAccordion').html('<p class="text-center text-muted py-4">Sedang memuat data...</p>'); *@
-                }
-            });
-        });
-    }
-
-    async function DetailPesanan(id){
-        
-        await new Promise(r => setTimeout(r, 0));
-        
-        try {
-            let data = await getDataTransaksi(id);
-
-            if (data && data.length > 0 && data[0]) {
-                const alldata = {
-                    id: data[0].id,
-                    createByIdUser: data[0].create_by_id_user,
-                    kategoriLayanan: data[0].kategori_layanan,
-                    jenisLayanan: data[0].jenis_layanan,
-                    totalTransaksi: data[0].total_transaksi,
-                    jenisProperti: data[0].properti,
-                    kontakPelanggan: data[0].kontak,
-                    alamatPelanggan: data[0].alamat_pelanggan,
-                    kunjungan: {
-                        Reguler: data[0].kunjungan.reguler,
-                        Member: data[0].kunjungan.member
-                    },
-                    cartItem: {
-                        Reguler: data[0].cart_items,
-                        Member: {}
-                    },
-                    paketMember: data[0].paket
-                };
-                console.log(alldata);
-                Storage.set("DataTrx", alldata);
-                window.location.href = '@Url.Action("PaymentMethod", "Pembayaran")';
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    
-
-
 </script>

@@ -61,5 +61,19 @@ namespace appacd.api
                 return StatusCode(500, new { message = "Terjadi kesalahan", error = ex.Message });
             }
         }
+
+        [HttpPut("Checkout")]
+        public async Task<IActionResult> Checkout([FromBody] ReqCheckout request)
+        {
+            try
+            {
+                var res = await _repo.Checkout(request);
+                return Ok(new { message = "Checkout berhasil", success = res });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan", error = ex.Message });
+            }
+        }
     }
 }

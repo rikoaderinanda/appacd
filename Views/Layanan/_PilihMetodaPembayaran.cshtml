@@ -83,7 +83,7 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         // Set total awal
-        updateTotalTransaksi(185000);
+        //updateTotalTransaksi(185000);
 
         // Load channel payment
         const savedChannels = Storage.get("ChannelPayment");
@@ -112,6 +112,8 @@
 
             list.style.display = isHidden ? "block" : "none";
             icon.className = isHidden ? "bi bi-chevron-up" : "bi bi-chevron-down";
+
+            
         });
     });
 

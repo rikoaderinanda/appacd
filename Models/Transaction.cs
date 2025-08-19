@@ -22,4 +22,11 @@ namespace appacd.Models
         public object? keluhanPerbaikan { get; set; } //json data
 
     }
+
+    public class ReqCheckout
+    {
+        public long Id { get; set; } // bigserial → long
+        public string NoRefCheckout { get; set; }
+        public object? TripayReq {get;set;}
+    }
 }

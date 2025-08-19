@@ -13,7 +13,7 @@ namespace appacd.Services
         Task<int> VerifikasiPembayaran(int id);
 
         Task<int> HapusTrackingById(int id);
-        Task<IEnumerable<dynamic>> GetTrackingById(int Id);
+        Task<IEnumerable<dynamic>> GetTrackingById(string Id);
         Task<IEnumerable<dynamic>> GetTracking(string id);
         Task<int> CheckoutAsync(int Id,string NoRefCheckout);
 
@@ -198,29 +198,54 @@ namespace appacd.Services
                 throw new ArgumentException("Invalid user ID");
 
             var sql = @"
-                SELECT a.*, b.status_tracking, b.status_tracking_color 
-                FROM pemesanan a 
-                LEFT JOIN list_status_order b ON b.id = a.status_order
-                WHERE a.status_order > 0
-                AND a.order_by_user_id = @id
-                ORDER BY a.status_order ASC
+                SELECT 
+                    a.id, 
+                    a.kategori_layanan,
+                    a.jenis_layanan,
+                    a.total_transaksi,
+                    a.status,
+                    (a.cart_item::jsonb)->'Reguler' AS cart_items,
+                    a.paket_member::jsonb AS paket,
+                    a.jenis_properti::jsonb AS properti,
+                    a.tripay_noreff,
+                    a.tripay_reff ::jsonb AS tripay_data,
+                    b.status_tracking, b.status_tracking_color
+                FROM log_transaction a 
+                    LEFT JOIN list_status_order b ON b.id = a.status 
+                    WHERE a.status  > 0
+                    AND a.create_by_id_user  = @Id::bigint
+                ORDER BY a.status asc
             ";
-            return await _db.QueryAsync<dynamic>(sql, new { id = userId });
-        }
 
-        public async Task<IEnumerable<dynamic>> GetTrackingById(int Id)
+            var param = new { Id = id };
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+            return JsonColumnParser.ParseJsonColumns(result);
+        }
+        
+        public async Task<IEnumerable<dynamic>> GetTrackingById(string Id)
         {
             var sql = @"
-                select a.*,b.status_tracking,b.status_tracking_color from pemesanan a 
-                left join list_status_order b on b.id = a.status_order
-                where a.status_order > 0 and a.id = @Id
+                SELECT 
+                    a.id, 
+                    a.kategori_layanan,
+                    a.jenis_layanan,
+                    a.total_transaksi,
+                    a.status,
+                    a.cart_item::jsonb AS cart_items,
+                    a.paket_member::jsonb AS paket,
+                    a.jenis_properti::jsonb AS properti,
+                    a.tripay_noreff,
+                    a.tripay_reff::jsonb,
+                    b.status_tracking, b.status_tracking_color 
+                FROM log_transaction a 
+                    LEFT JOIN list_status_order b ON b.id = a.status 
+                    WHERE a.status  > 0
+                    and a.id = @Id::bigint
+                ORDER BY a.status asc
             ";
-            var param = new
-            {
-                Id = Id
-            };
-
-            return await _db.QueryAsync<dynamic>(sql, param);
+            var param = new { Id = Id };
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+            return JsonColumnParser.ParseJsonColumns(result);
         }
 
         public async Task<int> HapusPemesananAsync(int id)
@@ -271,6 +296,7 @@ namespace appacd.Services
             return resId;
         }
 
+        
         public async Task<IEnumerable<dynamic>> GetStepStatus()
         {
             var sql = "SELECT * FROM list_status_order order by id asc";

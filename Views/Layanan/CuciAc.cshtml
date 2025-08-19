@@ -212,14 +212,14 @@
                     <div class="pb-30" id="sessionPaymentMethod">
                         @await Html.PartialAsync("_PilihMetodaPembayaran")
                     </div>
-                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3" id="panelSelesai">
                         <button type="button" class="btn btn-outline-secondary btn-wizard flex-fill prev-btn">
                             <i class="bi bi-arrow-left"></i> Kembali
                         </button>
                         <button type="button" class="btn btn-warning btn-wizard flex-fill" onclick="SimpanDulu()" id="btn_simpandulu">
                             <i class="bi bi-save"></i> Simpan Dulu
                         </button>
-                        <button type="button" class="btn btn-success btn-wizard flex-fill">
+                        <button type="button" class="btn btn-success btn-wizard flex-fill" onclick="Checkout();" id="btnCheckOut">
                             <i class="bi bi-check-circle"></i> Checkout
                         </button>
                     </div>
@@ -235,8 +235,10 @@
     let currentStep = 1;
 
     let IdTrx = 0;
+
+    let kategoriLayanan = "CUCI AC";
     
-    let RegAtauMember="REG";
+    let RegAtauMember ="REG";
     let TotalHargaAkhir = 0;
     
     let cartReguler = [];
@@ -252,6 +254,7 @@
     let kontakPelanggan = {};
     let AlamatPelanggan = {};
     let keluhanPerbaikan = [];
+
     let IdUser;
     
     document.addEventListener('DOMContentLoaded', function () {
@@ -531,42 +534,58 @@
         return true;
     }
 
-    function SimpanDulu(){
-        
-        var alldata =
-        {
-            id: IdTrx,
-            createByIdUser: IdUser,
-            kategoriLayanan: "CUCI AC",
-            jenisLayanan: RegAtauMember,
-            totalTransaksi: TotalHargaAkhir,
-            status: 0,
-            statusDeskripsi: "DRAFT",
-            jenisProperti: JenisProperti,
-            kontakPelanggan:kontakPelanggan,
-            alamatPelanggan: AlamatPelanggan,
-            kunjungan: {
-                Reguler: KunjunganReg,
-                Member: KunjunganMember
-            },
-            cartItem: {
-                Reguler: cartReguler,
-                Member: cartMember
-            },
-            paketMember:paketMember,
-            keluhanPerbaikan:keluhanPerbaikan
-        }
-        console.log(alldata);
-        callApi({
-            url: '/api/Transaction/SimpanDulu',
-            method: 'POST',
-            data:alldata,
-            success: function (res) {
-                console.log(res);
-                @* {
-                    "message": "Pemesanan berhasil disimpan",
-                    "id": 46
-                } *@
+    async function SimpanTransaksi(data) {
+        return new Promise((resolve, reject) => {
+            callApi({
+                url: '/api/Transaction/SimpanDulu',
+                method: 'POST',
+                data: data,
+                success: function (res) {
+                    resolve(res); // return hasil sukses
+                },
+                error: function (err) {
+                    reject(err); // return error ke caller
+                },
+                onBeforeSend: function () {
+                    $("#btn_simpandulu").prop("disabled", true).text("Memproses...");
+                    $("#btnCheckOut").prop("disabled", true).text("Memproses...");
+                },
+                onComplete: function () {
+                    $("#btn_simpandulu").prop("disabled", false).text("Simpan Dulu");
+                    $("#btnCheckOut").prop("disabled", false).text("Checkout");
+                }
+            });
+        });
+    }
+
+    async function SimpanDulu() {
+        try {
+            var alldata = {
+                id: IdTrx,
+                createByIdUser: IdUser,
+                kategoriLayanan: kategoriLayanan,
+                jenisLayanan: RegAtauMember,
+                totalTransaksi: TotalHargaAkhir,
+                status: 0,
+                statusDeskripsi: "DRAFT",
+                jenisProperti: JenisProperti,
+                kontakPelanggan: kontakPelanggan,
+                alamatPelanggan: AlamatPelanggan,
+                kunjungan: {
+                    Reguler: KunjunganReg,
+                    Member: KunjunganMember
+                },
+                cartItem: {
+                    Reguler: cartReguler,
+                    Member: cartMember
+                },
+                paketMember: paketMember,
+                keluhanPerbaikan: keluhanPerbaikan
+            };
+            var data = await SimpanTransaksi(alldata);
+            console.log("Hasil simpan:", data);
+
+            if (data) {
                 Swal.fire({
                     title: '<strong>🎉 Berhasil Disimpan!</strong>',
                     html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
@@ -587,17 +606,16 @@
                 }).then(() => {
                     window.location.href = '@Url.Action("Index", "Cart")';
                 });
-            },
-            error: function (err) {
-                alert("Gagal: " + err);
-            },
-            onBeforeSend: function () {
-                $("#btn_simpandulu").prop("disabled", true).text("Memproses...");
-            },
-            onComplete: function () {
-                $("#btn_simpandulu").prop("disabled", false).text("Simpan Dulu");
             }
-        });
+
+        } catch (err) {
+            console.error("Gagal simpan:", err);
+            Swal.fire({
+                title: "⚠️ Gagal",
+                text: "Terjadi kesalahan saat menyimpan pesanan.",
+                icon: "error"
+            });
+        }
     }
 
     function CloseModalLogin() {
@@ -714,6 +732,128 @@
             
         }
         $("#totalTransaksi").text(formatRupiah(Total));
+    }
+
+    async function Checkout(){
+        
+        if ($('input[name="payment_channel"]:checked').length > 0)
+        {
+            try 
+            {
+                var method = $('input[name="payment_channel"]:checked').val();
+                console.log(method);
+                var datatrx = {
+                    id: IdTrx,
+                    createByIdUser: IdUser,
+                    kategoriLayanan: kategoriLayanan,
+                    jenisLayanan: RegAtauMember,
+                    totalTransaksi: TotalHargaAkhir,
+                    status: 0,
+                    statusDeskripsi: "DRAFT",
+                    jenisProperti: JenisProperti,
+                    kontakPelanggan: kontakPelanggan,
+                    alamatPelanggan: AlamatPelanggan,
+                    kunjungan: {
+                        Reguler: KunjunganReg,
+                        Member: KunjunganMember
+                    },
+                    cartItem: {
+                        Reguler: cartReguler,
+                        Member: cartMember
+                    },
+                    paketMember: paketMember,
+                    keluhanPerbaikan: keluhanPerbaikan
+                };
+                var data = await SimpanTransaksi(datatrx);
+                console.log("Hasil simpan:", data);
+                datatrx.id = data.id;
+                setDataCheckOut(datatrx,method);
+                
+
+            } catch (err) {
+                console.error("Gagal simpan:", err);
+                Swal.fire({
+                    title: "⚠️ Gagal",
+                    text: "Terjadi kesalahan saat menyimpan pesanan.",
+                    icon: "error"
+                });
+            }
+        }
+        else{
+            showToast("Silahkan pilih metode pembayaran");
+        }
+    }
+
+    async function setDataCheckOut(datatrx,method){
+        if (datatrx.id > 0) {
+            var _order_items = [];
+            $.map(datatrx.cartItem.Reguler, function (item) {
+                if(!isEmptyObject(datatrx.paketMember)){
+                    let qtymember = datatrx.paketMember.qty;
+                    var dt = {
+                        sku: item.id,
+                        name: `${datatrx.paketMember.nama_layanan} - ${datatrx.paketMember.nama_paket} - ${datatrx.paketMember.deskripsi}`,
+                        price: datatrx.paketMember.total,
+                        quantity: 1
+                    };
+                    _order_items.push(dt);
+                }
+                else
+                {
+                    var dt = {
+                        sku: item.id,
+                        name: item.nama,
+                        price: item.after_diskon,
+                        quantity: item.qty
+                    };
+                    _order_items.push(dt);
+                }
+            });
+            
+            var dt = {
+                sku: datatrx.jenisProperti.id,
+                name: 'biaya Properti: ' + datatrx.jenisProperti.nama_jenis,
+                price: datatrx.jenisProperti.harga,
+                quantity: 1
+            };
+            _order_items.push(dt);
+
+            let emailuser = Storage.get('email');
+
+            var dataCheckOut = {
+                method: method,
+                merchant_ref: `ACD-${formatToSixDigits(datatrx.id)}`,
+                amount: datatrx.totalTransaksi,
+                customer_name: datatrx.kontakPelanggan.nama,
+                customer_email: emailuser,
+                customer_phone: datatrx.kontakPelanggan.nomor,
+                order_items: _order_items,
+                callback_url: '',
+                return_url: '',
+                expired_time: 0,
+                signature: ''
+            };
+            console.log(dataCheckOut);
+            var checkout = await InstruksiBayar(dataCheckOut,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
+            console.log(checkout);
+            if (checkout.success) {
+                var dataapi = {
+                    Id : checkout.data.id,
+                    NoRefCheckout : checkout.data.reference
+                }
+                var res =  await CheckOutTrx(dataapi,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
+                if(res.success){
+                    window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
+                }
+            } else {
+                 console.log(checkout);
+                 Swal.fire('Gagal!', checkout.message, 'warning');
+            }
+        }
+        else
+        {
+            showToast("Data tidak valid");
+        }
     }
 
 </script>

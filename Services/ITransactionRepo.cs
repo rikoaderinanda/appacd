@@ -13,6 +13,7 @@ namespace appacd.Services
         Task<IEnumerable<dynamic>> GetCart_ByUserId(string id);
         Task<bool> DeleteCart(string _id);
         Task<IEnumerable<dynamic>> GetDetail_ById(string id);
+        Task<bool> Checkout(ReqCheckout data);
     }
     public class TransactionRepo : ITransactionRepo
     {
@@ -108,7 +109,6 @@ namespace appacd.Services
             return Id;
         }
 
-
         public async Task<IEnumerable<dynamic>> GetDetail_ById(string id)
         {
             var sql = @"
@@ -164,5 +164,27 @@ namespace appacd.Services
             return result > 0;
         }
         
+        public async Task<bool> Checkout(ReqCheckout data)
+        {
+            var query = @"
+                update log_transaction
+                set 
+                    status = 1,
+                    status_deskripsi = 'Pesanan diterima, menunggu Pembayaran',
+                    tripay_noreff = @reff,
+                    tripay_reff = @TripayReq::jsonb
+                where id = @Id
+                RETURNING id;
+            ";
+
+            var param = new
+            {
+                Id = data.Id,
+                reff = data.NoRefCheckout,
+                TripayReq =  JsonConvert.SerializeObject(data.TripayReq)
+            };
+            var result = await _db.ExecuteScalarAsync<int>(query, param);
+            return result > 0;
+        }
     }
 }

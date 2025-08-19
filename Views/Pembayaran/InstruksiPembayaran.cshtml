@@ -177,8 +177,6 @@
                 toast.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
             }
         });
-
-
         window.location.href = '@Url.Action("Status", "Pembayaran")'; 
         
     });
@@ -192,20 +190,15 @@
             console.error('jQuery is not loaded.');
             return;
         }
-        $ = window.jQuery;
-        var data = getStoragePemesanan();
-
-        if (
-            data.Keranjang == null || data.JenisProperti == null || data.Keluhan == null ||
-            data.TanggalKunjungan == "" || data.JamKunjungan == "" || data.Total == null ||
-            data.Customer == null || data.Id == null || data.NoRefCheckout == null
-        ) {
-            alert("Session Order expired");
-            window.location.href = '@Url.Action("Index", "Home")';
-        }
-
-        LoadInstruksiBayar(data.NoRefCheckout);
         
+        $ = window.jQuery;
+        var data = Storage.get("payment");
+        console.log(data);
+        if(data)
+        {
+            LoadInstruksiBayar(data.noRefCheckout);
+            //setInstruksi(data.tripayReq.instructions);
+        }
     });
 
     function initFilter() {
@@ -249,6 +242,7 @@
             url: `/api/Tripay/GetDetailTransaction?reference=` + NoRefCheckout,
             method: 'GET',
             success: function (res) {
+                console.log(res);
                 if (res.success) {
                     if(res.data.status == null || res.data.status == "UNPAID"){
                         Storage.set('Instruksi',res.data.instructions);
@@ -399,13 +393,12 @@
 
             <div class="text-center mt-4">
                 <p class="text-muted small">Batas Waktu Pembayaran</p>
-                <h5 class="mt-2 fw-semibold mb-1"><span class="text-primary">${formatUnixToDateTimeString(1753753347)}</span></h5>
+                <h5 class="mt-2 fw-semibold mb-1"><span class="text-primary">${formatUnixToDateTimeString(data.expired_time)}</span></h5>
             </div>
         `;
         $("#infobayar").html(scr);
     }
 
-    
     function backToHome(){
         window.location.href = '@Url.Action("Index", "Home")';
     }
@@ -415,5 +408,8 @@
         window.location.href = '@Url.Action("OrderStatus", "Tracking")';
     }
 
-
+    function gotoBack(){
+        //window.history.back();
+        window.location.href = '@Url.Action("Index", "Tracking")';
+    }
 </script>

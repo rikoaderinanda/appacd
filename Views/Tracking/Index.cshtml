@@ -5,6 +5,40 @@
     ViewData["HeaderName"] = "Tracking Status Pesanan";
     ViewData["SelectedFooter"] = "Tracking";
 }
+<style>
+.accordion-minimal {
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  font-size: small;
+}
+.accordion-collapse ul {
+    padding-left: 0; /* hilangkan padding list */
+    margin-left: 0;
+    width: 100%;
+}
+
+.accordion-collapse li {
+    display: flex;
+    justify-content: space-between; /* item kiri, harga kanan */
+    padding: 0;
+}
+
+.accordion-minimal:focus {
+  box-shadow: none;
+}
+.accordion-icon {
+  transition: transform 0.3s ease;
+}
+.accordion-button.collapsed .accordion-icon {
+  transform: rotate(0deg);
+}
+.accordion-button:not(.collapsed) .accordion-icon {
+  transform: rotate(90deg);
+}
+</style>
 
 <!-- App Body Start -->
 <div class="app-body pb-30">
@@ -56,6 +90,7 @@
             url: '/api/Pemesanan/GetTracking?id=' + user.id,
             method: 'GET',
             success: function (data) {
+                console.log(data);
                 if (!data) {
                     $('#ListTacking').html('<p class="text-center text-muted py-4">Data layanan tidak tersedia.</p>');
                 }
@@ -72,29 +107,107 @@
                                 <i class="bi bi-pencil" style="font-size: 1.0rem;"></i>
                             </button>`;
                     }
+
+                    let regmember ="";
+                    if(item.jenis_layanan == "MEMBER")
+                    {
+                        regmember = `<span class="text-danger">Berlangganan</span>`;
+                    }
+                    else{
+                        regmember = `<span class="text-dark">Reguler</span>`;
+                    }
+                    
+                    console.log(item.tripay_data.expired_time);
+                    let expiredpay = "";
+                    let _statusPay =`
+                        <span class="badge ${item.status_tracking_color} text-white">${item.status_tracking}</span>
+                    `;
+                    let btnDetail = `
+                        <!-- Tombol Detail -->
+                        <button 
+                            id="BtnShow${item.id}"
+                            onclick="ShowTrackingById(${item.id},${item.status});"
+                            class="btn btn-success btn-sm"
+                            title="Lihat Detail Status"
+                            style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
+                        </button>
+                    `;
+                    if(item.status == 1){
+                        const now = Math.floor(Date.now() / 1000);
+                        if (now > item.tripay_data.expired_time) {
+                            expiredpay = `<p class="text-muted">Batas Pembayaran : <span class="fw-semibold text-danger"> Sudah berakhir</span> </p>`;
+                            btnDetail = `
+                                <!-- Tombol Detail -->
+                                <button 
+                                    id="BtnDelete${item.id}"
+                                    onclick="DeletePesanan(${item.id});"
+                                    class="btn btn-danger btn-sm text-white"
+                                    title="Delete"
+                                    style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-trash" style="font-size: 1.0rem;"></i>
+                                </button>
+                            `;
+
+                            _statusPay =
+                            `
+                                <span class="text-white">
+                                    <button 
+                                        id="BtnShow${item.id}"
+                                        onclick="DetailPesanan(${item.id},'btnDetail${item.id}');"
+                                        class="btn btn-warning btn-sm"
+                                        title="Lihat Detail Status">
+                                        <i class="bi bi-pencil" style="font-size: 1.0rem;"></i>
+                                        Checkout Ulang
+                                    </button>
+
+                                </span>
+                            `;
+                        }
+                        else
+                        {
+                            expiredpay = `<p class="text-muted">Batas Pembayaran : ${formatUnixToDateTimeString(item.tripay_data.expired_time)}</p>`;
+                        }
+                    }
+                    
                     scr = `
                     <div class="card mb-3 position-relative shadow-sm border-0">
                         <div class="card-body position-relative">
-                            <div>
-                                <h5 class="card-title mb-1 fw-bold">
-                                    ID Pesanan: <span class="text-primary"></span> ACD-${formatToSixDigits(item.id)}
-                                </h5>
-                                <p class="card-text mb-2">
-                                    Total Pesanan: <span class="fw-semibold text-success">${formatRupiah(item.total)}</span>
-                                </p>
-                                <span class="badge ${item.status_tracking_color} text-white">${item.status_tracking}</span>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title mb-1 fw-bold">
+                                        <span class="text-primary">ACD - ${formatToSixDigits(item.id)}</span>
+                                    </h5>
+                                    <p class="card-text mb-0">
+                                        <span class="text-dark">Layanan ${item.kategori_layanan}</span> - ${regmember}<br>
+                                        Total Pesanan:
+                                        <span class="fw-semibold text-success">${formatRupiah(item.total_transaksi)}</span>
+                                    </p>
+                                    ${expiredpay}
+                                    ${_statusPay}
+                                    
+                                    
+                                </div>
+                                <!-- Tombol Delete -->
+                                ${btnDelete}
+                                ${btnDetail}
                             </div>
-                            <!-- Tombol Delete -->
-                            ${btnDelete}
-                            <!-- Tombol Detail -->
-                            <button 
-                                id="BtnShow${item.id}"
-                                onclick="ShowTrackingById(${item.id},${item.status_order});"
-                                class="btn btn-success btn-sm"
-                                title="Lihat Detail Status"
-                                style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
-                            </button>
+                            <!-- Accordion Detail Order -->
+                            <div class="mt-1 w-100">
+                                <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                    aria-expanded="true" aria-controls="collapseOrder">
+                                    <span class="me-2 accordion-icon">▶</span>
+                                    <strong class="text-muted">Detail Order</strong>
+                                </button>
+
+                                <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100">
+                                    <ul class="list-unstyled mb-0" style="font-size: small;">
+                                        ${dtPesanan}
+                                    </ul>
+                                    ${paket}
+                                </div>
+                            </div>
                         </div>
                     </div>`;
                     return scr;
@@ -169,35 +282,51 @@
             url: '/api/Pemesanan/GetTrackingById?Id='+Id,
             method: 'GET',
             success: function (res) {
-                res.data.forEach(item => {
-                    Storage.set('keranjang', item.Pesanan);
-                    Storage.set('keluhan', item.Keluhan);
-                    Storage.set('jenis_properti', item.Properti);
-                    Storage.set('TanggalKunjungan', item.tanggal_kunjungan);
-                    Storage.set('JamKunjungan', item.jam_kunjungan);
-                    Storage.set('Total', item.total);
-                    Storage.set('id_layanan', item.id_layanan)
-                    let dataCustomer = {
-                        "nama": item.nama,
-                        "whatsapp": item.whatsapp,
-                        "catatan": item.catatan,
-                        "lokasi": item.lokasi,
-                        "alamat": item.alamat
-                    }
-                    Storage.set('Customer', dataCustomer);
-                    Storage.set('IdPesanan', item.id);
-                    Storage.set('NoRefCheckout',item.no_ref_checkout);
-                });
-                var result = getStoragePemesanan();
-                if (result != null) {
-                    //window.location.href = '@Url.Action("Index", "Pembayaran")';
-                    window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
+                console.log(res);
+                var dataapi = {
+                    id : Id,
+                    noRefCheckout : res.data[0].tripay_noreff,
+                    tripayReq : res.data[0].tripay_reff
                 }
+                console.log(dataapi);
+                Storage.set("payment",dataapi);
+                window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
             },
             error: function (err) {
-                @* alert('Error: ' + err); *@
                 Swal.fire('Gagal!', 'Data Gagal diload.', 'warning');
                 LoadListTracking();
+            }
+        });
+    }
+
+    function gotoBack(){
+        window.history.back();
+        //window.location.href = '@Url.Action("Index", "Home")';
+    }
+
+    function DeletePesanan(IdPemesanan) {
+        Swal.fire({
+            title: 'Yakin hapus pesanan ini?',
+            text: "Tindakan ini tidak bisa dibatalkan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                callApi({
+                    url: '/api/Transaction/DeleteCart/'+IdPemesanan,
+                    method: 'DELETE',
+                    success: function (data) {
+                        Swal.fire('Dihapus!', 'Pesanan berhasil dihapus.', 'success');
+                        LoadListTracking();
+                    },
+                    error: function (err) {
+                        alert('Error: ' + err);
+                        Swal.fire('Gagal!', 'Pesanan berhasil gagal dihapus.', 'warning');
+                        LoadListTracking();
+                    }
+                })
             }
         });
     }

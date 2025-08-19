@@ -371,3 +371,113 @@ function resetButtonIcon(btnId) {
         <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
     `);
 }
+
+async function InstruksiBayar(dataapi, btn) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Tripay/CreateTransaction',
+            method: 'POST',
+            data: dataapi,
+            success: function (res) {
+                resolve(res); // return hasil sukses
+            },
+            error: function (err) {
+                reject(err); // return error ke caller
+            },
+            onBeforeSend: function () {
+                $(`#${btn.id}`)
+                    .prop('disabled', true)
+                    .text(`${btn.txtProcess}`);
+            },
+            onComplete: function () {
+                $(`#${btn.id}`)
+                    .prop('disabled', false)
+                    .text(`${btn.txtfinish}`);
+            }
+        });
+    });
+}
+
+async function CheckOutTrx(dataapi, btn) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Transaction/Checkout',
+            method: 'PUT',
+            data: dataapi,
+            success: function (res) {
+                resolve(res); // return hasil sukses
+            },
+            error: function (err) {
+                reject(err); // return error ke caller
+            },
+            onBeforeSend: function () {
+                $(`#${btn.id}`)
+                    .prop('disabled', true)
+                    .text(`${btn.txtProcess}`);
+            },
+            onComplete: function () {
+                $(`#${btn.id}`)
+                    .prop('disabled', false)
+                    .text(`${btn.txtfinish}`);
+            }
+        });
+    });
+}
+
+async function getDataTransaksi(id, btnId) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: `/api/Transaction/GetDetailTrx_ById?id=` + id,
+            method: 'GET',
+            success: function (res) {
+                resolve(res); // kembalikan data API
+            },
+            error: function () {
+                Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+                reject('API Error');
+            },
+            onBeforeSend: function () {
+                const btn = $(`#${btnId}`);
+                btn.html(
+                    `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                );
+                btn.prop('disabled', true);
+            }
+        });
+    });
+}
+
+async function DetailPesanan(id, btn) {
+    await new Promise((r) => setTimeout(r, 0));
+
+    try {
+        let data = await getDataTransaksi(id, btn);
+
+        if (data && data.length > 0 && data[0]) {
+            const alldata = {
+                id: data[0].id,
+                createByIdUser: data[0].create_by_id_user,
+                kategoriLayanan: data[0].kategori_layanan,
+                jenisLayanan: data[0].jenis_layanan,
+                totalTransaksi: data[0].total_transaksi,
+                jenisProperti: data[0].properti,
+                kontakPelanggan: data[0].kontak,
+                alamatPelanggan: data[0].alamat_pelanggan,
+                kunjungan: {
+                    Reguler: data[0].kunjungan.reguler,
+                    Member: data[0].kunjungan.member
+                },
+                cartItem: {
+                    Reguler: data[0].cart_items,
+                    Member: {}
+                },
+                paketMember: data[0].paket
+            };
+            console.log(alldata);
+            Storage.set('DataTrx', alldata);
+            window.location.href = '/Pembayaran/PaymentMethod';
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}

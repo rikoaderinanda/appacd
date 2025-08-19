@@ -8,6 +8,7 @@ namespace appacd.api
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExplorerSettings(GroupName = "transaksi")]
     public class PemesananController : ControllerBase
     {
         /// <summary>
@@ -125,15 +126,11 @@ namespace appacd.api
         }
 
         [HttpGet("GetTrackingById")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> GetTrackingById(int Id)
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetTrackingById(string Id)
         {
-            if (Id <= 0)
-            {
-                return BadRequest(new { message = "ID tidak valid." });
-            }
             try
             {
-                var Resid = await _pemesananRepository.GetPemesananById(Id.ToString());
+                var Resid = await _pemesananRepository.GetTrackingById(Id);
                 return Ok(new { message = "load data success", data = Resid });
             }
             catch (Exception ex)

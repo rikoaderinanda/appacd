@@ -104,9 +104,15 @@
 <div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
     <div class="container p-0">
         <div class="row">
-            <div class="col">
-                <a href="app-cart.html" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
-                        class="bi bi-credit-card me-2"></i>Bayar</a>
+            <div class="col-6">
+                <button type="button" class="btn btn-outline-secondary w-100 fw-4 h_40 br-8" onclick="gotoBack();">
+                    <i class="bi bi-arrow-left me-2"></i>Kembali
+                </button>
+            </div>
+            <div class="col-6">
+                <button type="button" class="btn btn-primary text-white w-100 fw-4 h_40 br-8" onclick="checkout();" id="btnCheckout">
+                    <i class="bi bi-credit-card me-2"></i>Checkout
+                </button>
             </div>
         </div>
     </div>
@@ -371,6 +377,117 @@
             if(dataTrx.kategoriLayanan=="CUCI AC"){
                 window.location.href = '@Url.Action("CuciAc", "Layanan")';
             }
+        }
+    }
+
+    async function checkout(){
+        if ($('input[name="payment_channel"]:checked').length > 0)
+        {
+            var method = $('input[name="payment_channel"]:checked').val();
+            await setDataCheckOut(dataTrx,method);
+
+        }
+        else
+        {
+            showToast("Silahkan pilih metode pembayaran");
+        }
+        
+    }
+    
+    async function setDataCheckOut(datatrx,method){
+        if (datatrx.id > 0) {
+            var _order_items = [];
+            $.map(datatrx.cartItem.Reguler, function (item) {
+                if(!isEmptyObject(datatrx.paketMember)){
+                    let qtymember = datatrx.paketMember.qty;
+                    var dt = {
+                        sku: item.id,
+                        name: `${datatrx.paketMember.nama_layanan} - ${datatrx.paketMember.nama_paket} - ${datatrx.paketMember.deskripsi}`,
+                        price: datatrx.paketMember.total,
+                        quantity: 1
+                    };
+                    _order_items.push(dt);
+                }
+                else
+                {
+                    var dt = {
+                        sku: item.id,
+                        name: item.nama,
+                        price: item.after_diskon,
+                        quantity: item.qty
+                    };
+                    _order_items.push(dt);
+                }
+            });
+            
+            var dt = {
+                sku: datatrx.jenisProperti.id,
+                name: 'biaya Properti: ' + datatrx.jenisProperti.nama_jenis,
+                price: datatrx.jenisProperti.harga,
+                quantity: 1
+            };
+            _order_items.push(dt);
+
+            let emailuser = Storage.get('email');
+
+            var dataCheckOut = {
+                method: method,
+                merchant_ref: `ACD-${formatToSixDigits(datatrx.id)}`,
+                amount: datatrx.totalTransaksi,
+                customer_name: datatrx.kontakPelanggan.nama,
+                customer_email: emailuser,
+                customer_phone: datatrx.kontakPelanggan.nomor,
+                order_items: _order_items,
+                callback_url: '',
+                return_url: '',
+                expired_time: 0,
+                signature: ''
+            };
+            
+            console.log(dataCheckOut);
+            
+            var checkout = await InstruksiBayar(dataCheckOut,{id:"btnCheckout",txtProcess:"Memproses...",txtfinish:"Checkout"});
+            
+            console.log(checkout);
+            
+            if (checkout.success) {
+                var tripay_reff =
+                {
+                    reference : checkout.data.reference,
+                    merchant_ref : checkout.data.merchant_ref,
+                    payment_method : checkout.data.payment_method,
+                    payment_name : checkout.data.payment_name,
+                    amount : checkout.data.amount,
+                    fee_merchant : checkout.data.fee_merchant,
+                    fee_customer : checkout.data.fee_customer,
+                    total_fee : checkout.data.total_fee,
+                    amount_received : checkout.data.amount_received,
+                    pay_code : checkout.data.pay_code,
+                    pay_url : checkout.data.pay_url,
+                    checkout_url : checkout.data.checkout_url,
+                    status : checkout.data.status,
+                    expired_time : checkout.data.expired_time,
+                    instructions : checkout.data.instructions
+                }
+                var dataapi = {
+                    id : datatrx.id,
+                    noRefCheckout : checkout.data.reference,
+                    tripayReq : tripay_reff
+                }
+                console.log(dataapi);
+                var res =  await CheckOutTrx(dataapi,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
+                if(res.success){
+                    Storage.set("payment",dataapi);
+                    window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
+                }
+            } else {
+                 console.log(checkout);
+                 Swal.fire('Gagal!', checkout.message, 'warning');
+            }
+        }
+        else
+        {
+            showToast("Data tidak valid");
         }
     }
 </script>
