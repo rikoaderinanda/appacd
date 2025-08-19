@@ -307,8 +307,8 @@ namespace appacd.Services
         {
             var sql = @"
                 select *
-                from pemesanan 
-                where no_ref_checkout = @reference
+                from log_transaction 
+                where tripay_noreff = @reference
             ";
             return await _db.QueryAsync<dynamic>(sql, new { reference = _tripayReference });
         }
