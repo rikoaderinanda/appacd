@@ -5,6 +5,16 @@
 
 <!-- Form Tambah Alamat (hidden awalnya) -->
 <div id="formTambahAlamat" class="mb-3" style="display: none;">
+    <!-- Title & Subtitle -->
+    <hr>
+    <div class="text-center mb-4">
+        <h4 class="fw-bold text-primary">
+            <i class="bi bi-geo-alt-fill me-2"></i> Tambahkan Alamat Baru
+        </h4>
+        <p class="text-muted small mb-0">
+            Lengkapi detail alamat Anda dengan benar agar pengiriman lebih cepat dan akurat.
+        </p>
+    </div>
     <div class="mb-2">
         <label for="inputJudul" class="form-label">Judul Alamat</label>
         <input type="text" class="form-control" id="inputJudul" placeholder="Misal: Alamat Rumah">
@@ -202,7 +212,9 @@ function loadAlamat(){
                             <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
                         </div>
                         <button type="button" 
-                            class="btn-close position-absolute top-0 end-0 m-2" aria-label="Hapus"
+                            class="btn-close position-absolute top-0 end-0 m-2" 
+                            style="transform: scale(0.7); font-size: 0.8rem;" 
+                            aria-label="Hapus"
                             onclick="deleteAlamat(${item.id})">
                         </button>
                     </label>

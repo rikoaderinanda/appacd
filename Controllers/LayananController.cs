@@ -52,6 +52,29 @@ namespace appacd.Controllers
             return View();
         }
 
+        [Route("Layanan/Pasangbaru")]
+        public async Task<IActionResult> Pasangbaru()
+        {
+            ViewData["Id"] = 13;
+            return View();
+        }
+
+        [Route("Layanan/BeliPasang")]
+        public async Task<IActionResult> BeliPasang()
+        {
+            ViewData["Id"] = 13;
+            return View();
+        }
+
+        [Route("Layanan/ACIndustri")]
+        public async Task<IActionResult> ACIndustri()
+        {
+            ViewData["Id"] = 13;
+            return View();
+        }
+        
+        
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

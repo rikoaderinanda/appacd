@@ -442,6 +442,12 @@ async function getDataTransaksi(id, btnId) {
                     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                 );
                 btn.prop('disabled', true);
+            },
+            onComplete: function () {
+                btn.html(
+                    `<i class="bi bi-arrow-right" style="font-size: 1rem;"></i>`
+                );
+                btn.prop('disabled', false);
             }
         });
     });

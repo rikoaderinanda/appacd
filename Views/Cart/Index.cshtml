@@ -7,42 +7,50 @@
 }
 
 <style>
-.accordion-minimal {
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  padding: 0;
-  font-size: small;
-}
-.accordion-collapse ul {
-    padding-left: 0; /* hilangkan padding list */
-    margin-left: 0;
+    .accordion-minimal {
+    border: none;
+    background: none;
     width: 100%;
-}
-
-.accordion-collapse li {
-    display: flex;
-    justify-content: space-between; /* item kiri, harga kanan */
+    text-align: left;
     padding: 0;
-}
+    font-size: small;
+    }
+    .accordion-collapse ul {
+        padding-left: 0; /* hilangkan padding list */
+        margin-left: 0;
+        width: 100%;
+    }
 
-.accordion-minimal:focus {
-  box-shadow: none;
-}
-.accordion-icon {
-  transition: transform 0.3s ease;
-}
-.accordion-button.collapsed .accordion-icon {
-  transform: rotate(0deg);
-}
-.accordion-button:not(.collapsed) .accordion-icon {
-  transform: rotate(90deg);
-}
+    .accordion-collapse li {
+        display: flex;
+        justify-content: space-between; /* item kiri, harga kanan */
+        padding: 0;
+    }
+
+    .accordion-minimal:focus {
+    box-shadow: none;
+    }
+    .accordion-icon {
+    transition: transform 0.3s ease;
+    }
+    .accordion-button.collapsed .accordion-icon {
+    transform: rotate(0deg);
+    }
+    .accordion-button:not(.collapsed) .accordion-icon {
+    transform: rotate(90deg);
+    }
 </style>
 
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
+         <div class="text-center mb-4">
+            <h3 class="fw-bold text-primary">
+                <i class="bi bi-basket2 me-2"></i> Keranjang Pesanan Anda
+            </h3>
+            <p class="text-muted small">
+                Periksa kembali detail pesanan Anda sebelum melanjutkan ke pembayaran.
+            </p>
+        </div>
         <div class="position-relative mb-4">
             <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
                 id="searchInput">
@@ -57,8 +65,7 @@
     </div>
 </div>
 
-<script>
-    
+<script>    
     var $;
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -132,14 +139,7 @@
 
                             `;
                         }
-                        @* else
-                        {
-                            paket = `
-                            <strong class="d-flex justify-content-between pt-20">
-                                <span>Total Transaksi</span>
-                                <span class="">${formatRupiah(item.total_transaksi)}</span>
-                            </strong>`;
-                        } *@
+                        
                         
                         let regmember ="";
                         if(item.jenis_layanan == "MEMBER")
@@ -188,7 +188,7 @@
                                         <strong class="text-muted">Detail Order</strong>
                                     </button>
 
-                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100">
+                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
                                         <ul class="list-unstyled mb-0" style="font-size: small;">
                                             ${dtPesanan}
                                         </ul>

@@ -43,6 +43,14 @@
 <!-- App Body Start -->
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-primary">
+                <i class="bi bi-truck me-2"></i> Tracking Status Pesanan
+            </h3>
+            <p class="text-muted small">
+                Pantau status pesanan Anda secara real-time mulai dari pembayaran, proses layanan, hingga selesai.
+            </p>
+        </div>
         <div class="position-relative mb-4">
             <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
                 id="searchInput">
@@ -127,10 +135,10 @@
                         <button 
                             id="BtnShow${item.id}"
                             onclick="ShowTrackingById(${item.id},${item.status});"
-                            class="btn btn-success btn-sm"
+                            class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2"
                             title="Lihat Detail Status"
-                            style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
+                            style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
                         </button>
                     `;
                     if(item.status == 1){

@@ -132,42 +132,54 @@
                 </span>`;
             }
             var scr =`
-                <li class="list-group-item">
+                <li class="list-group-item border-0 mb-3 shadow-sm rounded-3 p-3" style="background: #f9fafb;">
                     <div class="rc-item d-flex align-items-center justify-content-between">
-                        <!-- Kiri: Gambar + deskripsi -->
+                        <!-- Kiri: Gambar + Deskripsi -->
                         <div class="rc-item-left d-flex align-items-center">
-                            <div class="rc-item-img position-relative border br-8 flex-shrink-0">
-                                <img src="${item.img_url}" alt="">
+                            <!-- Thumbnail -->
+                            <div class="rc-item-img position-relative border rounded-3 overflow-hidden shadow-sm flex-shrink-0" 
+                                style="width:70px; height:70px; background:#fff;">
+                                <img src="${item.img_url}" alt="${item.nama_detail_jasa}" 
+                                    class="img-fluid w-100 h-100 object-fit-cover">
                             </div>
+
+                            <!-- Detail -->
                             <div class="rc-item-content ms-3">
-                                <p class="fw-bold mb-1">${item.nama_detail_jasa}</p>
-                                <span class="b-color d-block fs-6 fw-5">${formatRupiah(hargaAkhir)}</span>
-                                ${diskon}
+                                <p class="fw-bold mb-1 text-dark">${item.nama_detail_jasa}</p>
+                                <span class="text-success fw-semibold d-block fs-6">${formatRupiah(hargaAkhir)}</span>
+                                <small class="text-danger fw-semibold">${diskon}</small>
                             </div>
                         </div>
 
                         <!-- Kanan: Counter -->
-                        <div class="rc-item-right flex-shrink-0">
-                            <div class="cart-counter text-end">
-                                <p>Jumlah AC</p>
-                                <div class="input-group input-group-sm mb-2">
-                                    <button class="btn btn-outline-primary minus" type="button">-</button>
-                                    <input type="text" class="form-control text-center"
-                                        id = "InputQtyLayanan${item.id}" 
+                        <div class="rc-item-right flex-shrink-0 text-end">
+                            <div class="cart-counter">
+                                <label class="text-muted small mb-1 d-block">Jumlah AC</label>
+                                <div class="input-group input-group-sm mb-2" style="max-width: 120px; margin-left:auto;">
+                                    <button class="btn btn-outline-danger minus" type="button">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </button>
+                                    <input type="text" 
+                                        class="form-control text-center fw-bold" 
+                                        id="InputQtyLayanan${item.id}" 
                                         value="0" 
-                                        data-diskon=${item.diskon}
-                                        data-harga=${item.harga_satuan}
-                                        data-after_diskon=${hargaAkhir}
-                                        data-detaillayanan=${encodeURIComponent(item.nama_detail_jasa)}
-                                        data-id=${item.id}
-                                        >
-                                    <button class="btn btn-outline-primary plus" type="button">+</button>
+                                        data-diskon="${item.diskon}"
+                                        data-harga="${item.harga_satuan}"
+                                        data-after_diskon="${hargaAkhir}"
+                                        data-detaillayanan="${encodeURIComponent(item.nama_detail_jasa)}"
+                                        data-id="${item.id}">
+                                    <button class="btn btn-outline-success plus" type="button">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
                                 </div>
-                                <span class="total-harga fw-bold" id="SubTotal${item.id}">${formatRupiah(0)}</span>
+                                <span class="total-harga fw-bold text-primary" id="SubTotal${item.id}">
+                                    ${formatRupiah(0)}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </li>
+
             `;
             return scr;
         }).join('');

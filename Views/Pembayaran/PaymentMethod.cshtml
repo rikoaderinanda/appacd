@@ -53,28 +53,112 @@
     }
 
 </style>
+
+<style>
+    /* Section Container */
+    #sessionPaymentMethod {
+        background: #f9fbfd;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* Judul Section */
+    #sessionPaymentMethod strong {
+        font-size: 1rem;
+        color: #0d6efd;
+    }
+
+    /* Toggle Button */
+    #toggleDetailBtn {
+        color: #0d6efd;
+        transition: transform 0.2s ease-in-out;
+    }
+    #toggleDetailBtn:hover {
+        transform: rotate(10deg);
+    }
+
+    /* Detail Transaksi Box */
+    #listTransaksi {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 15px;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    /* Total Box */
+    .alert-info {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #0d47a1;
+        border: none;
+        font-size: 0.95rem;
+    }
+
+    /* Input Cari */
+    #searchInput {
+        border: 2px solid #e9ecef;
+        transition: border 0.2s;
+    }
+    #searchInput:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+    }
+
+    /* Accordion */
+    .accordion-button {
+        background: #f1f5fb;
+        font-weight: 600;
+        color: #0d47a1;
+    }
+    .accordion-button:not(.collapsed) {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+    .accordion-body {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 15px;
+    }
+
+    /* Animasi */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
 <div class="app-body">
     <div class="container">
         <div class="row pt-30">
+            <div class="main-title text-center mb-4">
+                <h3 class="fw-bold text-primary mb-2">
+                    <i class="bi bi-credit-card me-2"></i> Selesaikan Pembayaran Anda
+                </h3>
+                <p class="text-muted small mb-0">
+                    Periksa kembali detail transaksi, lalu pilih metode pembayaran yang paling sesuai untuk Anda.
+                </p>
+            </div>
             <div class="pb-30" id="sessionPaymentMethod">
-                <div id="IdTransaksi" class="position-relative"></div>
-                
+
+                <div id="IdTransaksi" class="position-relative mb-3"></div>
+
                 <!-- Accordion Detail Order -->
-                <div class="position-relative" style="margin-bottom:10px;">
-                    <strong >Detail Transaksi</strong>
+                <div class="position-relative mb-2">
+                    <strong><i class="bi bi-receipt-cutoff me-1"></i> Detail Transaksi</strong>
                     <a id="toggleDetailBtn" href="javascript:void(0)"
                         class="btn btn-sm position-absolute top-0 end-0">
-                        <i id="toggleIcon" class="bi bi-chevron-down"></i>
+                        <i id="toggleIcon" class="bi bi-chevron-down fs-5"></i>
                     </a>
                 </div>
 
                 <!-- List Transaksi -->
-                <div id="listTransaksi" class="card-text mb-3" style="display:none;">
-                </div>
+                <div id="listTransaksi" class="card-text mb-3" style="display:none;"></div>
 
                 <!-- Total -->
-                <div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm rounded-pill px-3 py-2 mt-20">
-                    <span class="fw-bold">Total Transaksi:</span>
+                <div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm rounded-pill px-3 py-2 mt-3">
+                    <span class="fw-bold"><i class="bi bi-cash-coin me-1"></i> Total Transaksi:</span>
                     <span class="fw-bold text-primary fs-5" id="totalTransaksi">
                         <div class="spinner-border spinner-border-sm text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
@@ -83,16 +167,18 @@
                 </div>
 
                 <!-- Metode Pembayaran -->
-                <strong>Metode Pembayaran</strong>
-                <div class="position-relative mb-4 mt-2">
-                    <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" 
-                        type="text" placeholder="Cari" id="searchInput">
-                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                    <button type="button"
-                        class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
-                        onclick="GetChannelPembayaran()" title="Segarkan">
-                        <i class="bi bi-arrow-clockwise text-primary"></i>
-                    </button>
+                <div class="mt-4">
+                    <strong><i class="bi bi-credit-card me-1"></i> Metode Pembayaran</strong>
+                    <div class="position-relative mb-4 mt-2">
+                        <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" 
+                            type="text" placeholder="Cari metode..." id="searchInput">
+                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <button type="button"
+                            class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                            onclick="GetChannelPembayaran()" title="Segarkan">
+                            <i class="bi bi-arrow-clockwise text-primary"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="accordion mt-4 mb-3" id="channelAccordion"></div>
@@ -388,7 +474,6 @@
         {
             var method = $('input[name="payment_channel"]:checked').val();
             await setDataCheckOut(dataTrx,method);
-
         }
         else
         {

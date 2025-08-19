@@ -278,7 +278,7 @@ function SimpanDulu() {
                     popup: 'animate__animated animate__fadeOutUp'
                 }
             }).then(() => {
-                window.location.href = '@Url.Action("Index", "Cart")';
+                window.location.href = '/Cart';
             });
         },
         error: function (err) {
