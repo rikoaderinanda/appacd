@@ -1,0 +1,291 @@
+<div class="main-title text-left mb-4">
+  <h5 class="mb-1 fw-bold text-primary">Pasang Baru AC</h5>
+  <p class="text-muted small mb-0"></p>
+</div>
+
+<div class="items-group">
+<!-- Loading skeletons -->       
+    <label for="kapasitasAC" class="form-label fw-bold">
+      <i class="bi bi-snow text-primary me-2"></i> Pilih Kapasitas AC
+    </label>
+    <ul class="recommend-items ps-0" id="ListLayanan">
+        @await Html.PartialAsync("_SkeltonLoading")
+    </ul>
+    
+    <div class="total-harga d-flex justify-content-between align-items-center">
+        <p class="mb-0">Total Harga :</p>
+        <span class="total-harga fw-bold" id="TotalHargaReguler">Rp 0</span>
+    </div>
+    <br>
+</div>
+<!-- Alert Informasi Tambahan Biaya -->
+<div class="alert alert-warning d-flex align-items-center small" role="alert">
+    <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5"></i>
+    <span>
+        Biaya pasang <strong>belum termasuk</strong> tambahan biaya pipa, bracket, atau material lain yang dibutuhkan saat instalasi.
+    </span>
+</div>
+
+<script>
+  
+  document.addEventListener('DOMContentLoaded', function () {
+      (async () => {
+          try {
+
+              const data = await getDataLayanan();
+              if(data.length>1){
+                  renderData(data);
+              }
+              else
+              {
+                  const detail = await getDataLayananDetail(data[0].id);
+                  if(detail.length>0){
+                      renderDataDetail(detail);
+                  }
+              }
+              
+          } catch (err) {
+              console.error('Error:', err);
+          }
+      })();
+  });
+
+  async function getDataLayanan() {
+        return await new Promise((resolve, reject) => {
+            callApi({
+                url: '/api/Layanan/JasaLayanan?Id=3',
+                method: 'GET',
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (err) {
+                    reject(err);
+                }
+            });
+        });
+    }
+
+    async function getDataLayananDetail(Id) {
+        return await new Promise((resolve, reject) => {
+            callApi({
+                url: '/api/Layanan/JasaLayananDetail?Id=' + Id + '',
+                method: 'GET',
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (err) {
+                    reject(err);
+                }
+            });
+        });
+    }
+
+    function renderData(data){
+        var html = $.map(data, function (item) {
+          var scr = "";
+          scr = `
+                  <div
+                      class="list-group-item d-flex align-items-center justify-content-between mb-2 border rounded">
+                      <div class="d-flex align-items-center">
+                          <img src="${item.img_jasa}" alt="" class="rounded-circle me-3"
+                              style="width:40px;height:40px;object-fit:cover;">
+                          <span>${item.nama_jasa}</span>  
+                      </div>
+                      <a class="btn btn-outline-primary btn-sm rounded-circle" 
+                          href="#ModalLayanan"
+                          data-bs-toggle="modal" 
+                          data-namalayanan="${item.nama_jasa}" 
+                          data-id="${item.id}"
+                      >
+                          <i class="bi bi-plus"></i>
+                      </a>
+                  </div>
+                  
+                `;
+          return scr;
+        }).join('');
+
+      $('#ListLayanan').html(html);
+    }
+    
+    function renderDataDetail(data){
+        var html = $.map(data, function (item) {
+            //console.log("Data Detail");
+            //console.log(item);
+            var diskon = ``;
+            let hargaAkhir = item.harga_satuan - item.diskon;
+            if(hargaAkhir < item.harga_satuan){
+              diskon = `
+                <span class="item-weight-count">
+                    <span class="text-decoration-line-through text-muted me-2">
+                        ${formatRupiah(item.harga_satuan)}
+                    </span>
+                </span>`;
+            }
+            var scr =`
+                <li class="list-group-item border-0 mb-3 shadow-sm rounded-3 p-3" style="background: #f9fafb;">
+                    <div class="rc-item d-flex align-items-center justify-content-between">
+                        <!-- Kiri: Gambar + Deskripsi -->
+                        <div class="rc-item-left d-flex align-items-center">
+                            <!-- Thumbnail -->
+                            <div class="rc-item-img position-relative border rounded-3 overflow-hidden shadow-sm flex-shrink-0" 
+                                style="width:70px; height:70px; background:#fff;">
+                                <img src="${item.img_url}" alt="${item.nama_detail_jasa}" 
+                                    class="img-fluid w-100 h-100 object-fit-cover">
+                            </div>
+
+                            <!-- Detail -->
+                            <div class="rc-item-content ms-3">
+                                <p class="fw-bold mb-1 text-dark">${item.nama_detail_jasa}</p>
+                                <span class="text-success fw-semibold d-block fs-6">${formatRupiah(hargaAkhir)}</span>
+                                <small class="text-danger fw-semibold">${diskon}</small>
+                            </div>
+                        </div>
+
+                        <!-- Kanan: Counter -->
+                        <div class="rc-item-right flex-shrink-0 text-end">
+                            <div class="cart-counter">
+                                <label class="text-muted small mb-1 d-block">Jumlah AC</label>
+                                <div class="input-group input-group-sm mb-2" style="max-width: 120px; margin-left:auto;">
+                                    <button class="btn btn-outline-danger minus" type="button">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </button>
+                                    <input type="text" 
+                                        class="form-control text-center fw-bold" 
+                                        id="InputQtyLayanan${item.id}" 
+                                        value="0" 
+                                        data-diskon="${item.diskon}"
+                                        data-harga="${item.harga_satuan}"
+                                        data-after_diskon="${hargaAkhir}"
+                                        data-detaillayanan="${encodeURIComponent(item.nama_detail_jasa)}"
+                                        data-id="${item.id}">
+                                    <button class="btn btn-outline-success plus" type="button">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                                <span class="total-harga fw-bold text-primary" id="SubTotal${item.id}">
+                                    ${formatRupiah(0)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+            `;
+            return scr;
+        }).join('');
+        $("#ListLayanan").html(html);
+        initHandleEventButtonPlusMinus();
+
+    }
+
+    function initHandleEventButtonPlusMinus(){
+            let totalQty = 0;
+            
+            document.querySelectorAll(".plus").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let input = this.parentElement.querySelector("input");
+                    let harga = parseInt(input.dataset.harga) || 0;
+                    let diskon = parseInt(input.dataset.diskon) || 0;
+                    let after_diskon = parseInt(input.dataset.after_diskon) || 0;
+                    
+                    let currentValue = parseInt(input.value) || 0;
+                    var detaillayanan = decodeURIComponent(input.dataset.detaillayanan);
+                    let _id = parseInt(input.dataset.id);
+                    currentValue++;
+                    totalQty++;
+                    input.value = currentValue;
+                    
+
+                    let _subtotal = (after_diskon*currentValue);
+
+                    var dataSetCart =
+                    {
+                        id:_id,
+                        harga : harga,
+                        diskon : diskon,
+                        after_diskon : after_diskon,
+                        qty: currentValue,
+                        detaillayanan: detaillayanan,
+                        subtotal:_subtotal,
+                        totalQty:totalQty
+                    }
+                    setCart(dataSetCart);
+                    this.closest(".cart-counter").querySelector(".total-harga").textContent = formatRupiah(_subtotal);
+                    
+                });
+            });
+
+            document.querySelectorAll(".minus").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let input = this.parentElement.querySelector("input");
+                    let harga = parseInt(input.dataset.harga) || 0;
+                    let diskon = parseInt(input.dataset.diskon) || 0;
+                    let after_diskon = parseInt(input.dataset.after_diskon) || 0;
+
+                    let currentValue = parseInt(input.value) || 0;
+                    var detaillayanan = decodeURIComponent(input.dataset.detaillayanan);
+                    
+                    let _id = parseInt(input.dataset.id);
+                    if (currentValue > 0) {
+                        currentValue--;
+                        input.value = currentValue;
+                        totalQty--;
+                        
+                        let _subtotal = (after_diskon*currentValue);
+
+                        var dataSetCart =
+                        {
+                            id:_id,
+                            harga : harga,
+                            diskon : diskon,
+                            after_diskon : after_diskon,
+                            qty: currentValue,
+                            detaillayanan: detaillayanan,
+                            subtotal:_subtotal,
+                            totalQty:totalQty
+                        }
+                        setCart(dataSetCart);
+                        this.closest(".cart-counter").querySelector(".total-harga").textContent = formatRupiah(_subtotal);
+                    }
+                });
+            });
+            
+        }
+
+        function setCart(data){
+        
+          let existingItem = cartReguler.find(item => item.nama === data.detaillayanan);
+          if (existingItem) {
+              if (data.qty == 0) {
+                  let index = cartReguler.findIndex(item => item.nama === data.detaillayanan);
+                  if (index !== -1) {
+                      cartReguler.splice(index, 1);
+                  }
+              } 
+              else {
+                  existingItem.qty = data.qty;
+                  existingItem.harga = data.harga;
+                  existingItem.diskon = data.diskon;
+                  existingItem.after_diskon = data.after_diskon;
+                  existingItem.sub_total = data.subtotal;
+              }
+          } else 
+          {
+              cartReguler.push({
+                  id: data.id,
+                  nama: data.detaillayanan,
+                  harga: data.harga,
+                  diskon: data.diskon,
+                  after_diskon: data.after_diskon,
+                  qty: data.qty,
+                  sub_total: data.subtotal
+              });
+          }
+          console.log(cartReguler);
+          const totalHarga = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
+          $("#TotalHargaReguler").text(formatRupiah(totalHarga));
+          TotalHargaAkhir = totalHarga;
+          const totalQty = cartReguler.reduce((sum, item) => sum + (item.qty), 0);
+      }
+</script>

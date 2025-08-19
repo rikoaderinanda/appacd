@@ -536,6 +536,7 @@
                 showToast("Silakan pilih properti terlebih dahulu.");
                 return false; // Lolos validasi
             }
+            
             if(RegAtauMember =="REG"){
                 TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0)+JenisProperti.harga;
             }
@@ -879,14 +880,33 @@
             var checkout = await InstruksiBayar(dataCheckOut,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
             console.log(checkout);
             if (checkout.success) {
+                var tripay_reff =
+                {
+                    reference : checkout.data.reference,
+                    merchant_ref : checkout.data.merchant_ref,
+                    payment_method : checkout.data.payment_method,
+                    payment_name : checkout.data.payment_name,
+                    amount : checkout.data.amount,
+                    fee_merchant : checkout.data.fee_merchant,
+                    fee_customer : checkout.data.fee_customer,
+                    total_fee : checkout.data.total_fee,
+                    amount_received : checkout.data.amount_received,
+                    pay_code : checkout.data.pay_code,
+                    pay_url : checkout.data.pay_url,
+                    checkout_url : checkout.data.checkout_url,
+                    status : checkout.data.status,
+                    expired_time : checkout.data.expired_time,
+                    instructions : checkout.data.instructions
+                }
                 var dataapi = {
                     Id : datatrx.id,
-                    NoRefCheckout : checkout.data.reference
+                    noRefCheckout : checkout.data.reference,
+                    tripayReq : tripay_reff
                 }
                 var res =  await CheckOutTrx(dataapi,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
                 console.log(res);
                 if(res.success){
-                    
+                    Storage.set("payment",dataapi);
                     window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
                 }
             } else {

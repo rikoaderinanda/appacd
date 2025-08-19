@@ -1,3 +1,5 @@
+
+
 <div class="d-flex justify-content-between align-items-center mb-2">
     <label class="form-label fw-bold m-0">Pilih Alamat</label>
     <button id="btnTambahAlamat" type="button" 
@@ -8,6 +10,7 @@
 <!-- List ALAMAT -->
 <div class="list-group mb-3" id="ListAlamat">
 </div>
+
 
 <!-- Form Tambah Alamat (hidden awalnya) -->
 <div id="formTambahAlamat" class="mb-3" style="display: none;">
@@ -64,19 +67,64 @@
 <!-- Tombol Simpan & Tambah/Batal -->
 <div class="d-flex flex-column mb-3">
   <button id="btnSimpanAlamat" type="button" class="btn btn-success mb-2" style="display: none;">Simpan</button>
-  
+  @* <button id="btnTambahAlamat" type="button" class="btn btn-primary">Tambah Alamat</button> *@
 </div>
+
+<!-- Pertanyaan Relokasi -->
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+  <div class="card-body p-4 bg-light">
+    <div class="row align-items-center g-3">
+
+      <!-- Kolom Pertanyaan -->
+      <div class="col-12 col-md-9 d-flex align-items-start">
+        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+          <i class="bi bi-question-circle-fill text-primary fs-3"></i>
+        </div>
+        <div>
+          <h6 class="fw-bold mb-1 text-dark">
+            Apakah Relokasi AC dilakukan di alamat yang sama?
+          </h6>
+          <p class="text-muted small mb-0">
+            Jika tidak, silakan matikan switch untuk menambahkan alamat baru lokasi pindahan.
+          </p>
+        </div>
+      </div>
+
+      <!-- Kolom Switch -->
+      <div class="col-12 col-md-3 text-md-end">
+        <div class="form-check form-switch d-flex align-items-center justify-content-md-end">
+          <input class="form-check-input" type="checkbox" id="switchAlamatSama" checked>
+          <label class="form-check-label fw-semibold text-success small ms-2" for="switchAlamatSama">
+            Ya, alamat sama
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="PanelAlamat2">
+    <p>Pasang Di</p>
+    <!-- List ALAMAT -->
+    <div class="list-group mb-3" id="ListAlamat2">
+    </div>
+</div>
+
+
+
 
 <script>
 const btnTambah = document.getElementById('btnTambahAlamat');
 const formTambah = document.getElementById('formTambahAlamat');
 const btnSimpan = document.getElementById('btnSimpanAlamat');
 const ListAlamat = document.getElementById('ListAlamat');
+const switchAlamat = document.getElementById("switchAlamatSama");
+const panelAlamat2 = document.getElementById("PanelAlamat2");
+let dataAlamat = [];
 
 btnTambah.addEventListener('click', () => {
 if (formTambah.style.display === 'none') {
-    formTambah.style.display = 'block';
     btnSimpan.style.display = 'inline-block';
+    formTambah.style.display = 'block';
     btnTambah.innerHTML = '<i class="bi bi-x-circle me-1"></i> Batal';
     ListAlamat.style.display = 'none';
 } else {
@@ -194,13 +242,91 @@ $(document).ready(function () {
                 $kelurahan.select2('open');
             });
     });
+
+    togglePanelAlamat();
+
+    switchAlamat.addEventListener("change", togglePanelAlamat);
 });
 
+// fungsi toggle
+function togglePanelAlamat() {
+    if (!switchAlamat.checked) {
+        if(dataAlamat.length>0){
+            loadalamat2();
+            panelAlamat2.style.display = "block"; // tampil
+        }
+        else{
+            showToast("List alamat yang disimpan kosong, silahkan buat baru");
+            switchAlamat.checked = true;
+        }
+    } else {
+        panelAlamat2.style.display = "none"; // sembunyi
+    }
+}
+
+
+function loadalamat2(){
+    callApi({
+        url: '/api/Layanan/ListAlamat?Id='+IdUser,
+        method: 'GET',
+        success: function (data) {
+            var html = $.map(data, function (item) {
+                var scr =`
+                    <label class="list-group-item d-flex align-items-start position-relative">
+                        <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat2" 
+                        value="${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:${item.kota_nama}:${item.provinsi_nama}"
+                        >
+                        <div class="d-flex flex-column w-100">
+                            <div class="fw-bold mb-1">${item.judul}</div>
+                            <div class="d-flex align-items-center mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
+                                <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                </svg>
+                                <div class="fw-semibold">${item.alamat}</div>
+                            </div>
+                            <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
+                            <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
+                        </div>
+                        <button type="button" 
+                            class="btn-close position-absolute top-0 end-0 m-2" 
+                            style="transform: scale(0.7); font-size: 0.8rem;" 
+                            aria-label="Hapus"
+                            onclick="deleteAlamat(${item.id})">
+                        </button>
+                    </label>
+                `;
+                return scr;
+            }).join('');
+            if(data.length == 0){
+                html = `<p class="text-center text-muted py-4">tidak ada alamat yang disimpan...</p>`;
+            }
+
+            $("#ListAlamat2").html(html);
+            if(!isEmptyObject(AlamatPelanggan)){
+                document.querySelector(
+                    `input[name="pilihAlamat2"][value="${AlamatPelanggan.id}:${AlamatPelanggan.judul}:${AlamatPelanggan.alamat}:${AlamatPelanggan.kelurahan_nama}:${AlamatPelanggan.kecamatan_nama}:${AlamatPelanggan.kota_nama}:${AlamatPelanggan.provinsi_nama}"]`
+                ).checked = true;
+            }
+            else{
+                AlamatPelanggan = {};
+            }
+        },
+        error: function () {
+            $('#ListAlamat2').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>');
+        },
+        onBeforeSend: function () {
+            $('#ListAlamat2').html('<p class="text-center text-muted py-4">sedang memuat data ...</p>');
+        },
+        onComplete: function () {}
+    });
+}
 function loadAlamat(){
     callApi({
         url: '/api/Layanan/ListAlamat?Id='+IdUser,
         method: 'GET',
         success: function (data) {
+            dataAlamat = data;
             var html = $.map(data, function (item) {
                 var scr =`
                     <label class="list-group-item d-flex align-items-start position-relative">
@@ -233,7 +359,6 @@ function loadAlamat(){
                 html = `<p class="text-center text-muted py-4">tidak ada alamat yang disimpan...</p>`;
             }
             $("#ListAlamat").html(html);
-            
             if(!isEmptyObject(AlamatPelanggan)){
                 document.querySelector(
                     `input[name="pilihAlamat"][value="${AlamatPelanggan.id}:${AlamatPelanggan.judul}:${AlamatPelanggan.alamat}:${AlamatPelanggan.kelurahan_nama}:${AlamatPelanggan.kecamatan_nama}:${AlamatPelanggan.kota_nama}:${AlamatPelanggan.provinsi_nama}"]`

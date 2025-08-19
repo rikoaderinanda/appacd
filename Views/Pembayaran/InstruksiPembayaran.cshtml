@@ -192,11 +192,11 @@
         }
         
         $ = window.jQuery;
-        var data = Storage.get("payment");
-        console.log(data);
-        if(data)
+        var payment = Storage.get("payment");
+        console.log(payment);
+        if(payment)
         {
-            LoadInstruksiBayar(data.noRefCheckout);
+            LoadInstruksiBayar(payment.noRefCheckout);
             //setInstruksi(data.tripayReq.instructions);
         }
     });
