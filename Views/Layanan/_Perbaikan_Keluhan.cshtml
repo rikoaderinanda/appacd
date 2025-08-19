@@ -64,13 +64,13 @@
         });
     });
     function updateKeluhanLocalStorage() {
-        Keluhan = [];
+        keluhanPerbaikan = [];
         // Ambil semua checkbox yang dicentang
         $('#ItemKeluhanMasalah input[type="checkbox"]').each(function () {
             if ($(this).is(':checked')) {
                 var jeniskeluhan = $(this).closest('.d-flex').find('span').text().trim();
                 var id = $(this).val();
-                Keluhan.push(
+                keluhanPerbaikan.push(
                     {
                         "id":id,
                         "jeniskeluhan":jeniskeluhan
@@ -83,7 +83,7 @@
         if ($('#keluhan5').is(':checked')) {
             var catatan = $('textarea[name="CatatanKeluhanLainnya"]').val();
             if (catatan && catatan.trim() !== '') {
-                Keluhan.push(
+                keluhanPerbaikan.push(
                     {
                         "id":99,
                         "jeniskeluhan":catatan.trim()
@@ -138,6 +138,8 @@
                     $('[name="CatatanKeluhanLainnya"]').val(val);
                 }
                 lazyAnimateItems("ItemKeluhanMasalah");
+                console.log("ini dia");
+                console.log(keluhanPerbaikan);
             },
             error: function (err) {
                 alert('Error: ' + err);

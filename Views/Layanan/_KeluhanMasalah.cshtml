@@ -61,6 +61,7 @@
     });
     
     function updateKeluhanLocalStorage() {
+        console.log("Hai");
         var keluhanTerpilih = [];
 
         // Ambil semua checkbox yang dicentang
@@ -74,6 +75,8 @@
                         "val":keluhan
                     }
                 );
+                keluhanPerbaikan = keluhanTerpilih;
+                console.log(keluhanPerbaikan);
             }
         });
 
@@ -93,9 +96,11 @@
 
         // Simpan ke localStorage
         Storage.set('keluhan', keluhanTerpilih);
+        keluhanPerbaikan = keluhanTerpilih;
     }
     function LoadDataKeluhan(){
         const Keluhan = Storage.get('keluhan');
+        keluhanPerbaikan = Keluhan;
         callApi({
             url: '/api/Layanan/KeluhanMasalah?Id=@ViewData["Id"]',
             method: 'GET',

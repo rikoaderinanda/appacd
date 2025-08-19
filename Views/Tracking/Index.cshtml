@@ -166,24 +166,91 @@
                         }
                         else
                         {
-                            expiredpay = `<p class="text-muted">Batas Pembayaran : ${formatUnixToDateTimeString(item.tripay_data.expired_time)}</p>`;
+                            expiredpay = `<p class="text-muted">Batas Pembayaran : <br> ${formatUnixToDateTimeString(item.tripay_data.expired_time)}</p>`;
                         }
                     }
                     
+                    var dtPesanan = '';
+                    let TotalReg = 0;
+                    item.cart_items.forEach(p => {
+                        dtPesanan = dtPesanan +
+                            `<li class="d-flex justify-content-between border-bottom">
+                                <span>${p.nama} &times; ${p.qty}</span>
+                                <span class="text-muted">${formatRupiah(p.sub_total)}</span>
+                            </li>
+                            `
+                            ;
+                        TotalReg = TotalReg+p.sub_total;
+                    });
+
+                    var paket = '';
+                    if(Object.keys(item.paket).length > 0){
+                        paket = `
+
+                            <p class="d-flex justify-content-between">
+                                <span>${item.paket.deskripsi}</span>
+                                <span>${formatRupiah(TotalReg*item.paket.qty)}</span>
+                            </p>
+                            <p class="d-flex justify-content-between">
+                                <span>Diskon berlangganan</span>
+                                <span>- ${formatRupiah(((TotalReg*item.paket.qty)*item.paket.diskon)/100)}</span>
+                            </p>
+                            <strong class="d-flex justify-content-between">
+                                <span>Sub Total </span>
+                                <span class="">${formatRupiah(item.paket.total)}</span>
+                            </strong>
+
+                        `;
+                    }
+                    paket = paket +
+                    `
+                        <p class="d-flex justify-content-between">
+                            <span>Biaya Properti ${item.properti.nama_jenis}</span>
+                            <span>${formatRupiah(item.properti.harga)}</span>
+                        </p>
+                        
+                        <strong class="d-flex justify-content-between pt-20">
+                            <span>Total Transaksi</span>
+                            <span class="">${formatRupiah(item.total_transaksi)}</span>
+                        </strong>
+                        <hr>
+                    `
+                    ;
                     scr = `
-                    <div class="card mb-3 position-relative shadow-sm border-0">
+                    <div class="card mb-3 position-relative shadow-sm border-1">
                         <div class="card-body position-relative">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="card-title mb-1 fw-bold">
                                         <span class="text-primary">ACD - ${formatToSixDigits(item.id)}</span>
                                     </h5>
+                                    <!-- Accordion Detail Order -->
+                                    
                                     <p class="card-text mb-0">
                                         <span class="text-dark">Layanan ${item.kategori_layanan}</span> - ${regmember}<br>
+                                        
                                         Total Pesanan:
                                         <span class="fw-semibold text-success">${formatRupiah(item.total_transaksi)}</span>
                                     </p>
+
+                                    <div class="mt-1 w-100">
+                                        <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                            type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                            aria-expanded="true" aria-controls="collapseOrder">
+                                            <span class="me-2 accordion-icon">▶</span>
+                                            <strong class="text-muted">Detail Order</strong>
+                                        </button>
+
+                                        <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100">
+                                            <ul class="list-unstyled mb-0" style="font-size: small;">
+                                                ${dtPesanan}
+                                            </ul>
+                                            ${paket}
+                                        </div>
+                                    </div>
+
                                     ${expiredpay}
+                                    
                                     ${_statusPay}
                                     
                                     
@@ -192,22 +259,7 @@
                                 ${btnDelete}
                                 ${btnDetail}
                             </div>
-                            <!-- Accordion Detail Order -->
-                            <div class="mt-1 w-100">
-                                <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
-                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
-                                    aria-expanded="true" aria-controls="collapseOrder">
-                                    <span class="me-2 accordion-icon">▶</span>
-                                    <strong class="text-muted">Detail Order</strong>
-                                </button>
-
-                                <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100">
-                                    <ul class="list-unstyled mb-0" style="font-size: small;">
-                                        ${dtPesanan}
-                                    </ul>
-                                    ${paket}
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>`;
                     return scr;
