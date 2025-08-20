@@ -2,210 +2,58 @@
     ViewData["Title"] = "Layanan";
     ViewData["Header"] = "2";
     ViewData["Footer"] = "3";
-    ViewData["HeaderName"] = "Layanan - Beli + Pasang";
+    ViewData["HeaderName"] = "Layanan - Beli Baru + Pasang";
 }
-<!-- CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <style>
-    /* Wizard container */
-    .wizard-steps {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        position: relative;
-        padding: 0 10px;
+    .card-custom {
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
     }
-
-    /* Garis penghubung */
-    .wizard-steps::before {
-        content: "";
-        position: absolute;
-        top: 18px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: #e5e7eb;
-        z-index: 0;
+    .illustration {
+        width: auto;
     }
-
-    /* Step item */
-    .wizard-step {
-        text-align: center;
-        position: relative;
-        z-index: 1;
-        flex: 1;
+    .btn-wa {
+      background: #25d366;
+      border: none;
     }
-
-    /* Nomor step */
-    .step-number {
-        width: 36px;
-        height: 36px;
-        line-height: 36px;
-        background-color: #d1d5db;
-        color: #fff;
-        border-radius: 50%;
-        margin: auto;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    /* Nama step */
-    .step-title {
-        margin-top: 6px;
-        font-size: 12px;
-        font-weight: 500;
-        color: #6b7280;
-    }
-
-    /* Step aktif */
-    .wizard-step.active .step-number {
-        background-color: #2563eb;
-        transform: scale(1.1);
-    }
-    .wizard-step.active .step-title {
-        color: #2563eb;
-        font-weight: 600;
-    }
-
-    /* Step selesai */
-    .wizard-step.completed .step-number {
-        background-color: #16a34a;
-    }
-    .wizard-step.completed .step-title {
-        color: #16a34a;
-    }
-
-    /* Konten */
-    .wizard-content {
-        background: #fff;
-        border-radius: 6px;
-        padding: 15px;
-        border: 1px solid #f0f0f0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        transition: opacity 0.3s ease;
-        font-size: 14px;
-        padding-bottom: 30px;
-    }
-
-    /* Tombol navigasi */
-    .btn-wizard {
-        min-width: 100px;
-        font-weight: 500;
-        border-radius: 6px;
-        padding: 6px 14px;
-        font-size: 14px;
-    }
-
-    .wizard-footer {
-        position: absolute;
-        bottom: 15px;
-        right: 15px;
+    .btn-wa:hover {
+      background: #1ebe57;
     }
 </style>
-
+<img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1755653424/Gemini_Generated_Image_t5cygit5cygit5cy_iq8vyx.png" alt="Under Development" class="illustration img-fluid w-100">
 <div class="app-body">
     <div class="container">
         <div class="row pt-30">
-            <div class="wizard-steps">
-                <div class="wizard-step active" data-step="1">
-                    <div class="step-number">1</div>
-                    <div class="step-title">Alamat</div>
-                </div>
-                <div class="wizard-step" data-step="2">
-                    <div class="step-number">2</div>
-                    <div class="step-title">Layanan</div>
-                </div>
-                <div class="wizard-step" data-step="3">
-                    <div class="step-number">3</div>
-                    <div class="step-title">Jadwal</div>
-                </div>
-                <div class="wizard-step" data-step="4">
-                    <div class="step-number">4</div>
-                    <div class="step-title">Properti</div>
-                </div>
+            <div class="text-center">
+                <!-- Gambar ilustrasi -->
                 
-                <div class="wizard-step" data-step="5">
-                    <div class="step-number">5</div>
-                    <div class="step-title">Bayar</div>
-                </div>
-            </div>
 
-            <div id="wizardForm">
-                <!-- STEP 1 -->
-                <div class="wizard-content d-none" data-step="1">
-                    <div class="pb-30" id="sessionDataPelanggan">
-                        @await Html.PartialAsync("_InfoKontak")
-                        @await Html.PartialAsync("_AlamatPelanggan")
-                    </div>
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn" onclick="gotoBack()">Batal</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                    
-                </div>
+                <h4 class="fw-bold text-primary mb-2">
+                <i class="bi bi-tools me-2 text-warning"></i> Fitur Sedang dalam Pengembangan
+                </h4>
+                <p class="text-muted mb-4">
+                Saat ini halaman pemesanan <strong>AC Baru + Pemasangan</strong> masih kami kembangkan.  
+                Tapi jangan khawatir! Anda tetap bisa langsung pesan lewat WhatsApp Sales kami.
+                </p>
 
-                <!-- STEP 2 -->
-                <div class="wizard-content" data-step="2" style="position: relative; min-height: 200px;">
-                    <div class="pb-30" id="sessionJasaLayanan">
-                        @await Html.PartialAsync("_Perbaikan_Keluhan")
-                    </div>                    
+                <a href="https://wa.me/6281617233847?text=Halo%20saya%20ingin%20pesan%20AC%20baru%20plus%20pemasangan" 
+                class="btn btn-wa btn-lg rounded-pill text-white shadow-sm">
+                <i class="bi bi-whatsapp me-2"></i> Hubungi Sales via WhatsApp
+                </a>
 
-                    <!-- Tombol di pojok kanan bawah -->
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                </div>
-                <!-- STEP 3 -->
-                <div class="wizard-content" data-step="3" style="position: relative; min-height: 200px;">
-                    @await Html.PartialAsync("_Perbaikan_BiayaSurvey")
-
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                </div>
-
-                <!-- STEP 4 -->
-                <div class="wizard-content d-none" data-step="4">
-                    @await Html.PartialAsync("_Perbaikan_Jadwal")
-                    @* @await Html.PartialAsync("_WaktuKunjunganReguler") *@
-                    
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                </div>
-
-                <!-- STEP 5 -->
-                <div class="wizard-content d-none" data-step="5">
-                    <div class="pb-30" id="sessionJenisProperti">
-                        @await Html.PartialAsync("_JenisProperti")
-                    </div>
-                    <div class="d-flex justify-content-between pt-30">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
-                    </div>
-                    
-                </div>
-
-                <div class="wizard-content d-none" data-step="6">
-                    <div class="pb-30" id="sessionPaymentMethod">
-                        @await Html.PartialAsync("_PilihMetodaPembayaran")
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
-                        <button type="button" class="btn btn-danger btn-wizard" onclick="SimpanDulu()" id="btn_simpandulu">Simpan dulu</button>
-                        <button type="button" class="btn btn-success btn-wizard">Checkout</button>
-                    </div>
+                <div class="mt-4">
+                <small class="text-secondary">Terima kasih atas pengertiannya 🙏</small>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="~/js/pages/Perbaikan.js" asp-append-version="true"></script>
+<script>
+    function gotoBack() {
+        window.location.href = '/';
+    }
+</script>
