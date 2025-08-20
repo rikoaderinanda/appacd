@@ -291,6 +291,7 @@
             GetDataTrx(Id);
         }
         else if (StatusOrder >= 2) {
+            console.log(Id);
             Storage.set('StatusOrder', StatusOrder);
             window.location.href = '@Url.Action("OrderStatus", "Tracking")';
         }

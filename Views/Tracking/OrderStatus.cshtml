@@ -223,7 +223,7 @@
             method: 'GET',
             success: function (res) {
                 res.data.forEach(item => {
-                    status_order = item.status_order;
+                    status_order = item.status;
                 });
                 if (status_order != "") {
                     listStatusOrder(status_order);

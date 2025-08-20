@@ -236,7 +236,8 @@ namespace appacd.Services
                     a.jenis_properti::jsonb AS properti,
                     a.tripay_noreff,
                     a.tripay_reff::jsonb,
-                    b.status_tracking, b.status_tracking_color 
+                    b.status_tracking, b.status_tracking_color,
+                    a.checkout_date 
                 FROM log_transaction a 
                     LEFT JOIN list_status_order b ON b.id = a.status 
                     WHERE a.status  > 0

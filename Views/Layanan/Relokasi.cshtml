@@ -306,36 +306,70 @@ function eventstep_btn() {
 
 function validasiStep(step) {
     if (step === 1) {
-        @* if (isEmptyObject(kontakPelanggan)) {
+        if (isEmptyObject(kontakPelanggan)) {
             showToast('Silahkan pilih kontak yang akan dihubungi teknisi');
             return false;
         }
         if (isEmptyObject(AlamatPelanggan)) {
             showToast('Silahkan pilih Alamat yang akan dikunjungi teknisi');
             return false;
-        } *@
+        }
     } else if (step === 2) {
-        @* if (keluhanPerbaikan.length == 0) {
-            showToast('Silahkan pilih keluhan');
-            return false;
-        } *@
+        console.log(cartReguler);
+        console.log(RegAtauMember);
+        console.log(TotalHargaAkhir);
+        console.log(cartMember);
+        if (Array.isArray(cartReguler) && cartReguler.length > 0 && cartReguler != null) {
+        }
+        else {
+            showToast("Silahkan pilih layanan");
+            return false;    
+        }
+        console.log(TotalHargaAkhir);
     } else if (step === 3) {
-        @* if (isEmptyObject(BiayaSurvey)) {
-            showToast('Silahkan ceklist setuju jika ingin melanjutkan');
-            return false;
-        } *@
-    } else if (step === 4) {
-        @* var tanggalLayanan = $('#tanggalLayanan').val();
+        var tanggalLayanan = $('#tanggalLayanan').val();
         var jamLayanan = $('#jamLayanan').val();
         if (tanggalLayanan == '' || jamLayanan == '') {
             showToast('Silahkan isi jadwal kunjungan');
             return false;
-        } *@
+        }
 
-        @* Kunjungan = {
+        KunjunganReg = {
             tanggal: tanggalLayanan,
             jam: jamLayanan
-        }; *@
+        };
+    } else if (step === 4) {
+        if (isEmptyObject(JenisProperti)) {
+            showToast('Silakan pilih properti terlebih dahulu.');
+            return false;
+        }
+
+        var alldata =
+        {
+            id: IdTrx,
+            createByIdUser: IdUser,
+            kategoriLayanan: "PASANG BARU AC",
+            jenisLayanan: RegAtauMember,
+            totalTransaksi: TotalHargaAkhir,
+            status: 0,
+            statusDeskripsi: "DRAFT",
+            jenisProperti: JenisProperti,
+            kontakPelanggan:kontakPelanggan,
+            alamatPelanggan: AlamatPelanggan,
+            kunjungan: {
+                Reguler: KunjunganReg,
+                Member: KunjunganMember
+            },
+            cartItem: {
+                Reguler: cartReguler,
+                Member: cartMember
+            },
+            paketMember:paketMember,
+            keluhanPerbaikan:keluhanPerbaikan
+        }
+        $('#listTransaksi').html('');
+        console.log(alldata);
+        renderDataTransaksi(alldata);
     } else if (step === 5) {
         if (isEmptyObject(JenisProperti)) {
             showToast('Silakan pilih properti terlebih dahulu.');
@@ -460,43 +494,231 @@ function setCartReg(data) {
     }
 }
 
-function SimpanDulu() {
-    callApi({
-        url: '/api/Transaction/SimpanDulu',
-        method: 'POST',
-        data: getDataAll(),
-        success: function (res) {
+
+async function SimpanDulu() {
+        try {
+            var alldata = {
+                id: IdTrx,
+                createByIdUser: IdUser,
+                kategoriLayanan: kategoriLayanan,
+                jenisLayanan: RegAtauMember,
+                totalTransaksi: TotalHargaAkhir,
+                status: 0,
+                statusDeskripsi: "DRAFT",
+                jenisProperti: JenisProperti,
+                kontakPelanggan: kontakPelanggan,
+                alamatPelanggan: AlamatPelanggan,
+                kunjungan: {
+                    Reguler: KunjunganReg,
+                    Member: KunjunganMember
+                },
+                cartItem: {
+                    Reguler: cartReguler,
+                    Member: cartMember
+                },
+                paketMember: paketMember,
+                keluhanPerbaikan: keluhanPerbaikan
+            };
+            var data = await SimpanTransaksi(alldata);
+            console.log("Hasil simpan:", data);
+
+            if (data) {
+                Swal.fire({
+                    title: '<strong>🎉 Berhasil Disimpan!</strong>',
+                    html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Lihat Keranjang',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg',
+                        title: 'fw-bold text-success',
+                        confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then(() => {
+                    window.location.href = '@Url.Action("Index", "Cart")';
+                });
+            }
+
+        } catch (err) {
+            console.error("Gagal simpan:", err);
             Swal.fire({
-                title: '<strong>🎉 Berhasil Disimpan!</strong>',
-                html: 'Pesananmu telah ditambahkan ke keranjang.<br><small>Kamu akan diarahkan ke halaman <b>Keranjang Pesanan</b>.</small>',
-                icon: 'success',
-                showConfirmButton: true,
-                confirmButtonText: 'Lihat Keranjang',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg',
-                    title: 'fw-bold text-success',
-                    confirmButton: 'btn btn-primary px-4 py-2 rounded-pill'
-                },
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                }
-            }).then(() => {
-                window.location.href = '/Cart';
+                title: "⚠️ Gagal",
+                text: "Terjadi kesalahan saat menyimpan pesanan.",
+                icon: "error"
             });
-        },
-        error: function (err) {
-            alert('Gagal: ' + err);
-        },
-        onBeforeSend: function () {
-            $('#btn_simpandulu').prop('disabled', true).text('Memproses...');
-        },
-        onComplete: function () {
-            $('#btn_simpandulu').prop('disabled', false).text('Simpan Dulu');
         }
+    }
+async function SimpanTransaksi(data) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Transaction/SimpanDulu',
+            method: 'POST',
+            data: data,
+            success: function (res) {
+                resolve(res); // return hasil sukses
+            },
+            error: function (err) {
+                reject(err); // return error ke caller
+            },
+            onBeforeSend: function () {
+                $("#btn_simpandulu").prop("disabled", true).text("Memproses...");
+                $("#btnCheckOut").prop("disabled", true).text("Memproses...");
+            },
+            onComplete: function () {
+                $("#btn_simpandulu").prop("disabled", false).text("Simpan Dulu");
+                $("#btnCheckOut").prop("disabled", false).text("Checkout");
+            }
+        });
     });
 }
+
+async function Checkout(){
+        
+        if ($('input[name="payment_channel"]:checked').length > 0)
+        {
+            try 
+            {
+                var method = $('input[name="payment_channel"]:checked').val();
+                console.log(method);
+                var datatrx = {
+                    id: IdTrx,
+                    createByIdUser: IdUser,
+                    kategoriLayanan: kategoriLayanan,
+                    jenisLayanan: RegAtauMember,
+                    totalTransaksi: TotalHargaAkhir,
+                    status: 0,
+                    statusDeskripsi: "DRAFT",
+                    jenisProperti: JenisProperti,
+                    kontakPelanggan: kontakPelanggan,
+                    alamatPelanggan: AlamatPelanggan,
+                    kunjungan: {
+                        Reguler: KunjunganReg,
+                        Member: KunjunganMember
+                    },
+                    cartItem: {
+                        Reguler: cartReguler,
+                        Member: cartMember
+                    },
+                    paketMember: paketMember,
+                    keluhanPerbaikan: keluhanPerbaikan
+                };
+                var data = await SimpanTransaksi(datatrx);
+                console.log("Hasil simpan:", data);
+                datatrx.id = data.id;
+                setDataCheckOut(datatrx,method);
+                
+
+            } catch (err) {
+                console.error("Gagal simpan:", err);
+                Swal.fire({
+                    title: "⚠️ Gagal",
+                    text: "Terjadi kesalahan saat menyimpan pesanan.",
+                    icon: "error"
+                });
+            }
+        }
+        else{
+            showToast("Silahkan pilih metode pembayaran");
+        }
+    }
+
+async function setDataCheckOut(datatrx,method){
+        if (datatrx.id > 0) {
+            var _order_items = [];
+            $.map(datatrx.cartItem.Reguler, function (item) {
+                if(!isEmptyObject(datatrx.paketMember)){
+                    let qtymember = datatrx.paketMember.qty;
+                    var dt = {
+                        sku: item.id,
+                        name: `${datatrx.paketMember.nama_layanan} - ${datatrx.paketMember.nama_paket} - ${datatrx.paketMember.deskripsi}`,
+                        price: datatrx.paketMember.total,
+                        quantity: 1
+                    };
+                    _order_items.push(dt);
+                }
+                else
+                {
+                    var dt = {
+                        sku: item.id,
+                        name: item.nama,
+                        price: item.after_diskon,
+                        quantity: item.qty
+                    };
+                    _order_items.push(dt);
+                }
+            });
+            
+            var dt = {
+                sku: datatrx.jenisProperti.id,
+                name: 'biaya Properti: ' + datatrx.jenisProperti.nama_jenis,
+                price: datatrx.jenisProperti.harga,
+                quantity: 1
+            };
+            _order_items.push(dt);
+
+            let emailuser = Storage.get('email');
+
+            var dataCheckOut = {
+                method: method,
+                merchant_ref: `ACD-${formatToSixDigits(datatrx.id)}`,
+                amount: datatrx.totalTransaksi,
+                customer_name: datatrx.kontakPelanggan.nama,
+                customer_email: emailuser,
+                customer_phone: datatrx.kontakPelanggan.nomor,
+                order_items: _order_items,
+                callback_url: '',
+                return_url: '',
+                expired_time: 0,
+                signature: ''
+            };
+            console.log(dataCheckOut);
+            var checkout = await InstruksiBayar(dataCheckOut,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
+            console.log(checkout);
+            if (checkout.success) {
+                var tripay_reff =
+                {
+                    reference : checkout.data.reference,
+                    merchant_ref : checkout.data.merchant_ref,
+                    payment_method : checkout.data.payment_method,
+                    payment_name : checkout.data.payment_name,
+                    amount : checkout.data.amount,
+                    fee_merchant : checkout.data.fee_merchant,
+                    fee_customer : checkout.data.fee_customer,
+                    total_fee : checkout.data.total_fee,
+                    amount_received : checkout.data.amount_received,
+                    pay_code : checkout.data.pay_code,
+                    pay_url : checkout.data.pay_url,
+                    checkout_url : checkout.data.checkout_url,
+                    status : checkout.data.status,
+                    expired_time : checkout.data.expired_time,
+                    instructions : checkout.data.instructions
+                }
+                var dataapi = {
+                    Id : datatrx.id,
+                    noRefCheckout : checkout.data.reference,
+                    tripayReq : tripay_reff
+                }
+                var res =  await CheckOutTrx(dataapi,{id:"btnCheckOut",txtProcess:"Memproses...",txtfinish:"Checkout"});
+                console.log(res);
+                if(res.success){
+                    Storage.set("payment",dataapi);
+                    window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
+                }
+            } else {
+                 console.log(checkout);
+                 Swal.fire('Gagal!', checkout.message, 'warning');
+            }
+        }
+        else
+        {
+            showToast("Data tidak valid");
+        }
+    }
 
 </script>

@@ -172,6 +172,7 @@ namespace appacd.Services
                     status = 1,
                     status_deskripsi = 'Pesanan diterima, menunggu Pembayaran',
                     tripay_noreff = @reff,
+                    checkout_date = now(),
                     tripay_reff = @TripayReq::jsonb
                 where id = @Id
                 RETURNING id;
