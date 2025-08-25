@@ -405,6 +405,9 @@
 
     function cekStatus(){
         //console.log("cek status");
+        var dt = Storage.get("payment");
+        console.log(dt);
+        Storage.set("IdPesanan",dt.id);
         window.location.href = '@Url.Action("OrderStatus", "Tracking")';
     }
 

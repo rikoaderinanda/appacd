@@ -40,6 +40,7 @@ builder.Services.AddSwaggerGen(c =>
         Title = "API Transaksi",
         Version = "v1"
     });
+
     // Filter supaya dokumen "transaksi" hanya memuat controller dengan GroupName = "transaksi"
     c.DocInclusionPredicate((docName, apiDesc) =>
     {

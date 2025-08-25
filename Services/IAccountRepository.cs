@@ -17,6 +17,7 @@ namespace appacd.Services
         Task<IEnumerable<dynamic?>> GetAlamatAsync(string IdUser);
         Task<bool> DeleteAlanat(string _id);
         Task<bool> SimpanAlamatAsync(AlamatPelanggan data);
+        Task<bool> CheckLogTrxDgnAlamat(string _id);
     }
 
     public class AccountRepository : IAccountRepository
@@ -128,14 +129,27 @@ namespace appacd.Services
             {
                 Id = IdUser
             };
-
-            return await _db.QueryAsync<dynamic>(sql, param);
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+            return JsonColumnParser.ParseJsonColumns(result);
         }
 
         public async Task<bool> DeleteAlanat(string _id)
         {
             var query = "DELETE FROM alamat_pelanggan WHERE id = @Id::bigint;";
             var result = await _db.ExecuteAsync(query, new { Id = _id });
+            return result > 0;
+        }
+
+        public async Task<bool> CheckLogTrxDgnAlamat(string _id)
+        {
+            var query = @"
+                SELECT COUNT(1)
+                FROM log_transaction
+                WHERE (alamat_pelanggan::jsonb)->>'id' = @Id
+                AND status <= 1;
+            ";
+
+            var result = await _db.ExecuteScalarAsync<int>(query, new { Id = _id });
             return result > 0;
         }
 
@@ -155,7 +169,8 @@ namespace appacd.Services
                         kecamatan_nama,
                         kelurahan_code,
                         kelurahan_nama,
-                        id_user
+                        id_user,
+                        jenis_properti
                     ) VALUES (
                         @judul,
                         @alamat,
@@ -167,15 +182,17 @@ namespace appacd.Services
                         @kecamatan_nama,
                         @kelurahan_code,
                         @kelurahan_nama,
-                        @id_user
+                        @id_user,
+                        @jenis_properti::jsonb
                     )
-                    ON CONFLICT (id_user, judul, alamat) DO NOTHING;
+                    ON CONFLICT (id_user,judul, alamat) DO NOTHING
+                    RETURNING id;
                 ";
 
                 var param = new
                 {
-                    judul = data.Judul,
-                    alamat = data.Alamat,
+                    judul = data.Judul?.Trim(),
+                    alamat = data.Alamat?.Trim(),
                     provinsi_code = data.ProvinsiCode,
                     provinsi_nama = data.ProvinsiNama,
                     kota_code = data.KotaCode,
@@ -184,17 +201,34 @@ namespace appacd.Services
                     kecamatan_nama = data.KecamatanNama,
                     kelurahan_code = data.KelurahanCode,
                     kelurahan_nama = data.KelurahanNama,
-                    id_user = data.IdUser
+                    id_user = data.IdUser,
+                    jenis_properti = JsonConvert.SerializeObject(data.JenisProperti)
                 };
 
-                var affectedRows = await _db.ExecuteAsync(sql, param);
-                return affectedRows > 0;
+                // var affectedRows = await _db.ExecuteAsync(sql, param);
+                // return affectedRows > 0;
+                Console.WriteLine("SQL:");
+                Console.WriteLine(sql);
+
+                Console.WriteLine("Params:");
+                foreach (var p in param.GetType().GetProperties())
+                {
+                    var val = p.GetValue(param, null);
+                    Console.WriteLine($"{p.Name} = {val}");
+                }
+
+                var insertedId = await _db.ExecuteScalarAsync<int?>(sql, param);
+
+                return insertedId.HasValue;
+
             }
             catch (Exception ex)
             {
-                // Log exception jika kamu pakai logger
-                // _logger.LogError(ex, "Error updating invoice status for ID: {Id}", id);
-                return false; // bisa juga throw lagi kalau ingin controller yang menangani
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"Inner: {ex.InnerException.Message}");
+                return false;
             }
         }
     }

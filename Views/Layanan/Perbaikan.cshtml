@@ -128,13 +128,13 @@
                     <div class="step-number">4</div>
                     <div class="step-title">Jadwal</div>
                 </div>
-                <div class="wizard-step" data-step="5">
+                @* <div class="wizard-step" data-step="5">
                     <div class="step-number">5</div>
                     <div class="step-title">Properti</div>
-                </div>
+                </div> *@
                 
-                <div class="wizard-step" data-step="6">
-                    <div class="step-number">6</div>
+                <div class="wizard-step" data-step="5">
+                    <div class="step-number">5</div>
                     <div class="step-title">Bayar</div>
                 </div>
             </div>
@@ -187,7 +187,7 @@
                 </div>
 
                 <!-- STEP 5 -->
-                <div class="wizard-content d-none" data-step="5">
+                @* <div class="wizard-content d-none" data-step="5">
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
                     </div>
@@ -196,9 +196,9 @@
                         <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
                     </div>
                     
-                </div>
+                </div> *@
 
-                <div class="wizard-content d-none" data-step="6">
+                <div class="wizard-content d-none" data-step="5">
                     <div class="pb-30" id="sessionPaymentMethod">
                         @await Html.PartialAsync("_PilihMetodaPembayaran")
                     </div>
@@ -321,6 +321,7 @@ function eventstep_btn() {
 
 function validasiStep(step) {
     if (step === 1) {
+
         if (isEmptyObject(kontakPelanggan)) {
             showToast('Silahkan pilih kontak yang akan dihubungi teknisi');
             return false;
@@ -329,6 +330,12 @@ function validasiStep(step) {
             showToast('Silahkan pilih Alamat yang akan dikunjungi teknisi');
             return false;
         }
+        console.log(JenisProperti);
+        if(isEmptyObject(JenisProperti)){
+            showToast("Silahkan pilih Jenis Properti");
+            return false;
+        }
+
     } else if (step === 2) {
         if (keluhanPerbaikan.length == 0) {
             showToast('Silahkan pilih keluhan');
@@ -351,15 +358,20 @@ function validasiStep(step) {
             tanggal: tanggalLayanan,
             jam: jamLayanan
         };
-    } else if (step === 5) {
+
+        $('#listTransaksi').html('');
+        renderDataTransaksi(getDataAll());
+
+    } 
+    @* else if (step === 5) {
         if (isEmptyObject(JenisProperti)) {
             showToast('Silakan pilih properti terlebih dahulu.');
             return false;
         }
 
-        $('#listTransaksi').html('');
-        renderDataTransaksi(getDataAll());
-    }
+        
+    } *@
+
     return true;
 }
 
@@ -445,6 +457,30 @@ function renderDataTransaksi(data) {
 
     $('#totalTransaksi').text(formatRupiah(Total));
 
+    $("#KontakInfo").html(`
+        <span>
+            <i class="bi bi-person-circle me-1 text-primary"></i> ${data.kontakPelanggan.nama}
+            <i class="bi bi-telephone-fill ms-2 me-1 text-success"></i> ${data.kontakPelanggan.nomor}
+        </span>`
+    );
+    $("#AlamatInfo").html(`
+        <!-- Alamat ringkas (jenis + judul) -->
+        <div class="mb-1">
+            <i class="bi bi-building me-1 text-warning"></i> ${data.jenisProperti.nama_jenis}
+            <i class="bi bi-dot mx-1"></i>
+            <i class="bi bi-tag-fill me-1 text-info"></i> ${data.alamatPelanggan.judul}
+        </div>
+
+        <!-- Alamat lengkap + Map -->
+        <div class="d-flex justify-content-between align-items-center">
+            <span>
+            <i class="bi bi-geo-alt-fill me-1 text-danger"></i> ${data.alamatPelanggan.alamat}
+            </span>
+            <a href="https://maps.google.com?q=-6.917464,107.619123" target="_blank" class="text-decoration-none text-primary">
+            <i class="bi bi-map-fill fs-5"></i>
+            </a>
+        </div>
+    `);
     TotalHargaAkhir = Total;
 }
 

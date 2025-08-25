@@ -141,8 +141,15 @@ namespace appacd.api
         {
             try
             {
-                var res = await _accRepo.DeleteAlanat(id);
-                return Ok(new { message = "Delete data berhasil", success = res });
+                var cek = await _accRepo.CheckLogTrxDgnAlamat(id);
+                if(!cek){
+                     var res = await _accRepo.DeleteAlanat(id);
+                     return Ok(new { message = "Delete data berhasil", success = cek });
+                }
+                else
+                {
+                     return Conflict(new { message = "Alamat tidak bisa dihapus, dikarenakan masih ada transaksi order yang masih open", success = false });
+                }
             }
             catch (Exception ex)
             {
@@ -162,9 +169,12 @@ namespace appacd.api
                 var Resid = await _accRepo.SimpanAlamatAsync(request);
                 if (Resid)
                 {
-                    return Ok(new { message = "Simpan Kontak berhasil", success = Resid });
+                    return Ok(new { message = "Simpan alamat berhasil", success = true });
                 }
-                return Ok(new { message = "Data kontak already exist", success = Resid });
+                else
+                {
+                    return Conflict(new { message = "Alamat sudah ada", success = false });
+                }
             }
             catch (Exception ex)
             {

@@ -4,6 +4,7 @@
     ViewData["Footer"] = "3";
     ViewData["HeaderName"] = "Detail Transaksi";
 }
+
 <style>
     /* ===== Styling Channel Payment ===== */
     .payment-channel-list {
@@ -145,7 +146,22 @@
                 <div id="IdTransaksi" class="position-relative mb-3"></div>
 
                 <!-- Accordion Detail Order -->
-                <div class="position-relative mb-2">
+                <div class="fw-semibold text-primary mb-1">
+                    <i class="bi bi-person-vcard me-1"></i> Kontak & Alamat
+                </div>
+
+                <div class="p-3 border rounded bg-light medium mb-2">
+                <!-- Kontak (1 baris) -->
+                    <div class="mb-2 mt-2" id="KontakInfo">
+                    </div>
+
+                <!-- Pemisah -->
+                    <div class="border-top my-2" style="opacity:.1;border:1px;"></div>
+                        <div id="AlamatInfo"></div>
+                </div>
+            
+                <br>
+                <div class="position-relative">
                     <strong><i class="bi bi-receipt-cutoff me-1"></i> Detail Transaksi</strong>
                     <a id="toggleDetailBtn" href="javascript:void(0)"
                         class="btn btn-sm position-absolute top-0 end-0">
@@ -186,6 +202,7 @@
         </div>
     </div>
 </div>
+
 <!-- Footer -->
 <div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
     <div class="container p-0">
@@ -203,8 +220,10 @@
         </div>
     </div>
 </div>
+
 <!-- Footer End -->
 <script>
+
     var $;
     var dataTrx = {};
     document.addEventListener('DOMContentLoaded', function () {
@@ -225,6 +244,7 @@
         } else {
             GetChannelPembayaran();
         }
+
         // Event search
         $('#searchInput').on('keydown', function (e) {
             if (e.key === "Enter") {
@@ -249,6 +269,47 @@
 
     function renderDataTransaksi(data){
         let Total = 0;
+        console.log(data);
+        @* $("#KontakInfo").html(`
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-person-circle me-1 text-primary"></i> ${data.kontakPelanggan.nama}
+            </div>
+            <div class="d-flex align-items-center">
+                <i class="bi bi-telephone-fill ms-2 me-1 text-success"></i> ${data.kontakPelanggan.nomor}
+            </div>
+            `
+        ); *@
+        $("#KontakInfo").html(`
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-person-circle me-2 text-primary" style="font-size:1.2rem; line-height:1;"></i>
+                <span class="fw-semibold">Riko Ade Rinanda</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <i class="bi bi-telephone-fill me-2 text-success" style="font-size:1.2rem; line-height:1;"></i>
+                <span>081617233847</span>
+            </div>
+            `
+        );
+
+        $("#AlamatInfo").html(`
+            <!-- Alamat ringkas (jenis + judul) -->
+            <div class="mb-1">
+                <i class="bi bi-building me-1 text-warning"></i> ${data.jenisProperti.nama_jenis}
+                <i class="bi bi-dot mx-1"></i>
+                <i class="bi bi-tag-fill me-1 text-info"></i> ${data.alamatPelanggan.judul}
+            </div>
+
+            <!-- Alamat lengkap + Map -->
+            <div class="d-flex justify-content-between align-items-center">
+                <span>
+                <i class="bi bi-geo-alt-fill me-1 text-danger"></i> ${data.alamatPelanggan.alamat}
+                </span>
+                <a href="https://maps.google.com?q=-6.917464,107.619123" target="_blank" class="text-decoration-none text-primary">
+                <i class="bi bi-map-fill fs-5"></i>
+                </a>
+            </div>
+        `);
+
         if(data.jenisLayanan == "MEMBER")
         {
             regmember = `<span class="text-danger">Berlangganan</span>`;
@@ -578,4 +639,5 @@
             showToast("Data tidak valid");
         }
     }
+
 </script>

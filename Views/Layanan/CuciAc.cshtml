@@ -85,9 +85,9 @@
     .wizard-content {
         background: #fff;
         border-radius: 6px;
-        padding: 15px;
-        border: 1px solid #f0f0f0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        padding: 3px;
+        @* border: 1px solid #f0f0f0; *@
+        @* box-shadow: 0 2px 8px rgba(0,0,0,0.03); *@
         transition: opacity 0.3s ease;
         font-size: 14px;
     }
@@ -136,13 +136,13 @@
                     <div class="step-number">3</div>
                     <div class="step-title">Jadwal</div>
                 </div>
-                <div class="wizard-step" data-step="4">
+                @* <div class="wizard-step" data-step="4">
                     <div class="step-number">4</div>
                     <div class="step-title">Properti</div>
-                </div>
+                </div> *@
                 
-                <div class="wizard-step" data-step="5">
-                    <div class="step-number">5</div>
+                <div class="wizard-step" data-step="4">
+                    <div class="step-number">4</div>
                     <div class="step-title">Bayar</div>
                 </div>
             </div>
@@ -154,16 +154,19 @@
                         <header class="container mb-4">
                            <div class="d-flex align-items-center gap-3 flex-wrap">
                                 <!-- Ikon / Ilustrasi -->
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                    style="width:60px;height:60px;">
-                                    <i class="bi bi-geo-alt-fill fs-3"></i>
-                                </div>
+                                
 
                                 <!-- Judul & Subjudul -->
                                 <div>
-                                    <h1 class="h4 fw-bold text-primary mb-1">
-                                        Lengkapi Kontak &amp; Alamat Layanan
-                                    </h1>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width:45px;height:40px;">
+                                            <i class="bi bi-geo-alt-fill fs-3"></i>
+                                        </div>
+                                        <h1 class="h4 fw-bold text-primary mb-0 ms-3">
+                                            Lengkapi Kontak &amp; Alamat Layanan
+                                        </h1>
+                                    </div>
                                     <p class="text-muted mb-0">
                                         Pilih atau tambahkan kontak serta alamat tempat layanan akan dikerjakan.
                                     </p>
@@ -234,7 +237,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 3 Jenis Properti-->
+                @* <!-- STEP 3 Jenis Properti-->
                 <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
@@ -246,11 +249,11 @@
                         <button type="button" class="btn btn-primary btn-wizard next-btn flex-fill">Lanjut</button>
                     </div>
                     
-                </div>
+                </div> *@
 
                 
 
-                <div class="wizard-content d-none" data-step="5">
+                <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionPaymentMethod">
                         @await Html.PartialAsync("_PilihMetodaPembayaran")
                     </div>
@@ -390,6 +393,12 @@
                 showToast("Silahkan pilih Alamat yang akan dikunjungi teknisi");
                 return false;
             }
+
+            if(isEmptyObject(JenisProperti)){
+                showToast("Silahkan pilih Jenis Properti");
+                return false;
+            }
+
             let subtotal = 0;
             cartReguler.forEach(item => {
                 $(`#InputQtyLayanan${item.id}`).val(item.qty);
@@ -466,9 +475,9 @@
                     }
 
                     if(!isEmptyObject(JenisProperti)){
-                        document.querySelector(
+                        @* document.querySelector(
                             `input[name="JenisProperti"][value="${JenisProperti.nama_jenis}:${JenisProperti.harga}:${JenisProperti.id}"]`
-                        ).checked = true;
+                        ).checked = true; *@
                         TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0)+JenisProperti.harga;
                     }
                     else
@@ -505,10 +514,10 @@
                     
                     if(KunjunganMember.length>0){
                         if(!isEmptyObject(JenisProperti)){
-                            document.querySelector(
+                            @* document.querySelector(
                                 `input[name="JenisProperti"][value="${JenisProperti.nama_jenis}:${JenisProperti.harga}:${JenisProperti.id}"]`
                             ).checked = true;
-                            console.log(paketMember);
+                            console.log(paketMember); *@
                             TotalHargaAkhir = paketMember.total + JenisProperti.harga;
                         }
                         else{
@@ -529,14 +538,6 @@
                 }
             }
             console.log(TotalHargaAkhir);
-        }
-        else if(step ===4){
-            console.log(JenisProperti);
-            if (JenisProperti== null || isEmptyObject(JenisProperti)) {
-                showToast("Silakan pilih properti terlebih dahulu.");
-                return false; // Lolos validasi
-            }
-            
             if(RegAtauMember =="REG"){
                 TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0)+JenisProperti.harga;
             }
@@ -544,8 +545,6 @@
             {
                 TotalHargaAkhir = paketMember.total + JenisProperti.harga;
             }
-            //TotalHargaAkhir = TotalHargaAkhir + JenisProperti.harga;
-
             var alldata =
             {
                 id: IdTrx,
@@ -573,7 +572,13 @@
             $("#listTransaksi").html("");
             renderDataTransaksi(alldata);
         }
-        // Jika tidak ada validasi khusus untuk step lain, langsung lolos
+        else if(step ===4){
+            console.log(JenisProperti);
+            if (JenisProperti== null || isEmptyObject(JenisProperti)) {
+                showToast("Silakan pilih properti terlebih dahulu.");
+                return false; // Lolos validasi
+            }
+        }
         return true;
     }
 
@@ -775,6 +780,33 @@
             
         }
         $("#totalTransaksi").text(formatRupiah(Total));
+        
+        $("#KontakInfo").html(
+            `
+            <span>
+                <i class="bi bi-person-circle me-1 text-primary"></i> Budi Santoso
+                <i class="bi bi-telephone-fill ms-2 me-1 text-success"></i> 0812-3456-7890
+            </span>`
+        );
+
+        $("#AlamatInfo").html(`
+            <!-- Alamat ringkas (jenis + judul) -->
+            <div class="mb-1">
+                <i class="bi bi-building me-1 text-warning"></i> Rumah
+                <i class="bi bi-dot mx-1"></i>
+                <i class="bi bi-tag-fill me-1 text-info"></i> Rumah Utama
+            </div>
+
+            <!-- Alamat lengkap + Map -->
+            <div class="d-flex justify-content-between align-items-center">
+                <span>
+                <i class="bi bi-geo-alt-fill me-1 text-danger"></i> Jl. Melati No. 123, Bandung
+                </span>
+                <a href="https://maps.google.com?q=-6.917464,107.619123" target="_blank" class="text-decoration-none text-primary">
+                <i class="bi bi-map-fill fs-5"></i>
+                </a>
+            </div>
+        `);
     }
 
     async function Checkout(){

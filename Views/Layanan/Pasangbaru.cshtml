@@ -124,12 +124,12 @@
                     <div class="step-number">3</div>
                     <div class="step-title">Jadwal</div>
                 </div>
-                <div class="wizard-step" data-step="4">
+                @* <div class="wizard-step" data-step="4">
                     <div class="step-number">4</div>
                     <div class="step-title">Properti</div>
-                </div>
+                </div> *@
                 
-                <div class="wizard-step" data-step="5">
+                <div class="wizard-step" data-step="4">
                     <div class="step-number">5</div>
                     <div class="step-title">Bayar</div>
                 </div>
@@ -171,7 +171,7 @@
                 </div>
 
                 <!-- STEP 4 -->
-                <div class="wizard-content d-none" data-step="4">
+                @* <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionJenisProperti">
                         @await Html.PartialAsync("_JenisProperti")
                     </div>
@@ -179,9 +179,9 @@
                         <button type="button" class="btn btn-secondary btn-wizard prev-btn">Kembali</button>
                         <button type="button" class="btn btn-primary btn-wizard next-btn">Lanjut</button>
                     </div>
-                </div>
+                </div> *@
 
-                <div class="wizard-content d-none" data-step="5">
+                <div class="wizard-content d-none" data-step="4">
                     <div class="pb-30" id="sessionPaymentMethod">
                         @await Html.PartialAsync("_PilihMetodaPembayaran")
                     </div>
@@ -337,6 +337,63 @@ function validasiStep(step) {
             tanggal: tanggalLayanan,
             jam: jamLayanan
         };
+
+        KunjunganReg =
+        {
+            tanggal : tanggalLayanan,
+            jam : jamLayanan
+        }
+        TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0)+JenisProperti.harga;
+        var alldata =
+        {
+            id: IdTrx,
+            createByIdUser: IdUser,
+            kategoriLayanan: "CUCI AC",
+            jenisLayanan: RegAtauMember,
+            totalTransaksi: TotalHargaAkhir,
+            status: 0,
+            statusDeskripsi: "DRAFT",
+            jenisProperti: JenisProperti,
+            kontakPelanggan:kontakPelanggan,
+            alamatPelanggan: AlamatPelanggan,
+            kunjungan: {
+                Reguler: KunjunganReg,
+                Member: KunjunganMember
+            },
+            cartItem: {
+                Reguler: cartReguler,
+                Member: cartMember
+            },
+            paketMember:paketMember,
+            keluhanPerbaikan:keluhanPerbaikan
+        }
+        console.log(alldata);
+        @* var alldata =
+        {
+            id: IdTrx,
+            createByIdUser: IdUser,
+            kategoriLayanan: "PASANG BARU AC",
+            jenisLayanan: RegAtauMember,
+            totalTransaksi: TotalHargaAkhir,
+            status: 0,
+            statusDeskripsi: "DRAFT",
+            jenisProperti: JenisProperti,
+            kontakPelanggan:kontakPelanggan,
+            alamatPelanggan: AlamatPelanggan,
+            KunjunganReg: {
+                Reguler: KunjunganReg,
+                Member: KunjunganMember
+            },
+            cartItem: {
+                Reguler: cartReguler,
+                Member: cartMember
+            },
+            paketMember:paketMember,
+            keluhanPerbaikan:keluhanPerbaikan
+        } *@
+        $('#listTransaksi').html('');
+        renderDataTransaksi(alldata);
+
     } else if (step === 4) {
         if (isEmptyObject(JenisProperti)) {
             showToast('Silakan pilih properti terlebih dahulu.');

@@ -20,17 +20,30 @@
             Lengkapi detail alamat Anda dengan benar agar pengiriman lebih cepat dan akurat.
         </p>
     </div>
+    <!-- Jenis Properti -->
+    <div class="mb-2">
+        <label for="selectJenisProperti" class="form-label">Pilih Jenis Properti</label>
+        <select id="selectJenisProperti" class="form-control form-select">
+        </select>
+        <!-- Info Harga Properti -->
+        <div class="mt-2" id="infoHargaProperti" style="display:none;">
+            <span class="fw-bold text-success">Biaya :</span>
+            <span id="hargaPropertiValue"></span>
+        </div>
+        <div class="alert alert-warning mt-3" role="alert" id="AlertProperti" style="display:none;">
+            Bagi customer yang melakukan pemesanan untuk unit apartment, mohon
+            mempersiapkan surat izin untuk mitra ACD dari pihak gedung sebelum waktu
+            pengerjaan dilakukan.
+        </div>
+    </div>
     <div class="mb-2">
         <label for="inputJudul" class="form-label">Judul Alamat</label>
         <input type="text" class="form-control" id="inputJudul" placeholder="Misal: Alamat Rumah">
     </div>
     <div class="mb-2">
         <label for="inputAlamat" class="form-label">Alamat</label>
-        <textarea type="text" 
-            class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10"
-            rows="3"
-            >
-        </textarea>
+        <textarea class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10" rows="3"></textarea>
+
     </div>
     <div class="mb-2">
         <label for="selectProvinsi" class="form-label">Provinsi</label>
@@ -94,6 +107,7 @@ btnSimpan.addEventListener('click', () => {
 $(document).on('click', 'input[name="pilihAlamat"]', function() {
     var selectedValue = $(this).val();
     var values = selectedValue.split(':');
+    console.log(values);
     var _id = values[0];
     var _judul = values[1];
     var _alamat = values[2];
@@ -101,6 +115,10 @@ $(document).on('click', 'input[name="pilihAlamat"]', function() {
     var _kecamatan_nama = values[4];
     var _kota_nama = values[5];
     var _provinsi_nama = values[6];
+    //${item.jenis_properti.id}:${item.jenis_properti.nama_jenis}:${item.jenis_properti.harga}
+    var _property_id = values[7];
+    var _property_nama = values[8];
+    var _property_harga = values[9];
     
     AlamatPelanggan = {
         id : _id,
@@ -111,9 +129,19 @@ $(document).on('click', 'input[name="pilihAlamat"]', function() {
         kota_nama:_kota_nama,
         provinsi_nama:_provinsi_nama
     };
+    console.log(_property_harga);
+    JenisProperti = {
+        nama_jenis: _property_nama,
+        harga: Number(_property_harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
+        id: _property_id
+    };
+
+    console.log(JenisProperti);
 });
 
 $(document).ready(function () {
+    loadPropertyType();
+    eventSelectJenisProperty();
     // Inisialisasi semua select2
     $('.select2').select2({
         width: '100%',
@@ -201,14 +229,41 @@ function loadAlamat(){
         url: '/api/Layanan/ListAlamat?Id='+IdUser,
         method: 'GET',
         success: function (data) {
+            console.log(data);
             var html = $.map(data, function (item) {
+                
+                var properti = ``;
+                console.log(item.jenis_properti);
+                var _jenisProp = {};
+                if(!isEmptyObject(item.jenis_properti) && item.jenis_properti!= null){
+                    properti = `
+                    <span class="badge bg-info text-white ms-2">
+                        ${item.jenis_properti.nama_jenis}
+                    </span>
+                    <span class="badge bg-success text-white ms-1">
+                        ${formatRupiah(item.jenis_properti.harga)}
+                    </span>
+                    `;
+                    _jenisProp = item.jenisProperti;
+                }
+                else{
+                    _jenisProp = {
+                        id:0,
+                        nama_jenis:"",
+                        harga:0,
+                    }
+                }
+
                 var scr =`
                     <label class="list-group-item d-flex align-items-start position-relative">
                         <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" 
-                        value="${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:${item.kota_nama}:${item.provinsi_nama}"
+                        value="${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:${item.kota_nama}:${item.provinsi_nama}:${item.jenis_properti.id}:${item.jenis_properti.nama_jenis}:${item.jenis_properti.harga}"
                         >
                         <div class="d-flex flex-column w-100">
-                            <div class="fw-bold mb-1">${item.judul}</div>
+                            <div class="fw-bold mb-1">
+                                ${item.judul}
+                                ${properti}
+                            </div>
                             <div class="d-flex align-items-center mb-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
                                 <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
@@ -218,6 +273,7 @@ function loadAlamat(){
                             </div>
                             <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
                             <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
+                            
                         </div>
                         <button type="button" 
                             class="btn-close position-absolute top-0 end-0 m-2" 
@@ -235,9 +291,14 @@ function loadAlamat(){
             $("#ListAlamat").html(html);
             
             if(!isEmptyObject(AlamatPelanggan)){
-                document.querySelector(
-                    `input[name="pilihAlamat"][value="${AlamatPelanggan.id}:${AlamatPelanggan.judul}:${AlamatPelanggan.alamat}:${AlamatPelanggan.kelurahan_nama}:${AlamatPelanggan.kecamatan_nama}:${AlamatPelanggan.kota_nama}:${AlamatPelanggan.provinsi_nama}"]`
-                ).checked = true;
+                const el = document.querySelector(
+                    `input[name="pilihAlamat"][value="${AlamatPelanggan.id}:${AlamatPelanggan.judul}:${AlamatPelanggan.alamat}:${AlamatPelanggan.kelurahan_nama}:${AlamatPelanggan.kecamatan_nama}:${AlamatPelanggan.kota_nama}:${AlamatPelanggan.provinsi_nama}:${JenisProperti.id}:${JenisProperti.nama_jenis}:${JenisProperti.harga}"]`
+                );
+                if (el) {el.checked = true;}
+                else
+                {
+                    AlamatPelanggan = {};
+                }
             }
             else{
                 AlamatPelanggan = {};
@@ -274,8 +335,16 @@ function deleteAlamat(id){
 
 function simpanAlamat(){
     // Ambil semua nilai dari form
+    var selectedValue = $("#selectJenisProperti").val();
+    const [nama, harga, id] = selectedValue.split(':');
+    var Properti = {
+        nama_jenis: nama,
+        harga: Number(harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
+        id: id
+    };
     const dataAlamat = {
         id: 0, // kalau create baru bisa 0 atau null
+        jenisProperti:Properti,
         judul: document.getElementById('inputJudul').value.trim(),
         alamat: document.getElementById('inputAlamat').value.trim(),
         provinsiCode: document.getElementById('selectProvinsi').value,
@@ -289,7 +358,7 @@ function simpanAlamat(){
         idUser: IdUser
     };
 
-    //console.log(dataAlamat);
+    console.log(dataAlamat);
     callApi({
         url: "/api/Layanan/SimpanAlamat",
         method: 'POST',
@@ -317,5 +386,69 @@ function simpanAlamat(){
             loadAlamat();
         }
     });  
+}
+
+//this function used for get data "Jenis Property"
+function loadPropertyType(){
+    callApi({
+        url: '/api/Layanan/JenisProperti?Id=1',
+        method: 'GET',
+        success: function (data) {
+            var html= `<option value=""></option>`;
+            html += $.map(data, function (item) {
+                var scr = "";
+                scr = `
+                    <option value="${item.nama_jenis}:${item.harga}:${item.id}">${item.nama_jenis}</option>
+                `;
+                return scr;
+            }).join('');
+
+            $('#selectJenisProperti').html(html);
+            lazyAnimateItems("selectJenisProperti");
+        },
+        error: function (err) {
+            alert('Error: ' + err);
+        }
+    });
+}
+
+//event handle for jenis property when changed value
+function eventSelectJenisProperty(){
+    $('#selectJenisProperti').on('change', function () {
+        var selectedValue = $(this).val();
+        var selectedText  = $("#selectJenisProperti option:selected").text();
+        if (selectedValue) 
+        {
+            const [nama, harga, id] = selectedValue.split(':');
+            const hargaC = parseInt(harga.trim(), 10) || 0;
+            console.log(nama);
+            // Tampilkan alert jika properti adalah apartment
+            if (nama.trim().toLowerCase() === 'apartemen') 
+            {   
+                $('#AlertProperti').show();
+            } else {
+                $('#AlertProperti').hide();
+                
+            }
+
+            if(nama != ""){
+                $(`#infoHargaProperti`).html(
+                    `
+                        <span class="fw-bold text-success">Biaya :</span>
+                        <span id="hargaPropertiValue">${formatRupiah(hargaC)}</span>
+                    `
+                );
+                $('#infoHargaProperti').show();
+            }
+
+            // Contoh: panggil fungsi lain atau isi ke input hidden
+            // $('#hiddenPropertyType').val(selectedValue);
+        } else 
+        {
+            console.log("Belum pilih jenis properti");
+            $(`#infoHargaProperti`).html("");
+            $('#infoHargaProperti').hide();
+        }
+    });
 }
 </script>

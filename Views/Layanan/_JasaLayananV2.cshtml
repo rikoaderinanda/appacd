@@ -220,7 +220,8 @@
         console.log(cartReguler);
         const totalHarga = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
         $("#TotalHargaReguler").text(formatRupiah(totalHarga));
-        TotalHargaAkhir = totalHarga;
+        
+        TotalHargaAkhir = totalHarga+JenisProperti.harga;
         const totalQty = cartReguler.reduce((sum, item) => sum + (item.qty), 0);
         ShowHideBerlangganan(totalQty);
     }

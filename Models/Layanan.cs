@@ -30,6 +30,7 @@ namespace appacd.Models
     public class AlamatPelanggan
     {
         public int Id { get; set; }
+        public object? JenisProperti { get; set; }
         public string Judul { get; set; }
         public string Alamat { get; set; }
 

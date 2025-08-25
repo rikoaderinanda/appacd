@@ -54,13 +54,29 @@
         Periksa kembali detail transaksi, lalu pilih metode pembayaran yang paling sesuai untuk Anda.
     </p>
 </div>
-<div class="position-relative" style="margin-bottom:20px;">
-    <strong >Detail Transaksi</strong>
-    <a id="toggleDetailBtn" href="#"
-        class="btn btn-sm position-absolute top-0 end-0">
-        <i id="toggleIcon" class="bi bi-chevron-down"></i>
-    </a>
+
+<div class="fw-semibold text-primary mb-1">
+    <i class="bi bi-person-vcard me-1"></i> Kontak & Alamat
 </div>
+<div class="p-2 border rounded bg-light medium">
+  <!-- Kontak (1 baris) -->
+  <div class="d-flex justify-content-between" id="KontakInfo">
+  </div>
+
+  <!-- Pemisah -->
+  <div class="border-top my-2" style="opacity:.1;border:1px;"></div>
+
+  <div id="AlamatInfo"></div>
+</div>
+
+
+<div class="position-relative" style="margin-bottom:20px;margin-top:10px;">
+    <strong >Detail Transaksi</strong>
+        <a id="toggleDetailBtn" href="#"
+            class="btn btn-sm position-absolute top-0 end-0">
+            <i id="toggleIcon" class="bi bi-chevron-down"></i>
+        </a>
+    </div>
 
 <!-- List Transaksi -->
 <div id="listTransaksi" class="mb-3 mt-20" style="display:none;">
@@ -124,8 +140,6 @@
             
         });
     });
-
-    
 
     function updateTotalTransaksi(total) {
         document.getElementById("totalTransaksi").textContent = formatRupiah(total);
@@ -204,4 +218,5 @@
             idx++;
         });
     }
+
 </script>
