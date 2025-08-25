@@ -81,6 +81,7 @@
 </div>
 
 <script>
+
 const btnTambah = document.getElementById('btnTambahAlamat');
 const formTambah = document.getElementById('formTambahAlamat');
 const btnSimpan = document.getElementById('btnSimpanAlamat');
@@ -235,6 +236,7 @@ function loadAlamat(){
                 var properti = ``;
                 console.log(item.jenis_properti);
                 var _jenisProp = {};
+                var scr = "";
                 if(!isEmptyObject(item.jenis_properti) && item.jenis_properti!= null){
                     properti = `
                     <span class="badge bg-info text-white ms-2">
@@ -244,45 +246,73 @@ function loadAlamat(){
                         ${formatRupiah(item.jenis_properti.harga)}
                     </span>
                     `;
-                    _jenisProp = item.jenisProperti;
+                    _jenisProp = item.jenis_properti;
+                    scr =`
+                        <label class="list-group-item d-flex align-items-start position-relative">
+                            <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" 
+                            value="
+                                ${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:
+                                ${item.kota_nama}:${item.provinsi_nama}:
+                                ${_jenisProp.id}:${_jenisProp.nama_jenis}:${_jenisProp.harga}"
+                            >
+                            <div class="d-flex flex-column w-100">
+                                <div class="fw-bold mb-1">
+                                    ${item.judul}
+                                    ${properti}
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+                                    <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
+                                    <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                    </svg>
+                                    <div class="fw-semibold">${item.alamat}</div>
+                                </div>
+                                <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
+                                <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
+                                
+                            </div>
+                            <button type="button" 
+                                class="btn-close position-absolute top-0 end-0 m-2" 
+                                style="transform: scale(0.7); font-size: 0.8rem;" 
+                                aria-label="Hapus"
+                                onclick="deleteAlamat(${item.id})">
+                            </button>
+                        </label>
+                    `;
                 }
                 else{
-                    _jenisProp = {
-                        id:0,
-                        nama_jenis:"",
-                        harga:0,
-                    }
+                    scr = `
+                        <label class="list-group-item d-flex align-items-start position-relative">
+                            
+                            <div class="d-flex flex-column w-100">
+                                <div class="fw-bold mb-1">
+                                    ${item.judul}
+                                    <span class="badge bg-info text-white ms-2">
+                                        Properti belom diset, silahkan edit terlebih dahulu
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+                                    <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
+                                    <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                    </svg>
+                                    <div class="fw-semibold">${item.alamat}</div>
+                                </div>
+                                <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
+                                <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
+                                
+                            </div>
+                            <button type="button" 
+                                class="btn-close position-absolute top-0 end-0 m-2" 
+                                style="transform: scale(0.7); font-size: 0.8rem;" 
+                                aria-label="Hapus"
+                                onclick="deleteAlamat(${item.id})">
+                            </button>
+                        </label>
+                    `;
                 }
 
-                var scr =`
-                    <label class="list-group-item d-flex align-items-start position-relative">
-                        <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" 
-                        value="${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:${item.kota_nama}:${item.provinsi_nama}:${item.jenis_properti.id}:${item.jenis_properti.nama_jenis}:${item.jenis_properti.harga}"
-                        >
-                        <div class="d-flex flex-column w-100">
-                            <div class="fw-bold mb-1">
-                                ${item.judul}
-                                ${properti}
-                            </div>
-                            <div class="d-flex align-items-center mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
-                                <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
-                                <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
-                                </svg>
-                                <div class="fw-semibold">${item.alamat}</div>
-                            </div>
-                            <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
-                            <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
-                            
-                        </div>
-                        <button type="button" 
-                            class="btn-close position-absolute top-0 end-0 m-2" 
-                            style="transform: scale(0.7); font-size: 0.8rem;" 
-                            aria-label="Hapus"
-                            onclick="deleteAlamat(${item.id})">
-                        </button>
-                    </label>
-                `;
+                
                 return scr;
             }).join('');
             if(data.length == 0){
@@ -319,7 +349,14 @@ function deleteAlamat(id){
         url: "/api/Layanan/DeleteAlamat/"+id,
         method: 'DELETE',
         success: function (res) {
-            loadAlamat();
+            console.log(res);
+            if(res.success){
+                loadAlamat();
+            }
+            else
+            {
+                Swal.fire('sorry!', res.message, 'warning');
+            }
         },
         error: function (err) {
             Swal.fire('Gagal!', 'data gagal disimpan.', 'warning');

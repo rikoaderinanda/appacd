@@ -449,8 +449,20 @@
                 else
                 {
                     if(!isEmptyObject(KunjunganReg) && KunjunganReg != null){
-                        $("#tanggalLayanan").val(KunjunganReg.tanggal);
-                        $("#jamLayanan").val(KunjunganReg.jam);
+                        let chkExp = checkDateAndTimeVisitOrder(KunjunganReg.tanggal,KunjunganReg.jam);
+                        if(chkExp){
+                            showToast("Waktu visit yang diatur sebelumnya sudah expired, silahkan atur kembali");
+                            $("#tanggalLayanan").val("");
+                            $("#jamLayanan").val("");
+                            KunjunganReg = {};
+                        }
+                        else
+                        {
+                            
+                            $("#tanggalLayanan").val(KunjunganReg.tanggal);
+                            $("#jamLayanan").val(KunjunganReg.jam);
+                        }
+                        
                     }
                     TotalHargaAkhir = cartReguler.reduce((sum, item) => sum + (item.sub_total), 0);
                     //return true; // Lolos validasi
@@ -781,26 +793,35 @@
         }
         $("#totalTransaksi").text(formatRupiah(Total));
         
-        $("#KontakInfo").html(
+        $("#KontakInfo").html(`
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-person-circle me-2 text-primary" style="font-size:1.2rem; line-height:1;"></i>
+                <span class="fw-semibold">${data.kontakPelanggan.nama}</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <i class="bi bi-telephone-fill me-2 text-success" style="font-size:1.2rem; line-height:1;"></i>
+                <span>${data.kontakPelanggan.nomor}</span>
+            </div>
             `
-            <span>
-                <i class="bi bi-person-circle me-1 text-primary"></i> Budi Santoso
-                <i class="bi bi-telephone-fill ms-2 me-1 text-success"></i> 0812-3456-7890
-            </span>`
         );
 
         $("#AlamatInfo").html(`
             <!-- Alamat ringkas (jenis + judul) -->
-            <div class="mb-1">
-                <i class="bi bi-building me-1 text-warning"></i> Rumah
-                <i class="bi bi-dot mx-1"></i>
-                <i class="bi bi-tag-fill me-1 text-info"></i> Rumah Utama
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-building me-1 text-warning"></i> ${data.jenisProperti.nama_jenis}
+            </div>
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-tag-fill me-1 text-info"></i> ${data.alamatPelanggan.judul}
             </div>
 
             <!-- Alamat lengkap + Map -->
             <div class="d-flex justify-content-between align-items-center">
                 <span>
-                <i class="bi bi-geo-alt-fill me-1 text-danger"></i> Jl. Melati No. 123, Bandung
+                <i class="bi bi-geo-alt-fill me-1 text-danger"></i> 
+                ${data.alamatPelanggan.alamat}
+                <br>
+                <small class="text-muted mb-1">${data.alamatPelanggan.kelurahan_nama}, ${data.alamatPelanggan.kecamatan_nama}</small>
+                <small class="text-muted">${data.alamatPelanggan.kota_nama}, ${data.alamatPelanggan.provinsi_nama}</small>
                 </span>
                 <a href="https://maps.google.com?q=-6.917464,107.619123" target="_blank" class="text-decoration-none text-primary">
                 <i class="bi bi-map-fill fs-5"></i>
@@ -810,7 +831,6 @@
     }
 
     async function Checkout(){
-        
         if ($('input[name="payment_channel"]:checked').length > 0)
         {
             try 
@@ -839,11 +859,18 @@
                     paketMember: paketMember,
                     keluhanPerbaikan: keluhanPerbaikan
                 };
-                var data = await SimpanTransaksi(datatrx);
-                console.log("Hasil simpan:", data);
-                datatrx.id = data.id;
-                setDataCheckOut(datatrx,method);
-                
+
+                let chekexp = checkDateAndTimeVisitOrder(datatrx.kunjungan.Reguler.tanggal,datatrx.kunjungan.Reguler.jam);
+                if(chekexp){
+                    showToast("Waktu visit yang diorder melewati waktu saat ini, silahkan atur ulang waktu visit");
+                }
+                else
+                {
+                    var data = await SimpanTransaksi(datatrx);
+                    console.log("Hasil simpan:", data);
+                    datatrx.id = data.id;
+                    setDataCheckOut(datatrx,method);
+                }
 
             } catch (err) {
                 console.error("Gagal simpan:", err);
@@ -939,6 +966,7 @@
                 console.log(res);
                 if(res.success){
                     Storage.set("payment",dataapi);
+                    Storage.set("IdPesanan",datatrx.id);
                     window.location.href = '@Url.Action("InstruksiPembayaran", "Pembayaran")';
                 }
             } else {

@@ -24,4 +24,10 @@ namespace appacd.Models
         public string Email { get; set; }
         public string Picture { get; set; }
     }
+
+    public class StatusRequest
+    {
+        public string userId { get; set; }
+        public string Pesan { get; set; }
+    }
 }

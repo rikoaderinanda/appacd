@@ -578,32 +578,38 @@ async function SimpanTransaksi(data) {
 }
 
 async function Checkout(){
-    
-    if ($('input[name="payment_channel"]:checked').length > 0)
-    {
-        try 
-        {
-            var method = $('input[name="payment_channel"]:checked').val();
-            console.log(method);
-            var datatrx = getDataAll();
-            console.log(datatrx);
-            var data = await SimpanTransaksi(datatrx);
-            console.log("Hasil simpan:", data);
-            datatrx.id = data.id;
-            setDataCheckOut(datatrx,method);
-            
-
-        } catch (err) {
-            console.error("Gagal simpan:", err);
-            Swal.fire({
-                title: "⚠️ Gagal",
-                text: "Terjadi kesalahan saat menyimpan pesanan.",
-                icon: "error"
-            });
-        }
+    let chekexp = checkDateAndTimeVisitOrder(dataTrx.kunjungan.Reguler.tanggal,dataTrx.kunjungan.Reguler.jam);
+    if(chekexp){
+        showToast("Waktu visit yang diorder melewati waktu saat ini, silahkan atur ulang waktu visit");
     }
-    else{
-        showToast("Silahkan pilih metode pembayaran");
+    else
+    {
+        if ($('input[name="payment_channel"]:checked').length > 0)
+        {
+            try 
+            {
+                var method = $('input[name="payment_channel"]:checked').val();
+                console.log(method);
+                var datatrx = getDataAll();
+                console.log(datatrx);
+                var data = await SimpanTransaksi(datatrx);
+                console.log("Hasil simpan:", data);
+                datatrx.id = data.id;
+                setDataCheckOut(datatrx,method);
+                
+
+            } catch (err) {
+                console.error("Gagal simpan:", err);
+                Swal.fire({
+                    title: "⚠️ Gagal",
+                    text: "Terjadi kesalahan saat menyimpan pesanan.",
+                    icon: "error"
+                });
+            }
+        }
+        else{
+            showToast("Silahkan pilih metode pembayaran");
+        }
     }
 }
 

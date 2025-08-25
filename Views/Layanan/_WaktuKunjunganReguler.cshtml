@@ -85,21 +85,38 @@
         }
     }
 
+    // --- logic utama --- //
     tanggalInput.addEventListener("change", () => {
-        const selectedDate = tanggalInput.value;
+        let selectedDate = tanggalInput.value;
         const now = new Date();
 
+        // kalau pilih hari ini
         if (selectedDate === minDate) {
-            // Minimal 2 jam setelah sekarang
-            let startHour = now.getHours() + 2;
+            // cek apakah jam 17:00 hari ini sudah expired
+            const lastSlotExpired = checkDateAndTimeVisitOrder(selectedDate, "17:00");
 
-            if (startHour < 8) startHour = 8; // buka dari jam 08:00
-            if (startHour > 17) startHour = 17; // tutup di jam 17:00
+            if (lastSlotExpired) {
+                // kalau sudah expired semua slot hari ini → pindah ke besok
+                showToast("untuk hari ini order sudah tutup, akan dialihkan ke hari esok");
+                const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                const y = tomorrow.getFullYear();
+                const m = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                const d = String(tomorrow.getDate()).padStart(2, '0');
+                const tomorrowStr = `${y}-${m}-${d}`;
 
-            generateJamOptions(startHour, 17,"jamLayanan");
+                tanggalInput.value = tomorrowStr;
+                generateJamOptions(8, 17, "jamLayanan");
+                return;
+            }
+
+            // kalau belum expired semua → generate jam mulai 3 jam ke depan
+            let startHour = now.getHours() + 3;
+            if (startHour < 8) startHour = 8;
+            if (startHour > 17) startHour = 17;
+            generateJamOptions(startHour, 17, "jamLayanan");
         } else {
-            // Hari lain: jam kerja normal
-            generateJamOptions(8, 17,"jamLayanan");
+            // tanggal lain (bukan hari ini) → jam normal
+            generateJamOptions(8, 17, "jamLayanan");
         }
     });
 

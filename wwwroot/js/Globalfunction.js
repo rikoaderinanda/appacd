@@ -426,6 +426,7 @@ async function CheckOutTrx(dataapi, btn) {
 
 async function getDataTransaksi(id, btnId) {
     return new Promise((resolve, reject) => {
+        const btn = $(`#${btnId}`);
         callApi({
             url: `/api/Transaction/GetDetailTrx_ById?id=` + id,
             method: 'GET',
@@ -437,7 +438,6 @@ async function getDataTransaksi(id, btnId) {
                 reject('API Error');
             },
             onBeforeSend: function () {
-                const btn = $(`#${btnId}`);
                 btn.html(
                     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
                 );
@@ -486,4 +486,51 @@ async function DetailPesanan(id, btn) {
     } catch (err) {
         console.error(err);
     }
+}
+
+function checkDateAndTimeVisitOrder(date, time) {
+    // date format: "YYYY-MM-DD"
+    // time format: "HH:mm" (24 jam)
+
+    const now = new Date();
+
+    // gabungkan date + time jadi 1 Date object
+    const visitDateTime = new Date(`${date}T${time}:00`);
+
+    if (isNaN(visitDateTime.getTime())) {
+        throw new Error('Format date/time tidak valid');
+    }
+
+    // kurangi 2 jam dari waktu visit
+    const expiredThreshold = new Date(
+        visitDateTime.getTime() - 2 * 60 * 60 * 1000
+    );
+
+    // return true kalau sudah lewat
+    return now > expiredThreshold;
+}
+
+// helper untuk ambil token
+function getValidToken() {
+    let token = localStorage.getItem('jwt');
+    if (!token) return null;
+
+    token = token.replace(/^"(.+)"$/, '$1'); // hapus quotes ganda
+
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp && Date.now() >= payload.exp * 1000) {
+            console.warn('Token expired');
+            Storage.remove('username');
+            Storage.remove('jwt');
+            return null;
+        }
+    } catch (e) {
+        console.error('Token tidak valid', e);
+        Storage.remove('username');
+        Storage.remove('jwt');
+        return null;
+    }
+
+    return token;
 }

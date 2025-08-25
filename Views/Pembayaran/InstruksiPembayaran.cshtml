@@ -155,7 +155,7 @@
         "linear-gradient(135deg, #28a745, #43e97b)"
     ]
 
-    const connection = new signalR.HubConnectionBuilder()
+    @* const connection = new signalR.HubConnectionBuilder()
         .withUrl("/notifikasiHub")
         .build();
 
@@ -178,12 +178,11 @@
             }
         });
         window.location.href = '@Url.Action("Status", "Pembayaran")'; 
-        
     });
 
     connection.start().catch(function (err) {
         console.error(err.toString());
-    });
+    }); *@
 
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
@@ -407,7 +406,7 @@
         //console.log("cek status");
         var dt = Storage.get("payment");
         console.log(dt);
-        Storage.set("IdPesanan",dt.id);
+        Storage.set("IdPesanan",dt.Id ?? dt.id);
         window.location.href = '@Url.Action("OrderStatus", "Tracking")';
     }
 

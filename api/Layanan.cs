@@ -148,7 +148,7 @@ namespace appacd.api
                 }
                 else
                 {
-                     return Conflict(new { message = "Alamat tidak bisa dihapus, dikarenakan masih ada transaksi order yang masih open", success = false });
+                     return Ok(new { message = "Alamat tidak bisa dihapus, dikarenakan masih ada transaksi order yang masih open", success = false });
                 }
             }
             catch (Exception ex)

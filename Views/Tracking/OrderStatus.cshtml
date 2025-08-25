@@ -37,6 +37,7 @@
     }
 
 </style>
+
 <!-- App Body Start -->
 <div class="app-body pb-30">
     <div class="container">
@@ -179,41 +180,66 @@
 
 <script>
     var $;
+    
+    
+    
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
             return;
         }
         $ = window.jQuery;
-        var Id = Storage.get('IdPesanan');
-        if(Id == null){
-            Swal.fire({
-                title: '<strong>❌ Data Tidak Ditemukan</strong>',
-                html: 'ID pesanan yang kamu cari tidak valid atau tidak tersedia.<br><small>Silakan periksa kembali atau hubungi admin jika kamu merasa ini sebuah kesalahan.</small>',
-                icon: 'error',
-                showConfirmButton: true,
-                confirmButtonText: 'Kembali',
-                customClass: {
-                    popup: 'rounded-4 shadow-lg',
-                    title: 'fw-bold text-danger',
-                    confirmButton: 'btn btn-danger px-4 py-2 rounded-pill',
-                },
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                }
-            }).then(() => {
-                window.location.href = '@Url.Action("Index", "Tracking")'; // Ganti tujuan redirect sesuai kebutuhan
-            });
+        let token = getValidToken();
+        if (token) {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notifikasiHub", {
+                    accessTokenFactory: () => token
+                })
+                .withAutomaticReconnect()
+                .build();
+            
+            connection.on("TerimaNotifikasi", msg => console.log("Broadcast:", msg));
+            connection.on("UpdateStatusTrackingOrder", msg => console.log("Personal:", msg));
+
+            connection.start()
+            .then(() => console.log("✅ SignalR connected"))
+            .catch(err => console.error("❌ SignalR error:", err.toString()));
+            var Id = Storage.get('IdPesanan');
+            if(Id == null){
+                Swal.fire({
+                    title: '<strong>❌ Data Tidak Ditemukan</strong>',
+                    html: 'ID pesanan yang kamu cari tidak valid atau tidak tersedia.<br><small>Silakan periksa kembali atau hubungi admin jika kamu merasa ini sebuah kesalahan.</small>',
+                    icon: 'error',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Kembali',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg',
+                        title: 'fw-bold text-danger',
+                        confirmButton: 'btn btn-danger px-4 py-2 rounded-pill',
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then(() => {
+                    window.location.href = '@Url.Action("Index", "Tracking")'; // Ganti tujuan redirect sesuai kebutuhan
+                });
+            }
+            else
+            {
+                LoadStepStatus(Id);
+                $("#idPesanan").text("ACD-" + formatToSixDigits(Id));
+            }
         }
         else
         {
-            LoadStepStatus(Id);
-            $("#idPesanan").text("ACD-" + formatToSixDigits(Id));
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
         }
-        
     });
 
     function LoadStepStatus(Id) {
