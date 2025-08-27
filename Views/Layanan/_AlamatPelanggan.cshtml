@@ -582,6 +582,7 @@ function eventSelectJenisProperty(){
 
 async function success_getLocationAlamatSaatIni(pos) 
 {
+    
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
     console.log('Lat:', lat, 'Lng:', lng);
@@ -609,29 +610,40 @@ async function success_getLocationAlamatSaatIni(pos)
 }
 
 async function initMapFromUserLocation(lat, lng) {
-    const posisi = { lat: lat, lng: lng };
+    try {
+        if (typeof google === "undefined" || !google.maps) {
+            console.warn("Google Maps belum siap, coba lagi...");
+            setTimeout(() => initMapFromUserLocation(lat, lng), 1000); // ulang setelah 1 detik
+            return;
+        }
+        const posisi = { lat: lat, lng: lng };
 
-    map = new google.maps.Map(document.getElementById("googleMap"), {
-        zoom: 15,
-        center: posisi,
-    });
+        map = new google.maps.Map(document.getElementById("googleMap"), {
+            zoom: 15,
+            center: posisi,
+        });
 
-    marker = new google.maps.Marker({
-        position: posisi,
-        map: map,
-        draggable: true, // biar bisa digeser
-    });
+        marker = new google.maps.Marker({
+            position: posisi,
+            map: map,
+            draggable: true, // biar bisa digeser
+        });
 
-    // Update input saat marker digeser
-    google.maps.event.addListener(marker, 'dragend', function(evt) {
-        $('#inputMaps').val(`${evt.latLng.lat()}, ${evt.latLng.lng()}`);
-    });
+        // Update input saat marker digeser
+        google.maps.event.addListener(marker, 'dragend', function(evt) {
+            $('#inputMaps').val(`${evt.latLng.lat()}, ${evt.latLng.lng()}`);
+        });
 
-    // Update marker saat klik map
-    map.addListener('click', function(e) {
-        marker.setPosition(e.latLng);
-        $('#inputMaps').val(`${e.latLng.lat()}, ${e.latLng.lng()}`);
-    });
+        // Update marker saat klik map
+        map.addListener('click', function(e) {
+            marker.setPosition(e.latLng);
+            $('#inputMaps').val(`${e.latLng.lat()}, ${e.latLng.lng()}`);
+        });
+    } catch (err) {
+        console.error("Error in initMap:", err);
+        // coba ulang lagi
+        setTimeout(() => initMapFromUserLocation(lat, lng), 1000);
+    }
 }
 
 function AlamatPosisiSaatIni() {
