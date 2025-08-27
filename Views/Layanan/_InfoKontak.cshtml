@@ -104,43 +104,33 @@ btnNewKontak.addEventListener("click", function () {
 });
 
 btnSimpanKontak.addEventListener("click", function () {
-    var nama = $("#nama").val();
-    var whatsapp = $("#whatsapp").val();
-    if(nama !="" && whatsapp!=""){
-        var _Data = {
-            UserId : IdUser,
-            NamaKontak : nama,
-            NomorKontak : whatsapp
-        }
-        callApi({
-            url: "/api/Layanan/SimpanKontak",
-            method: 'POST',
-            data:_Data,
-            success: function (res) {
-                if(!res.success){
-                    Swal.fire('Gagal!',res.message, 'warning');    
-                }
-            },
-            error: function (err) {
-                Swal.fire('Gagal!', 'data gagal disimpan.'+err.message, 'warning');
-            },
-            onBeforeSend : function () {
-                $("#btnSimpanKontak").prop("disabled", true).text("Memproses...");
-            },
-            onComplete : function () {
-                $("#btnSimpanKontak").prop("disabled", false).text("Simpan");
-                formKontak.style.display = "none";
-                btnNewKontak.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Kontak Baru';  
-                btnSimpanKontak.style.display = "none";
-                ListKontak.style.display = "block";
-                LoadDataKontak();
-            }
-        });  
-    }
-    else{
-        showToast("silahkan isi nama dan kontak")
-    }
+    simpanKontak();
     
+});
+
+// Tampilkan form kontak baru saat tombol "Kontak Baru" ditekan
+document.getElementById("btnNewKontak").addEventListener("click", function() {
+    document.getElementById("formKontak").style.display = "block";
+    document.getElementById("btnSimpanKontak").style.display = "inline-block";
+});
+
+// Format otomatis untuk nomor WhatsApp
+document.getElementById("whatsapp").addEventListener("input", function() {
+    let val = this.value.replace(/\D/g, ""); // hapus non-digit
+
+    if (val.startsWith("0")) {
+        val = "62" + val.substring(1);
+    } else if (val.startsWith("62")) {
+        // sudah benar
+    } else if (val.startsWith("8")) {
+        val = "62" + val;
+    }
+
+    if (val) {
+        this.value = "+" + val;
+    } else {
+        this.value = "";
+    }
 });
 
 function LoadDataKontak(){
@@ -155,7 +145,7 @@ function LoadDataKontak(){
                             <input class="form-check-input me-2 mt-1" type="radio" name="pilihKontak" value="${item.id}:${item.nama_kontak}:${item.nomor_kontak}">
                             <div>
                                 <div class="fw-semibold">${item.nama_kontak}</div>
-                                <small class="text-muted">+${item.nomor_kontak}</small>
+                                <small class="text-muted">${item.nomor_kontak}</small>
                             </div>
                             
                             <button 
@@ -193,6 +183,76 @@ function LoadDataKontak(){
             },
             onComplete: function () {}
     });
+}
+
+function simpanKontak(){
+    const nama = document.getElementById("nama");
+    const whatsapp = document.getElementById("whatsapp");
+
+    let valid = true;
+
+    // Cek nama
+    if (nama.value.trim() === "") {
+        nama.classList.add("is-invalid");
+        valid = false;
+    } else {
+        nama.classList.remove("is-invalid");
+        nama.classList.add("is-valid");
+    }
+
+    // Cek nomor WhatsApp (regex: +62 diikuti 8–13 digit)
+    const regexWa = /^\+62[0-9]{8,13}$/;
+    if (!regexWa.test(whatsapp.value)) {
+        whatsapp.classList.add("is-invalid");
+        valid = false;
+    } else {
+        whatsapp.classList.remove("is-invalid");
+        whatsapp.classList.add("is-valid");
+    }
+
+    // Kalau tidak valid, hentikan di sini
+    if (!valid) {
+        return;
+    }
+
+    // ---- Kalau valid, lakukan ini ----
+    var _Data = {
+        UserId : IdUser,
+        NamaKontak : nama.value,
+        NomorKontak : whatsapp.value
+    }
+    console.log(_Data);
+    callApi({
+        url: "/api/Layanan/SimpanKontak",
+        method: 'POST',
+        data:_Data,
+        success: function (res) {
+            if(!res.success){
+                Swal.fire('Gagal!',res.message, 'warning');    
+            }
+        },
+        error: function (err) {
+            Swal.fire('Gagal!', 'data gagal disimpan.'+err.message, 'warning');
+        },
+        onBeforeSend : function () {
+            $("#btnSimpanKontak").prop("disabled", true).text("Memproses...");
+        },
+        onComplete : function () {
+            $("#btnSimpanKontak").prop("disabled", false).text("Simpan");
+            formKontak.style.display = "none";
+            btnNewKontak.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Kontak Baru';  
+            btnSimpanKontak.style.display = "none";
+            ListKontak.style.display = "block";
+            LoadDataKontak();
+            // Reset form setelah simpan
+            nama.value = "";
+            whatsapp.value = "";
+            nama.classList.remove("is-valid");
+            whatsapp.classList.remove("is-valid");
+            document.getElementById("formKontak").style.display = "none";
+            document.getElementById("btnSimpanKontak").style.display = "none";
+        }
+    });  
 }
 
 function deleteKontak(id){

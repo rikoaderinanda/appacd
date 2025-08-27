@@ -50,5 +50,7 @@ namespace appacd.Models
         public DateTime UpdatedAt { get; set; }
 
         public int IdUser { get; set; }
+
+        public string Koordinat { get; set; }
     }
 }

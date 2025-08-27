@@ -170,7 +170,8 @@ namespace appacd.Services
                         kelurahan_code,
                         kelurahan_nama,
                         id_user,
-                        jenis_properti
+                        jenis_properti,
+                        koordinat
                     ) VALUES (
                         @judul,
                         @alamat,
@@ -183,7 +184,8 @@ namespace appacd.Services
                         @kelurahan_code,
                         @kelurahan_nama,
                         @id_user,
-                        @jenis_properti::jsonb
+                        @jenis_properti::jsonb,
+                        @koordinat
                     )
                     ON CONFLICT (id_user,judul, alamat) DO NOTHING
                     RETURNING id;
@@ -202,7 +204,8 @@ namespace appacd.Services
                     kelurahan_code = data.KelurahanCode,
                     kelurahan_nama = data.KelurahanNama,
                     id_user = data.IdUser,
-                    jenis_properti = JsonConvert.SerializeObject(data.JenisProperti)
+                    jenis_properti = JsonConvert.SerializeObject(data.JenisProperti),
+                    koordinat = data.Koordinat
                 };
 
                 // var affectedRows = await _db.ExecuteAsync(sql, param);

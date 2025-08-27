@@ -1,5 +1,3 @@
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBS9s8GewgkGEaj3ANIwMaTOmZCYbd-aR0&callback=AlamatPosisiSaatIni"></script>
-
 <span class="small mb-2"> <i class="bi bi-geo-alt-fill text-primary me-1"></i> Lokasi saat ini :</span>
 <a href="#"
     class="d-flex align-items-center text-decoration-none px-3 py-1 rounded-2 bg-light mb-3">
@@ -7,13 +5,7 @@
         Memuat lokasi...
     </span>
 </a>
-<a href="#"
-    class="d-flex align-items-center text-decoration-none px-2 py-1 rounded-pill bg-light" hidden>
-    <i class="bi bi-geo-alt-fill text-primary me-1"></i>
-    <span id="currentLocation" class="fw-semibold small text-dark">
-        Memuat lokasi...
-    </span>
-</a>
+
 <div class="d-flex justify-content-between align-items-center mb-2">
     <label class="form-label fw-bold m-0">Pilih Alamat</label>
     <button id="btnTambahAlamat" type="button" 
@@ -28,7 +20,7 @@
 </div>
 
 <!-- Form Tambah Alamat (hidden awalnya) -->
-<div id="formTambahAlamat" class="mb-3" style="display: none;margin-top:30px;">
+<div id="formTambahAlamat" class="mb-3" style="display:none;margin-top:30px;">
     <!-- Title & Subtitle -->
     <div class="text-center mb-4">
         <h4 class="fw-bold text-primary">
@@ -89,15 +81,34 @@
         <label for="inputAlamat" class="form-label">Alamat Lengkap</label>
         <textarea class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10" rows="3"></textarea>
     </div>
-    <button id="btnToggle">Tampilkan / Sembunyikan Map</button>
-    <br><br>
-    <div class="mb-2">
-        <label for="inputMaps" class="form-label">Maps Location</label>
-        <div class="input-group">
-            <div id="googleMap" style="height:400px; width:100%; display:none"></div>
-            <button id="btnMyLocation">📍 Lokasi Saya</button>
-            <input type="text" id="inputMaps" readonly style="width:300px">
+    
+    <div class="mb-3">
+        <label for="inputMaps" class="form-label fw-bold">📍 Lokasi di Peta</label>
+
+        <!-- Container Map + Button -->
+        <div class="position-relative mb-2 rounded border overflow-hidden" style="height: 400px; width: 100%;" id="googleMapContainer">
+            <div id="googleMap" style="height: 100%; width: 100%;"></div>
+
+            <!-- Tombol di pojok kiri bawah -->
+            <button id="btnMyLocation"
+                class="position-absolute m-2"
+                style="
+                    bottom: 0;
+                    left: 0;
+                    z-index: 1000;
+                    background-color: rgba(255, 255, 255, 0.9);
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    padding: 6px 10px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                    cursor: pointer;
+                ">
+                📍 Lokasi Saya
+            </button>
         </div>
+
+        <!-- Input koordinat -->
+        <input type="text" id="inputMaps" class="form-control" style="max-width: 300px;" readonly placeholder="Koordinat Anda akan muncul di sini">
     </div>
 </div>
 
@@ -171,27 +182,12 @@ $(document).on('click', 'input[name="pilihAlamat"]', function() {
 $(document).ready(function () {
     loadPropertyType();
     eventSelectJenisProperty();
+    AlamatPosisiSaatIni();
     // Inisialisasi semua select2
     $('.select2').select2({
         width: '100%',
         placeholder: 'Cari...',
         allowClear: true
-    });
-
-    document.getElementById("btnToggle").addEventListener("click", () => {
-        const mapDiv = document.getElementById("googleMap");
-        if (mapDiv.style.display === "none") {
-            mapDiv.style.display = "block";
-
-            setTimeout(() => {
-            if (map) {
-                google.maps.event.trigger(map, "resize");
-                map.setCenter(marker.getPosition());
-            }
-            }, 300); // kasih delay sedikit biar DOM sudah render
-        } else {
-            mapDiv.style.display = "none";
-        }
     });
 
     // Tombol lokasi saya
@@ -290,6 +286,7 @@ $(document).ready(function () {
                 $kelurahan.select2('open');
             });
     });
+    
 });
 
 function loadAlamat(){
@@ -316,10 +313,10 @@ function loadAlamat(){
                     scr =`
                         <label class="list-group-item d-flex align-items-start position-relative">
                             <input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" 
-                            value="
-                                ${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:
-                                ${item.kota_nama}:${item.provinsi_nama}:
-                                ${_jenisProp.id}:${_jenisProp.nama_jenis}:${_jenisProp.harga}"
+                                value="
+                                    ${item.id}:${item.judul}:${item.alamat}:${item.kelurahan_nama}:${item.kecamatan_nama}:
+                                    ${item.kota_nama}:${item.provinsi_nama}:
+                                    ${_jenisProp.id}:${_jenisProp.nama_jenis}:${_jenisProp.harga}"
                             >
                             <div class="d-flex flex-column w-100">
                                 <div class="fw-bold mb-1">
@@ -328,22 +325,32 @@ function loadAlamat(){
                                 </div>
                                 <div class="d-flex align-items-center mb-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
-                                    <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
-                                    <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                        <path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/>
+                                        <path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
                                     </svg>
                                     <div class="fw-semibold">${item.alamat}</div>
                                 </div>
                                 <small class="text-muted mb-1">${item.kelurahan_nama}, ${item.kecamatan_nama}</small>
                                 <small class="text-muted">${item.kota_nama}, ${item.provinsi_nama}</small>
-                                
                             </div>
+
+                            <!-- Button hapus -->
                             <button type="button" 
                                 class="btn-close position-absolute top-0 end-0 m-2" 
                                 style="transform: scale(0.7); font-size: 0.8rem;" 
                                 aria-label="Hapus"
                                 onclick="deleteAlamat(${item.id})">
                             </button>
+
+                            <!-- Button Maps -->
+                            <button type="button" 
+                                class="btn btn-sm btn-primary position-absolute bottom-0 end-0 m-2"
+                                style="border-radius: 50%; width: 35px; height: 35px; display:flex; align-items:center; justify-content:center;"
+                                onclick="showMaps('${item.koordinat}')">
+                                <i class="bi bi-map"></i>
+                            </button>
                         </label>
+
                     `;
                 }
                 else{
@@ -438,8 +445,25 @@ function deleteAlamat(id){
 
 function simpanAlamat(){
     // Ambil semua nilai dari form
-    var selectedValue = $("#selectJenisProperti").val();
-    const [nama, harga, id] = selectedValue.split(':');
+    var _Properti = $("#selectJenisProperti").val();
+    let isValid = true;
+
+    // Input text
+    isValid &= validateField('inputJudul');
+    isValid &= validateField('inputAlamat');
+    isValid &= validateField('inputMaps');
+
+    // Select option
+    isValid &= validateField('selectProvinsi', true);
+    isValid &= validateField('selectKota', true);
+    isValid &= validateField('selectKecamatan', true);
+    isValid &= validateField('selectKelurahan', true);
+
+    if (!isValid) {
+        return;
+    }
+
+    const [nama, harga, id] = _Properti.split(':');
     var Properti = {
         nama_jenis: nama,
         harga: Number(harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
@@ -458,7 +482,8 @@ function simpanAlamat(){
         kecamatanNama: document.getElementById('selectKecamatan').selectedOptions[0]?.text || '',
         kelurahanCode: document.getElementById('selectKelurahan').value,
         kelurahanNama: document.getElementById('selectKelurahan').selectedOptions[0]?.text || '',
-        idUser: IdUser
+        idUser: IdUser,
+        koordinat:document.getElementById('inputMaps').value
     };
 
     console.log(dataAlamat);
@@ -583,8 +608,6 @@ async function success_getLocationAlamatSaatIni(pos)
     }
 }
 
-
-
 async function initMapFromUserLocation(lat, lng) {
     const posisi = { lat: lat, lng: lng };
 
@@ -623,7 +646,6 @@ function AlamatPosisiSaatIni() {
     () => initMapFromUserLocation(-6.2, 106.8) // fallback kalau user tolak izin
     );
 }
-
     
 </script>
 

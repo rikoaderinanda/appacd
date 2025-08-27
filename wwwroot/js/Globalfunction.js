@@ -568,3 +568,53 @@ async function getAddress_api(lat, lng) {
         });
     });
 }
+
+function validateField(id, isSelect = false, fieldName = '') {
+    const el = document.getElementById(id);
+    const val = el.value.trim();
+
+    if (!val || val === '0') {
+        el.style.border = '2px solid red';
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: `${fieldName} wajib diisi!`,
+            confirmButtonColor: '#3085d6'
+        });
+
+        return false;
+    } else {
+        el.style.border = '';
+        return true;
+    }
+}
+
+function showMaps(koordinat) {
+    if (!koordinat) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Koordinat tidak tersedia',
+            text: 'Alamat ini belum memiliki titik lokasi di Maps.'
+        });
+        return;
+    }
+
+    // pastikan format koordinat: "lat,lng"
+    const [lat, lng] = koordinat.split(',');
+    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+
+    Swal.fire({
+        title: 'Lokasi Alamat',
+        html: `
+            <div style="width:100%; height:400px;">
+                <iframe width="100%" height="100%" frameborder="0" 
+                    src="${mapUrl}">
+                </iframe>
+            </div>
+        `,
+        width: 600,
+        showCloseButton: true,
+        showConfirmButton: false
+    });
+}
