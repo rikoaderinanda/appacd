@@ -4,17 +4,14 @@
     <div class="gobo-shadow p-3 homepage-gobo-header">
         <div class="container p-0">
             <div class="d-flex align-items-center w-100">
-                <div class="main-logo">
+                <div class="main-logo me-3">
                     <a href="@Url.Action("Index", "Home")"><img src="~/img/logo_ACD.png" alt="logo">
                     </a>
+                    @* <span>Layanan AC Terpecaya</span> *@
                     
                 </div>
-                <a class="header-location" href="#addAddressModal" data-bs-toggle="modal">
-                    <span class="b-color local-area fw-4 fs-7">
-                        <i class="bi bi-geo-alt ms-1 me-2 ls-f header-action"></i>
-                        Ciomas, Bogor
-                    </span>
-                </a>
+                <!-- Current Location -->
+                
                 <ul class="ms-auto header-right">
                     @* <li>
                         <a href="app-notifications.html" class="header-action position-relative">

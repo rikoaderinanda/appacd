@@ -345,5 +345,17 @@ namespace appacd.Services
             }
         }
 
+        public async Task<int> UserId_Order(int id)
+        {
+            var sql = @"SELECT * FROM list_status_order order by id asc";
+            var param = new
+            {
+                Id = id
+            };
+
+            int resId = await _db.ExecuteScalarAsync<int>(sql, param);
+            return resId;
+        }
+
     }
 }

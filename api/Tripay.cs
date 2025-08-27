@@ -138,6 +138,7 @@ namespace appacd.api
             _logger.LogInformation("Callback: Ref={Ref}, Status={Status}", body.reference, body.status);
 
             //await _hubContext.Clients.All.SendAsync("TerimaNotifikasi", "Pembayaran Kamu telah diterima");
+            
             //await _hubContext.Clients.User(userId).SendAsync("UpdateStatusTrackingOrder", pesan);
             // // Update invoice status, etc
             return Ok(new { success = resUpdateInv });

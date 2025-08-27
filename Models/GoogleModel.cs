@@ -30,4 +30,23 @@ namespace appacd.Models
         public string userId { get; set; }
         public string Pesan { get; set; }
     }
+
+    public class GeocodingResponse
+    {
+        public List<Result> Results { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class Result
+    {
+        public List<AddressComponent> Address_Components { get; set; }
+        public string Formatted_Address { get; set; }
+    }
+
+    public class AddressComponent
+    {
+        public string Long_Name { get; set; }
+        public string Short_Name { get; set; }
+        public List<string> Types { get; set; }
+    }
 }

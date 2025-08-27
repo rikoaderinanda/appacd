@@ -534,3 +534,59 @@ function getValidToken() {
 
     return token;
 }
+
+async function success_getLocation(pos) {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    console.log('Lat:', lat, 'Lng:', lng);
+
+    // setelah dapat lat/lng, panggil Google Geocoding API
+    const data = await getAddress_api(lat, lng);
+    //console.log(data);
+    if (data != null) {
+        $('#currentLocation').text(
+            `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
+        );
+        //$('#AlamatSekarang').text(`${data.fullAddress}`);
+    }
+}
+function error_getLocation(err) {
+    console.error('Error:', err.message);
+}
+
+function initMap() {
+    navigator.geolocation.getCurrentPosition(
+        success_getLocation,
+        error_getLocation
+    );
+    // inisialisasi peta
+}
+
+async function getAddress_api(lat, lng) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: `/api/Location/reverse-geocode?lat=${lat}&lng=${lng}`,
+            method: 'GET',
+            success: function (res) {
+                resolve(res); // kembalikan data API
+            },
+            error: function () {
+                console.log('Proses gagal.');
+                //Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+                reject('API Error');
+            },
+            onBeforeSend: function () {
+                // btn.html(
+                //     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                // );
+                // btn.prop('disabled', true);
+            },
+            onComplete: function () {
+                // btn.html(
+                //     `<i class="bi bi-arrow-right" style="font-size: 1rem;"></i>`
+                // );
+                // btn.prop('disabled', false);
+            }
+        });
+    });
+}

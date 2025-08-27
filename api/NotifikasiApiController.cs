@@ -28,10 +28,17 @@ namespace appacd.Controllers
         /// <summary>
         /// Kirim personal ke user tertentu (by userId dari JWT nameidentifier)
         /// </summary>
-        [HttpPost("personal")]
-        public async Task<IActionResult> Personal([FromQuery] string userId, [FromBody] string pesan)
+        [HttpPost("Update_StatusTrackingOrder")]
+        public async Task<IActionResult> Update_StatusTrackingOrder([FromQuery] string userId, [FromBody] string pesan)
         {
             await _hubContext.Clients.User(userId).SendAsync("UpdateStatusTrackingOrder", pesan);
+            return Ok(new { success = true, message = $"Pesan dikirim ke user {userId}" });
+        }
+
+        [HttpPost("Update_PembayaranSukses")]
+        public async Task<IActionResult> Update_PembayaranSukses([FromQuery] string userId, [FromBody] string pesan)
+        {
+            await _hubContext.Clients.User(userId).SendAsync("UpdatePembayaranSukses", pesan);
             return Ok(new { success = true, message = $"Pesan dikirim ke user {userId}" });
         }
     }

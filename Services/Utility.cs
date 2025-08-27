@@ -50,6 +50,25 @@ namespace appacd.Services
             return (input.StartsWith("{") && input.EndsWith("}")) ||
                 (input.StartsWith("[") && input.EndsWith("]"));
         }
+
+        
+    }
+    public static class Utility
+    {
+        private static string Singkatkan(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            if (input.StartsWith("Kabupaten"))
+                return input.Replace("Kabupaten", "Kab.");
+            if (input.StartsWith("Kota"))
+                return input.Replace("Kota", "Kota."); // atau "Kota" saja kalau nggak mau ada titik
+            if (input.StartsWith("Kecamatan"))
+                return input.Replace("Kecamatan", "Kec.");
+
+            return input;
+        }
     }
 }
 
