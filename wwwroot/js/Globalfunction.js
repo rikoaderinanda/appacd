@@ -535,31 +535,9 @@ function getValidToken() {
     return token;
 }
 
-async function success_getLocation(pos) {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    console.log('Lat:', lat, 'Lng:', lng);
 
-    // setelah dapat lat/lng, panggil Google Geocoding API
-    const data = await getAddress_api(lat, lng);
-    //console.log(data);
-    if (data != null) {
-        $('#currentLocation').text(
-            `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
-        );
-        //$('#AlamatSekarang').text(`${data.fullAddress}`);
-    }
-}
 function error_getLocation(err) {
     console.error('Error:', err.message);
-}
-
-function initMap() {
-    navigator.geolocation.getCurrentPosition(
-        success_getLocation,
-        error_getLocation
-    );
-    // inisialisasi peta
 }
 
 async function getAddress_api(lat, lng) {

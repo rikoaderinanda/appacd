@@ -1,3 +1,19 @@
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXMWAZQlydlDlVJ878ujPs30KE9Y1g4Bg&callback=AlamatPosisiSaatIni"></script>
+
+<span class="small mb-2"> <i class="bi bi-geo-alt-fill text-primary me-1"></i> Lokasi saat ini :</span>
+<a href="#"
+    class="d-flex align-items-center text-decoration-none px-3 py-1 rounded-2 bg-light mb-3">
+    <span id="AlamatSekarang" class="fw-thin small text-dark">
+        Memuat lokasi...
+    </span>
+</a>
+<a href="#"
+    class="d-flex align-items-center text-decoration-none px-2 py-1 rounded-pill bg-light" hidden>
+    <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+    <span id="currentLocation" class="fw-semibold small text-dark">
+        Memuat lokasi...
+    </span>
+</a>
 <div class="d-flex justify-content-between align-items-center mb-2">
     <label class="form-label fw-bold m-0">Pilih Alamat</label>
     <button id="btnTambahAlamat" type="button" 
@@ -6,11 +22,13 @@
     </button>
 </div>
 <!-- List ALAMAT -->
+
+
 <div class="list-group mb-3" id="ListAlamat">
 </div>
 
 <!-- Form Tambah Alamat (hidden awalnya) -->
-<div id="formTambahAlamat" class="mb-3" style="display: none;">
+<div id="formTambahAlamat" class="mb-3" style="display: none;margin-top:30px;">
     <!-- Title & Subtitle -->
     <div class="text-center mb-4">
         <h4 class="fw-bold text-primary">
@@ -41,11 +59,6 @@
         <input type="text" class="form-control" id="inputJudul" placeholder="Misal: Alamat Rumah">
     </div>
     <div class="mb-2">
-        <label for="inputAlamat" class="form-label">Alamat</label>
-        <textarea class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10" rows="3"></textarea>
-
-    </div>
-    <div class="mb-2">
         <label for="selectProvinsi" class="form-label">Provinsi</label>
         <select id="selectProvinsi" class="form-control form-select select2">
             <option value="">Pilih Provinsi</option>
@@ -72,16 +85,31 @@
             <option value="">Pilih Kelurahan / Desa</option>
         </select>
     </div>
+    <div class="mb-2">
+        <label for="inputAlamat" class="form-label">Alamat Lengkap</label>
+        <textarea class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10" rows="3"></textarea>
+    </div>
+    <button id="btnToggle">Tampilkan / Sembunyikan Map</button>
+    <br><br>
+    <div class="mb-2">
+        <label for="inputMaps" class="form-label">Maps Location</label>
+        <div class="input-group">
+            <div id="googleMap" style="height:400px; width:100%; display:none"></div>
+            <button id="btnMyLocation">📍 Lokasi Saya</button>
+            <input type="text" id="inputMaps" readonly style="width:300px">
+        </div>
+    </div>
 </div>
 
 <!-- Tombol Simpan & Tambah/Batal -->
 <div class="d-flex flex-column mb-3">
   <button id="btnSimpanAlamat" type="button" class="btn btn-success mb-2" style="display: none;">Simpan</button>
-  
 </div>
 
 <script>
-
+let map;
+let marker;
+window.AlamatPosisiSaatIni = AlamatPosisiSaatIni;
 const btnTambah = document.getElementById('btnTambahAlamat');
 const formTambah = document.getElementById('formTambahAlamat');
 const btnSimpan = document.getElementById('btnSimpanAlamat');
@@ -148,6 +176,45 @@ $(document).ready(function () {
         width: '100%',
         placeholder: 'Cari...',
         allowClear: true
+    });
+
+    document.getElementById("btnToggle").addEventListener("click", () => {
+        const mapDiv = document.getElementById("googleMap");
+        if (mapDiv.style.display === "none") {
+            mapDiv.style.display = "block";
+
+            setTimeout(() => {
+            if (map) {
+                google.maps.event.trigger(map, "resize");
+                map.setCenter(marker.getPosition());
+            }
+            }, 300); // kasih delay sedikit biar DOM sudah render
+        } else {
+            mapDiv.style.display = "none";
+        }
+    });
+
+    // Tombol lokasi saya
+    document.getElementById("btnMyLocation").addEventListener("click", () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const userPos = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            };
+            marker.setPosition(userPos);
+            map.setCenter(userPos);
+            document.getElementById("inputMaps").value =
+              userPos.lat + ", " + userPos.lng;
+          },
+          () => {
+            alert("Gagal mengambil lokasi.");
+          }
+        );
+      } else {
+        alert("Browser tidak mendukung Geolocation");
+      }
     });
 
     const $provinsi = $('#selectProvinsi');
@@ -232,7 +299,6 @@ function loadAlamat(){
         success: function (data) {
             console.log(data);
             var html = $.map(data, function (item) {
-                
                 var properti = ``;
                 console.log(item.jenis_properti);
                 var _jenisProp = {};
@@ -488,4 +554,76 @@ function eventSelectJenisProperty(){
         }
     });
 }
+
+async function success_getLocationAlamatSaatIni(pos) 
+{
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    console.log('Lat:', lat, 'Lng:', lng);
+    initMapFromUserLocation(lat, lng);
+    const mapDiv = document.getElementById("googleMap");
+    mapDiv.style.display = "block";
+
+    setTimeout(() => {
+    if (map) {
+            google.maps.event.trigger(map, "resize");
+            map.setCenter(marker.getPosition());
+        }
+    }, 300); 
+    // kasih delay sedikit biar DOM sudah render
+    // setelah dapat lat/lng, panggil Google Geocoding API
+    const data = await getAddress_api(lat, lng);
+    console.log(data);
+    if (data != null) {
+        $('#AlamatSekarang').text(`${data.fullAddress}`);
+        $('#inputMaps').val(`${lat}, ${lng}`); // 👈 masukkan koordinat ke input maps
+        
+    } else {
+        $('#inputMaps').val(`${lat}, ${lng}`); // fallback jika geocoding gagal
+    }
+}
+
+
+
+async function initMapFromUserLocation(lat, lng) {
+    const posisi = { lat: lat, lng: lng };
+
+    map = new google.maps.Map(document.getElementById("googleMap"), {
+        zoom: 15,
+        center: posisi,
+    });
+
+    marker = new google.maps.Marker({
+        position: posisi,
+        map: map,
+        draggable: true, // biar bisa digeser
+    });
+
+    // Update input saat marker digeser
+    google.maps.event.addListener(marker, 'dragend', function(evt) {
+        $('#inputMaps').val(`${evt.latLng.lat()}, ${evt.latLng.lng()}`);
+    });
+
+    // Update marker saat klik map
+    map.addListener('click', function(e) {
+        marker.setPosition(e.latLng);
+        $('#inputMaps').val(`${e.latLng.lat()}, ${e.latLng.lng()}`);
+    });
+}
+
+function AlamatPosisiSaatIni() {
+    if (!navigator.geolocation) {
+    console.warn("Geolocation tidak didukung");
+    initMapFromUserLocation(-6.2, 106.8); // fallback Jakarta
+    return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+    success_getLocationAlamatSaatIni,
+    () => initMapFromUserLocation(-6.2, 106.8) // fallback kalau user tolak izin
+    );
+}
+
+    
 </script>
+
