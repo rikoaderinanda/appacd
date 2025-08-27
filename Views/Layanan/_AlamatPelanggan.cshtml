@@ -90,7 +90,7 @@
             <div id="googleMap" style="height: 100%; width: 100%;"></div>
 
             <!-- Tombol di pojok kiri bawah -->
-            <button id="btnMyLocation"
+            @* <button id="btnMyLocation"
                 class="position-absolute m-2"
                 style="
                     bottom: 0;
@@ -104,6 +104,23 @@
                     cursor: pointer;
                 ">
                 📍 Lokasi Saya
+            </button> *@
+            <button id="btnMyLocation" type="button" 
+                class="position-absolute m-2"
+                style="
+                    bottom: 0;
+                    left: 0;
+                    z-index: 1000;
+                    background-color: rgba(255, 255, 255, 0.9);
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    padding: 6px 10px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                    cursor: pointer;
+                ">
+                <span id="spinnerLocation" class="spinner-border spinner-border-sm me-2" 
+                        role="status" aria-hidden="true" style="display:none;"></span>
+                <span id="btnText">📍 Lokasi Saya</span>
             </button>
         </div>
 
@@ -125,6 +142,10 @@ const btnTambah = document.getElementById('btnTambahAlamat');
 const formTambah = document.getElementById('formTambahAlamat');
 const btnSimpan = document.getElementById('btnSimpanAlamat');
 const ListAlamat = document.getElementById('ListAlamat');
+
+const btnMyLocation = document.getElementById("btnMyLocation");
+const spinner = document.getElementById("spinnerLocation");
+const btnText = document.getElementById("btnText");
 
 btnTambah.addEventListener('click', () => {
 if (formTambah.style.display === 'none') {
@@ -190,27 +211,40 @@ $(document).ready(function () {
         allowClear: true
     });
 
-    // Tombol lokasi saya
-    document.getElementById("btnMyLocation").addEventListener("click", () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const userPos = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-            };
-            marker.setPosition(userPos);
-            map.setCenter(userPos);
-            document.getElementById("inputMaps").value =
-              userPos.lat + ", " + userPos.lng;
-          },
-          () => {
-            alert("Gagal mengambil lokasi.");
-          }
-        );
-      } else {
-        alert("Browser tidak mendukung Geolocation");
-      }
+    btnMyLocation.addEventListener("click", () => {
+        console.log("test");
+        if (navigator.geolocation) {
+            // tampilkan spinner di tombol
+            spinner.style.display = "inline-block";
+            btnText.textContent = "Mengambil lokasi...";
+            btnMyLocation.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const userPos = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+                };
+                marker.setPosition(userPos);
+                map.setCenter(userPos);
+                document.getElementById("inputMaps").value =
+                userPos.lat + ", " + userPos.lng;
+
+                // reset tombol
+                spinner.style.display = "none";
+                btnText.textContent = "📍 Lokasi Saya";
+                btnMyLocation.disabled = false;
+            },
+            () => {
+                alert("Gagal mengambil lokasi.");
+                spinner.style.display = "none";
+                btnText.textContent = "📍 Lokasi Saya";
+                btnMyLocation.disabled = false;
+            }
+            );
+        } else {
+            alert("Browser tidak mendukung Geolocation");
+        }
     });
 
     const $provinsi = $('#selectProvinsi');
