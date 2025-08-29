@@ -133,7 +133,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 app.Use(async (context, next) =>
 {
-    Console.WriteLine($"Request: {context.Request.Path}");
+    //Console.WriteLine($"Request: {context.Request.Path}");
     await next.Invoke();
 });
 

@@ -45,7 +45,7 @@
     <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="home-cart mt-0">
-                <div class="delivery-dts">
+                <div class="">
                     <div class="row">
                         <div class="col-12">
                             <div class="login-top position-relative">
@@ -232,6 +232,7 @@ function setUser(data){
     Storage.set('photo', data.user.picture);
     Storage.set("jwt", data.token);
     $('#ModalLogin').modal('hide');
+    Storage.remove("ChannelPayment");
     window.location.reload();
     
 }

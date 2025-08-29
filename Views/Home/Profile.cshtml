@@ -5,6 +5,8 @@
     ViewData["HeaderName"] = "Profil Pengguna";
 }
 @await Html.PartialAsync("_formProfile")
+@await Html.PartialAsync("_ModalAddressManage")
+
 <div class="app-body pb-30">
     <div class="container">
         <div class="row">
@@ -20,13 +22,13 @@
                             <div>
                             <h6 class="mb-1 fw-semibold" id="userName">Nama Pengguna</h6>
                             <small class="text-muted d-block" id="userEmail">email@example.com</small>
-                            <span class="badge bg-success mt-1" id="userBalance">Saldo: Rp 0</span>
+                            @* <span class="badge bg-success mt-1" id="userBalance">Saldo: Rp 0</span> *@
                             </div>
                         </div>
                     </div>
 
                     <!-- Baris Bawah: Tombol Aksi -->
-                    <div class="mt-3 d-flex gap-2">
+                    @* <div class="mt-3 d-flex gap-2">
                     <button class="btn btn-success w-100 d-flex align-items-center justify-content-center"
                             onclick="topUpSaldo()">
                         <i class="bi bi-plus-circle me-1"></i> Top Up
@@ -35,7 +37,8 @@
                             onclick="withdrawSaldo()">
                         <i class="bi bi-cash-coin me-1"></i> Withdraw
                     </button>
-                    </div>
+                    </div> *@
+
 
                 </div>
             </div>
@@ -49,18 +52,20 @@
                     <a href="@Url.Action("Index", "Tracking")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-bag-check fs-5 me-3"></i>Pesanan Saya</a>
-                    <a href="@Url.Action("Index", "Home")"
+                    <a href="javascript:void(0)" onclick="ShowModalKelolaAlamat()"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-geo-alt fs-5 me-3"></i>Kelola Alamat</a>
                     <a href="@Url.Action("Index", "Home")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-bell fs-5 me-3"></i>Notifikasi</a>
-                    <a href="@Url.Action("Index", "Home")"
+                    <a href="@Url.Action("Index", "Penawaran")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
-                            class="bi bi-percent fs-5 me-3"></i>Penawaran</a>
-                    <a href="@Url.Action("Index", "Home")"
-                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
-                            class="bi bi-chat-dots fs-5 me-3"></i>Dukungan Langsung</a>
+                            class="bi bi-percent fs-5 me-3"></i>Penawaran
+                    </a>
+                    <a href="https://wa.me/6281617233847?text=Halo%20Mimin"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3">
+                        <i class="bi bi-chat-dots fs-5 me-3"></i>Dukungan Langsung
+                    </a>
                 </div>
                 <div class="profile-link-list light-bg br-10 mt-3">
                     <a href="@Url.Action("Index", "Home")"
@@ -85,6 +90,8 @@
 
 <script>
     var $;
+    let IdUser;
+    
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -99,6 +106,8 @@
         }
         else {
             loadUserInfo(user);
+            IdUser = user.id;
+            loadAlamat();
         }
 
     });
@@ -151,7 +160,13 @@
         });
 
     }
+    
     function gotoBack() {
         window.location.href = '/';
     }
+
+    function ShowModalKelolaAlamat(){
+        $('#addAddressModal').modal('show');
+    }
+
 </script>

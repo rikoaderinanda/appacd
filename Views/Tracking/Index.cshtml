@@ -6,39 +6,113 @@
     ViewData["SelectedFooter"] = "Tracking";
 }
 <style>
+/* ====== General ====== */
+body {
+    background-color: #f9fafb;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ====== Search bar ====== */
+.search-bar {
+    position: relative;
+}
+.search-bar input {
+    border-radius: 25px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+.search-bar input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+}
+.search-bar i {
+    color: #9ca3af;
+}
+
+/* ====== Card Order ====== */
+.card {
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    transition: box-shadow 0.3s ease;
+}
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.card-title {
+    font-size: 1rem;
+}
+.card-text {
+    font-size: 0.9rem;
+}
+
+/* ====== Accordion Minimal ====== */
 .accordion-minimal {
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  padding: 0;
-  font-size: small;
-}
-.accordion-collapse ul {
-    padding-left: 0; /* hilangkan padding list */
-    margin-left: 0;
+    border: none;
+    background: none;
     width: 100%;
-}
-
-.accordion-collapse li {
-    display: flex;
-    justify-content: space-between; /* item kiri, harga kanan */
+    text-align: left;
     padding: 0;
-}
-
-.accordion-minimal:focus {
-  box-shadow: none;
+    font-size: 0.85rem;
+    color: #6b7280;
 }
 .accordion-icon {
-  transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
+    display: inline-block;
 }
 .accordion-button.collapsed .accordion-icon {
-  transform: rotate(0deg);
+    transform: rotate(0deg);
 }
 .accordion-button:not(.collapsed) .accordion-icon {
-  transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+.accordion-collapse ul {
+    padding-left: 0;
+}
+.accordion-collapse li {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.85rem;
+    color: #374151;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+/* ====== Status Badge ====== */
+.badge {
+    border-radius: 6px;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+}
+
+/* ====== Floating Button ====== */
+.floating-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0d6efd;
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+.floating-btn:hover {
+    transform: scale(1.05);
+    background-color: #0b5ed7;
+}
+.floating-btn i {
+    font-size: 1.1rem;
 }
 </style>
+
 
 <!-- App Body Start -->
 <div class="app-body pb-30">
@@ -135,16 +209,18 @@
                         <button 
                             id="BtnShow${item.id}"
                             onclick="ShowTrackingById(${item.id},${item.status});"
-                            class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2"
-                            title="Lihat Detail Status"
-                            style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                            class="btn btn-success btn-sm floating-btn"
+                            title="Lihat Detail Status">
                             <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
                         </button>
                     `;
                     if(item.status == 1){
                         const now = Math.floor(Date.now() / 1000);
                         if (now > item.tripay_data.expired_time) {
-                            expiredpay = `<p class="text-muted">Batas Pembayaran : <span class="fw-semibold text-danger"> Sudah berakhir</span> </p>`;
+                            expiredpay = `
+                            <p class="text-muted">Batas Pembayaran : <span class="fw-semibold text-danger"> Sudah berakhir</span> 
+                                <br> ${formatUnixToDateTimeString(item.tripay_data.expired_time)}
+                            </p>`;
                             btnDetail = `
                                 <!-- Tombol Detail -->
                                 <button 
@@ -168,7 +244,6 @@
                                         <i class="bi bi-pencil" style="font-size: 1.0rem;"></i>
                                         Checkout Ulang
                                     </button>
-
                                 </span>
                             `;
                         }
@@ -212,64 +287,71 @@
                     }
                     paket = paket +
                     `
-                        <p class="d-flex justify-content-between">
+                        <p class="d-flex justify-content-between mb-0">
                             <span>Biaya Properti ${item.properti.nama_jenis}</span>
                             <span>${formatRupiah(item.properti.harga)}</span>
                         </p>
-                        
+                        <p class="d-flex justify-content-between">
+                            <span>Biaya Admin :</span>
+                            <span>${formatRupiah(item.tripay_data.total_fee)}</span>
+                        </p>
                         <strong class="d-flex justify-content-between pt-20">
                             <span>Total Transaksi</span>
-                            <span class="">${formatRupiah(item.total_transaksi)}</span>
+                            <span class="">${formatRupiah(item.tripay_data.amount)}</span>
                         </strong>
                         <hr>
                     `
                     ;
                     scr = `
-                    <div class="card mb-3 position-relative shadow-sm border-1">
-                        <div class="card-body position-relative">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5 class="card-title mb-1 fw-bold">
-                                        <span class="text-primary">ACD - ${formatToSixDigits(item.id)}</span>
-                                    </h5>
-                                    <!-- Accordion Detail Order -->
-                                    
-                                    <p class="card-text mb-0">
-                                        <span class="text-dark">Layanan ${item.kategori_layanan}</span> - ${regmember}<br>
-                                        
-                                        Total Pesanan:
-                                        <span class="fw-semibold text-success">${formatRupiah(item.total_transaksi)}</span>
+                        <div class="card mb-3 position-relative">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                
+                                <!-- Kiri: Informasi Pesanan -->
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-1 text-primary">
+                                    Pesanan #ACD-${formatToSixDigits(item.id)}
+                                    </h6>
+                                    <p class="mb-1 small text-muted">
+                                    Layanan ${item.kategori_layanan} • ${regmember}
+                                    </p>
+                                    <p class="fw-semibold text-success mb-2">
+                                    Total: ${formatRupiah(item.tripay_data.amount)}
                                     </p>
 
-                                    <div class="mt-1 w-100">
-                                        <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
-                                            type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
-                                            aria-expanded="true" aria-controls="collapseOrder">
-                                            <span class="me-2 accordion-icon">▶</span>
-                                            <strong class="text-muted">Detail Order</strong>
-                                        </button>
+                                    <!-- Accordion Detail -->
+                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                    aria-expanded="false" aria-controls="collapseOrder${item.id}">
+                                    <span class="me-2 accordion-icon">▶</span>
+                                    <span>Detail Pesanan</span>
+                                    </button>
 
-                                        <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100">
-                                            <ul class="list-unstyled mb-0" style="font-size: small;">
-                                                ${dtPesanan}
-                                            </ul>
-                                            ${paket}
-                                        </div>
+                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2">
+                                    <ul class="list-unstyled mb-2">
+                                        ${dtPesanan}
+                                    </ul>
+                                    ${paket}
                                     </div>
 
+                                    <!-- Expired / Info pembayaran -->
                                     ${expiredpay}
-                                    
+
+                                    <!-- Status / Button -->
+                                    <div class="mt-2">
                                     ${_statusPay}
-                                    
-                                    
+                                    </div>
                                 </div>
-                                <!-- Tombol Delete -->
-                                ${btnDelete}
-                                ${btnDetail}
+
+                                <!-- Kanan: Tombol Aksi -->
+                                <div class="ms-2 d-flex flex-column align-items-end">
+                                    ${btnDelete}
+                                    ${btnDetail}
+                                </div>
+                                </div>
                             </div>
-                            
-                        </div>
-                    </div>`;
+                        </div>`;
+
                     return scr;
                 }).join('');
                 $('#ListTacking').html(html);

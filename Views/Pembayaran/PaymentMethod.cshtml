@@ -7,24 +7,21 @@
 
 <style>
     /* ===== Styling Channel Payment ===== */
+    
     .payment-channel-list {
         display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
+        flex-direction: column;
+        gap: 0px;
     }
 
     .channel-card {
-        position: relative;
-        border: 2px solid transparent;
-        border-radius: 12px;
-        padding: 0;
-        background: #fff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        transition: all 0.1s ease-in-out;
-        flex: 1 1 150px;
-        text-align: center;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.25s ease;
         cursor: pointer;
     }
+
 
     .channel-card:hover {
         border-color: #0d6efd;
@@ -41,17 +38,38 @@
     .channel-content {
         display: flex;
         align-items: center;
-        justify-content: center;
-        height: 80px;
-        border-radius: 8px;
-        transition: 0.1s;
+        padding: 14px 16px;
+        gap: 16px;
     }
 
-    .channel-content img {
-        max-height: 60px;
-        max-width: 100px;
+    .channel-logo {
+        width: 60px;
+        height: 60px;
         object-fit: contain;
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 6px;
+        border: 1px solid #eee;
     }
+
+    .channel-info {
+        @* display: flex;
+        flex-direction: column; *@
+    }
+
+    .channel-name {
+        font-weight: 300;
+        font-size: 12px;
+        color: #333;
+        margin-bottom: 0px;
+    }
+
+    .channel-fee {
+        font-size: 12px;
+        color: #888;
+    }
+
+
 
 </style>
 
@@ -461,6 +479,7 @@
             url: `/api/Tripay/GetPaymentChannelsV2`,
             method: 'GET',
             success: function (res) {
+                console.lo
                 Storage.set("ChannelPayment", res);
                 SetChannelPembayaranV2(res, "");
             },
@@ -474,6 +493,7 @@
     }
     
     function SetChannelPembayaranV2(res, cari) {
+        console.log(res);
         if (cari === "") $("#searchInput").val("");
 
         // Grouping berdasarkan "group"
@@ -500,7 +520,12 @@
                     <label class="channel-card">
                         <input type="radio" name="payment_channel" value="${item.code}" class="form-check-input d-none" />
                         <div class="channel-content">
-                            <img src="${item.icon_url}" alt="${item.name}" width="80">
+                            <img src="${item.icon_url}" alt="${item.name}" width="80" class="channel-logo">
+                            <div class="channel-info">
+                                <span class="channel-name">${item.name}</span>
+                                <br>
+                                <span class="channel-fee">Biaya admin: ${formatRupiah(item.total_fee.flat)}</span>
+                            </div>
                         </div>
                     </label>
                 </div>

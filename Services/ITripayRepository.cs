@@ -107,7 +107,7 @@ namespace appacd.Services
         public async Task<dynamic> CreateTransactionAsync(TripayTransactionRequest dt)
         {
             dt.signature = await GetSignatureAsync(dt.merchant_ref, dt.amount);
-            dt.expired_time = DateTimeOffset.UtcNow.AddHours(24).ToUnixTimeSeconds();
+            dt.expired_time = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds();
 
             var json = JsonConvert.SerializeObject(dt);
             var content = new StringContent(json, Encoding.UTF8, "application/json");

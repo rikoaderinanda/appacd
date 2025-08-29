@@ -1,0 +1,141 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+</style>
+
+<div class="modal fade" id="ModalMapsLocationLatLng" tabindex="-1" aria-labelledby="ModalMapsLocationLatLngLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalMapsLocationLatLngLabel">Lokasi Anda</h5>
+                <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close"><i
+                        class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- App Body Start -->
+                <div class="app-body pb-30 mb-30">
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0" id="search-addon">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0" placeholder="Cari layanan..."
+                                        aria-label="Cari layanan" aria-describedby="search-addon" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+                <div class="container p-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <button data-bs-dismiss="modal" aria-label="Close" class="save-btn w-100 fw-4 h_40 br-8">
+                                Batal
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button type="button" id="btnTambahLayanan" class="main-btn btn-hover w-100 fw-4 h_40 br-8">
+                                <span id="btnTambahLayananText">Tambahkan</span>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        var dataKeranjang = Storage.get('keranjang') || [];
+                                        var btnText = document.getElementById('btnTambahLayananText');
+                                        if (btnText) {
+                                            btnText.textContent = dataKeranjang.length === 0 ? 'Tambahkan' : 'Simpan';
+                                        }
+                                        $('#ModalLayanan').on('show.bs.modal', function () {
+                                            var dataKeranjang = Storage.get('keranjang') || [];
+                                            if (btnText) {
+                                                btnText.textContent = dataKeranjang.length === 0 ? 'Tambahkan' : 'Simpan';
+                                            }
+                                        });
+                                    });
+                                </script>
+                            </button>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    $('#btnTambahLayanan').off('click').on('click', function () {
+                                        var keranjang = [];
+                                        $('#listJasaLayananDetail li').each(function () {
+                                            var $li = $(this);
+                                            var id = $li.data('id');
+                                            var nama = $li.find('.rc-item-content h6').text().trim();
+                                            var jumlah = parseInt($li.find('.cart-plus-minus input').val()) || 0;
+                                            var hargaText = $li.find('.rc-item-content .b-color').text().trim();
+                                            var harga = parseFloat(hargaText.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+                                            if (jumlah > 0 && nama !="") {
+                                                keranjang.push({
+                                                    id: id,
+                                                    nama: nama,
+                                                    jumlah: jumlah,
+                                                    harga: harga,
+                                                    total: jumlah * harga
+                                                });
+                                            }
+                                            if (jumlah === 0) {
+                                                var DataKeranjang = Storage.get('keranjang') || [];
+                                                var index = DataKeranjang.findIndex(item => item.id === id);
+                                                if (index > -1) {
+                                                    DataKeranjang.splice(index, 1);
+                                                    Storage.set('keranjang', DataKeranjang);
+                                                }
+                                            }
+                                        });
+
+                                        
+                                        if (keranjang.length > 0) {
+                                            var DataKeranjang = Storage.get('keranjang') || [];
+                                            keranjang.forEach(
+                                                newItem => 
+                                                {
+                                                    const index = DataKeranjang.findIndex(item => item.id === newItem.id);
+                                                    if (index > -1) {
+                                                        DataKeranjang[index].jumlah = newItem.jumlah;
+                                                    } else {
+                                                        DataKeranjang.push(newItem);
+                                                    }
+                                                
+                                                }
+                                            );
+                                            Storage.set('keranjang', DataKeranjang);
+                                        }
+
+
+                                        var dataKeranjang = Storage.get('keranjang') || [];
+                                        renderKeranjangGrid();
+                                        $('#ModalLayanan').modal('hide');
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer End -->
+        </div>
+    </div>
+</div>
+<style>
+    .skeleton-img,
+    .skeleton-line {
+        animation: skeleton-loading 1.2s infinite linear alternate;
+        opacity: 0.7;
+    }
+    @@keyframes skeleton-loading {
+        0% { background-color: #e0e0e0; }
+        100% { background-color: #f5f5f5; }
+    }
+</style>

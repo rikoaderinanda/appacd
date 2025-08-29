@@ -6,158 +6,213 @@
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-    .bg-lightblue {
-        background: #f0f7ff;
+   /* ====== Modern & Minimalist Redesign ====== */
+    body {
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: #f9fafb;
+        color: #333;
     }
 
-    .accordion-button {
-        transition: all 0.3s ease;
+    /* Card utama */
+    .delivery-dts {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-        .accordion-button:not(.collapsed) {
-            background-color: #e3f2fd;
-            color: #0d6efd;
-        }
-
-        .accordion-button:hover {
-            background-color: #dbefff;
-        }
-
-    .accordion-item {
+    /* Header order info */
+    .rc-item-img {
+        width: 56px;
+        height: 56px;
         border-radius: 12px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .rc-item-img i {
+        font-size: 1.6rem;
+        color: #0d6efd;
     }
 
-    .accordion-body {
+    #idPesanan {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #0d6efd;
+    }
+    #statusTitle {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #111;
+    }
+    #statusDeskripsi {
+        font-size: 0.88rem;
+        color: #6b7280;
+    }
+
+    /* Accordion modern */
+    .accordion-item {
+        border: 1px solid #f0f0f0 !important;
+        border-radius: 12px !important;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+    .accordion-button {
+        background: #fff;
+        font-weight: 500;
         font-size: 0.95rem;
+        color: #374151;
+        padding: 0.85rem 1rem;
+    }
+    .accordion-button:not(.collapsed) {
+        color: #0d6efd;
+        background: #f9faff;
+    }
+    .accordion-button i {
+        font-size: 1rem;
+    }
+    .accordion-body {
+        font-size: 0.88rem;
+        color: #444;
+        padding: 1rem;
     }
 
-    #orderKeluhan .list-group-item {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
+    /* Stepper clean */
+    #stepStatusOrder {
+        margin-left: 14px;
+    }
+    .step {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        position: relative;
+    }
+    .step::before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 22px;
+        width: 2px;
+        height: calc(100% - 22px);
+        background: #e5e7eb;
+    }
+    .step:last-child::before {
+        display: none;
+    }
+    .circle {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #d1d5db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: #fff;
+        margin-right: 12px;
+    }
+    .circle.done {
+        background: #22c55e; /* green */
+    }
+    .step-active .circle {
+        background: #0d6efd;
+    }
+    .step .title {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+    .step .caption {
+        font-size: 0.82rem;
+        color: #6b7280;
+    }
+
+    /* List item */
+    .list-group-item {
+        border: none !important;
+        padding: 8px 0;
+        font-size: 0.88rem;
+        color: #374151;
+    }
+
+    /* Footer */
+    .gobo-custom-footer {
+        background: #fff;
+        border-top: 1px solid #f0f0f0;
+    }
+    .main-btn {
+        background: #0d6efd;
+        color: #fff !important;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 10px;
+        transition: 0.2s;
+    }
+    .main-btn:hover {
+        background: #0b5ed7;
     }
 
 </style>
 
-<!-- App Body Start -->
-<div class="app-body pb-30">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="home-cart mt-4">
-                    <div class="delivery-dts">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="recommend-items p-0 rounded-4 bg-white">
-                                    <div class="rc-item d-flex align-items-start pb-3">
-                                        <div class="rc-item-left d-flex align-items-start">
-                                            <div class="rc-item-img position-relative border rounded-4 d-flex align-items-center justify-content-center bg-light shadow-sm"
-                                                 style="width:64px; height:64px;">
-                                                <i class="bi bi-clock text-warning" style="font-size: 2rem;"></i>
-                                                <!-- <img src="~/images/order-status.png" alt="Order Status"
-                class="img-fluid" style="max-width:42px; max-height:42px;" /> -->
-                                            </div>
-                                            <div class="ms-3">
-                                                <strong class="text-primary d-block fs-6" id="idPesanan"></strong>
-                                                <span class="text-dark fs-6 fw-semibold d-block" id="statusTitle"></span>
-                                                <span class="text-muted fs-7" id="statusDeskripsi"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="accordion mt-3" id="accordionOrderDetail">
+<div class="app-body pb-5">
+    <div class="container py-4">
+        <!-- Card Pesanan -->
+        <div class="delivery-dts shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="rc-item-img shadow-sm">
+                    <i class="bi bi-clock text-warning"></i>
+                </div>
+                <div class="ms-3">
+                    <div id="idPesanan" class="text-primary fw-semibold fs-6"></div>
+                    <div id="statusTitle" class="fw-semibold text-dark"></div>
+                    <small id="statusDeskripsi" class="text-muted"></small>
+                </div>
+            </div>
 
-                                        <!-- Template item, diulang untuk tiap bagian -->
-                                        <div class="accordion-item rounded mb-2 overflow-hidden border-0 shadow-sm">
-                                            <h2 class="accordion-header" id="headingStatus">
-                                                <button class="accordion-button bg-lightblue text-dark collapsed py-3" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseStatus" aria-expanded="true" aria-controls="collapseStatus">
-                                                    <i class="bi bi-flag-fill me-2 text-primary"></i> Status Pesanan
-                                                </button>
-                                            </h2>
-                                            <div id="collapseStatus" class="accordion-collapse collapse show" aria-labelledby="headingStatus"
-                                                 data-bs-parent="#accordionOrderDetail">
-                                                <div class="accordion-body bg-white">
-                                                    <div class="Scriptcontent mt-2 px-1">
-                                                        <div id="stepStatusOrder"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="accordion-item rounded mb-2 overflow-hidden border-0 shadow-sm">
-                                            <h2 class="accordion-header" id="headingKeluhan">
-                                                <button class="accordion-button bg-lightblue text-dark collapsed py-3" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseKeluhan" aria-expanded="false" aria-controls="collapseKeluhan">
-                                                    <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i> Keluhan
-                                                </button>
-                                            </h2>
-                                            <div id="collapseKeluhan" class="accordion-collapse collapse" aria-labelledby="headingKeluhan"
-                                                 data-bs-parent="#accordionOrderDetail">
-                                                <div class="accordion-body bg-white">
-                                                    <ul class="list-group list-group-flush" id="orderKeluhan">
-                                                        <li class="list-group-item border-0 px-0 d-flex align-items-center">
-                                                            <i class="bi bi-dot text-danger me-2 fs-6"></i>
-                                                            <span class="text-dark">Service Rutin</span>
-                                                        </li>
-                                                        <li class="list-group-item border-0 px-0 d-flex align-items-center">
-                                                            <i class="bi bi-dot text-danger me-2 fs-6"></i>
-                                                            <span class="text-dark">AC Tidak Dingin</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="accordion-item rounded mb-2 overflow-hidden border-0 shadow-sm">
-                                            <h2 class="accordion-header" id="headingLayanan">
-                                                <button class="accordion-button bg-lightblue text-dark collapsed py-3" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseLayanan" aria-expanded="false" aria-controls="collapseLayanan">
-                                                    <i class="bi bi-tools me-2 text-warning"></i> Layanan
-                                                </button>
-                                            </h2>
-                                            <div id="collapseLayanan" class="accordion-collapse collapse" aria-labelledby="headingLayanan"
-                                                 data-bs-parent="#accordionOrderDetail">
-                                                <div class="accordion-body bg-white">
-                                                    <ul class="list-group list-group-flush" id="orderLayanan">
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
+            <!-- Accordion -->
+            <div class="accordion mt-4" id="accordionOrderDetail">
+                
+                <!-- Status Pesanan -->
+                <div class="accordion-item shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseStatus">
+                            <i class="bi bi-flag-fill me-2 text-primary"></i> Status Pesanan
+                        </button>
+                    </h2>
+                    <div id="collapseStatus" class="accordion-collapse collapse show" data-bs-parent="#accordionOrderDetail">
+                        <div class="accordion-body">
+                            <div id="stepStatusOrder"></div>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Detail Transaksi -->
+                <div class="accordion-item shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayanan">
+                            <i class="bi bi-tools me-2 text-warning"></i> Detail Transaksi
+                        </button>
+                    </h2>
+                    <div id="collapseLayanan" class="accordion-collapse collapse" data-bs-parent="#accordionOrderDetail">
+                        <div class="accordion-body">
+                            <ul id="orderLayanan" class="list-group list-group-flush"></ul>
+                        </div>
+                    </div>
+                </div>
 
-
-                                        <div class="accordion-item rounded mb-2 overflow-hidden border-0 shadow-sm">
-                                            <h2 class="accordion-header" id="headingProperti">
-                                                <button class="accordion-button bg-lightblue text-dark collapsed py-3" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseProperti" aria-expanded="false" aria-controls="collapseProperti">
-                                                    <i class="bi bi-house-gear-fill me-2 text-success"></i> Properti
-                                                </button>
-                                            </h2>
-                                            <div id="collapseProperti" class="accordion-collapse collapse" aria-labelledby="headingProperti"
-                                                 data-bs-parent="#accordionOrderDetail">
-                                                <div class="accordion-body bg-white">
-                                                    <div id="orderProperti"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="accordion-item rounded mb-2 overflow-hidden border-0 shadow-sm">
-                                            <h2 class="accordion-header" id="headingPelanggan">
-                                                <button class="accordion-button bg-lightblue text-dark collapsed py-3" type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapsePelanggan" aria-expanded="false" aria-controls="collapsePelanggan">
-                                                    <i class="bi bi-person-vcard-fill me-2 text-info"></i> Info Pelanggan
-                                                </button>
-                                            </h2>
-                                            <div id="collapsePelanggan" class="accordion-collapse collapse" aria-labelledby="headingPelanggan"
-                                                 data-bs-parent="#accordionOrderDetail">
-                                                <div class="accordion-body bg-white">
-                                                    <div id="orderPelanggan"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-
-                                </div>
-                            </div>
+                <!-- Info Pelanggan -->
+                <div class="accordion-item shadow-sm">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseKeluhan">
+                            <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i> Info Pelanggan
+                        </button>
+                    </h2>
+                    <div id="collapseKeluhan" class="accordion-collapse collapse" data-bs-parent="#accordionOrderDetail">
+                        <div class="accordion-body">
+                            <ul id="orderKeluhan" class="list-group list-group-flush"></ul>
                         </div>
                     </div>
                 </div>
@@ -165,25 +220,16 @@
         </div>
     </div>
 </div>
-<!-- App Body End -->
+
 <!-- Footer -->
-<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
-    <div class="container p-0">
-        <div class="row align-items-center">
-            <div class="col">
-                <a href="@Url.Action("Index", "Home")" class="main-btn btn-hover w-100 fw-4 h_40 br-8">Halaman Utama</a>
-            </div>
-        </div>
+<footer class="gobo-custom-footer fixed-bottom py-2 border-top bg-white">
+    <div class="container">
+        <a href="@Url.Action("Index", "Home")" class="main-btn w-100">Halaman Utama</a>
     </div>
-</div>
-<!-- Footer End -->
+</footer>
 
 <script>
     var $;
-    
-    
-    
-
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -248,12 +294,16 @@
             url: `/api/Pemesanan/GetTrackingById?Id=${Id}`,
             method: 'GET',
             success: function (res) {
+                console.log(res);
+
                 res.data.forEach(item => {
                     status_order = item.status;
                 });
+
                 if (status_order != "") {
                     listStatusOrder(status_order);
                 }
+
                 $.map(res.data, function (item) {
                     var Keluhan = $.map(item.Keluhan, function (i) {
                         var scr = `
@@ -264,7 +314,6 @@
                         `;
                         return scr;
                     }).join("");
-                    //$("#orderKeluhan").html(Keluhan);
 
                     var layanan = $.map(item.Pesanan, function (i) {
                         var scr = `
@@ -302,10 +351,10 @@
             url: '/api/Pemesanan/GetStepStatus',
             method: 'GET',
             success: function (res) {
+                console.log(res);
                 var html = $.map(res, function (item) {
                     var scr = "";
                     if (item.id < status_order) {
-
                         scr = `
                         <div class="step">
                             <div>
@@ -334,16 +383,17 @@
                         $("#statusDeskripsi").text(item.deskripsi);
                     }
                     else {
-                        @* scr = `
+                        scr = `
                         <div class="step step-active">
                             <div>
-                                <div class="circle bg-danger">${item.id}</div>
+                                <div class="circle bg-dark">${item.id}</div>
                             </div>
                             <div>
-                                <div class="title">${item.title}</div>
+                                <div class="title text-dark">${item.title}</div>
+                                <div class="caption">${item.deskripsi}</div>
                             </div>
                         </div>
-                        `; *@
+                        `;
                     }
                     return scr;
                 }).join('');
@@ -365,4 +415,6 @@
         //window.history.back();
         window.location.href = '@Url.Action("Index", "Tracking")';
     }
+
+    
 </script>

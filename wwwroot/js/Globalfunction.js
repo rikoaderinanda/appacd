@@ -604,17 +604,31 @@ function showMaps(koordinat) {
     const [lat, lng] = koordinat.split(',');
     const mapUrl = `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
 
+    
+
     Swal.fire({
-        title: 'Lokasi Alamat',
+        title: '<h2 style="font-size:20px; font-weight:600; display:flex; align-items:center; gap:8px; color:#333;">📍 Lokasi Alamat</h2>',
         html: `
-            <div style="width:100%; height:400px;">
-                <iframe width="100%" height="100%" frameborder="0" 
-                    src="${mapUrl}">
-                </iframe>
+            <div style="width:100%; height:380px; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+            <iframe 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                style="border:0;" 
+                src="${mapUrl}">
+            </iframe>
             </div>
         `,
-        width: 600,
+        width: 650,
+        padding: '0rem',
+        background: '#fff',
+        color: '#444',
         showCloseButton: true,
-        showConfirmButton: false
+        showConfirmButton: false,
+        customClass: {
+            popup: 'rounded-2xl shadow-xl',
+            closeButton: 'text-gray-500 hover:text-gray-700 transition'
+        }
     });
+
 }

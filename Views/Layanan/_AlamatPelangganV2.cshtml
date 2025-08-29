@@ -168,7 +168,7 @@ btnSimpan.addEventListener('click', () => {
 $(document).on('click', 'input[name="pilihAlamat"]', function() {
     var selectedValue = $(this).val();
     var values = selectedValue.split(':');
-    console.log(values);
+    //console.log(values);
     var _id = values[0];
     var _judul = values[1];
     var _alamat = values[2];
@@ -190,14 +190,14 @@ $(document).on('click', 'input[name="pilihAlamat"]', function() {
         kota_nama:_kota_nama,
         provinsi_nama:_provinsi_nama
     };
-    console.log(_property_harga);
+    //console.log(_property_harga);
     JenisProperti = {
         nama_jenis: _property_nama,
         harga: Number(_property_harga.replace(/\./g, '')), // Menghapus titik untuk mengonversi ke angka
         id: _property_id
     };
 
-    console.log(JenisProperti);
+    //console.log(JenisProperti);
 });
 
 $(document).ready(function () {
@@ -212,7 +212,7 @@ $(document).ready(function () {
     });
 
     btnMyLocation.addEventListener("click", () => {
-        console.log("test");
+        //console.log("test");
         if (navigator.geolocation) {
             // tampilkan spinner di tombol
             spinner.style.display = "inline-block";
@@ -227,8 +227,7 @@ $(document).ready(function () {
                 };
                 marker.setPosition(userPos);
                 map.setCenter(userPos);
-                document.getElementById("inputMaps").value =
-                userPos.lat + ", " + userPos.lng;
+                document.getElementById("inputMaps").value =userPos.lat + ", " + userPos.lng;
 
                 // reset tombol
                 spinner.style.display = "none";
@@ -328,10 +327,10 @@ function loadAlamat(){
         url: '/api/Layanan/ListAlamat?Id='+IdUser,
         method: 'GET',
         success: function (data) {
-            console.log(data);
+            ////console.log(data);
             var html = $.map(data, function (item) {
                 var properti = ``;
-                console.log(item.jenis_properti);
+                ////console.log(item.jenis_properti);
                 var _jenisProp = {};
                 var scr = "";
                 if(!isEmptyObject(item.jenis_properti) && item.jenis_properti!= null){
@@ -456,7 +455,7 @@ function deleteAlamat(id){
         url: "/api/Layanan/DeleteAlamat/"+id,
         method: 'DELETE',
         success: function (res) {
-            console.log(res);
+            ////console.log(res);
             if(res.success){
                 loadAlamat();
             }
@@ -520,7 +519,7 @@ function simpanAlamat(){
         koordinat:document.getElementById('inputMaps').value
     };
 
-    console.log(dataAlamat);
+    ////console.log(dataAlamat);
     callApi({
         url: "/api/Layanan/SimpanAlamat",
         method: 'POST',
@@ -583,7 +582,7 @@ function eventSelectJenisProperty(){
         {
             const [nama, harga, id] = selectedValue.split(':');
             const hargaC = parseInt(harga.trim(), 10) || 0;
-            console.log(nama);
+            ////console.log(nama);
             // Tampilkan alert jika properti adalah apartment
             if (nama.trim().toLowerCase() === 'apartemen') 
             {   
@@ -607,7 +606,7 @@ function eventSelectJenisProperty(){
             // $('#hiddenPropertyType').val(selectedValue);
         } else 
         {
-            console.log("Belum pilih jenis properti");
+            //console.log("Belum pilih jenis properti");
             $(`#infoHargaProperti`).html("");
             $('#infoHargaProperti').hide();
         }
@@ -619,7 +618,7 @@ async function success_getLocationAlamatSaatIni(pos)
     
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
-    console.log('Lat:', lat, 'Lng:', lng);
+    //console.log('Lat:', lat, 'Lng:', lng);
     initMapFromUserLocation(lat, lng);
     const mapDiv = document.getElementById("googleMap");
     mapDiv.style.display = "block";
@@ -633,7 +632,7 @@ async function success_getLocationAlamatSaatIni(pos)
     // kasih delay sedikit biar DOM sudah render
     // setelah dapat lat/lng, panggil Google Geocoding API
     const data = await getAddress_api(lat, lng);
-    console.log(data);
+    //console.log(data);
     if (data != null) {
         $('#AlamatSekarang').text(`${data.fullAddress}`);
         $('#inputMaps').val(`${lat}, ${lng}`); // 👈 masukkan koordinat ke input maps

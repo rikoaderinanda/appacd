@@ -6,143 +6,102 @@
 }
 
 <style>
-    .info {
-        background: #f9fbfd;
-        border-left: 5px solid #005baa;
-        padding: 1.2em;
-        border-radius: 10px;
-        margin-bottom: 2em;
+    .payment-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
     }
 
-    .info p {
-        margin: 6px 0;
-        font-size: 15px;
+    .payment-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
 
-    .va-code-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 8px;
-    }
-
-    .va-code {
-        font-size: 1.6em;
-        font-weight: bold;
+    .payment-header i {
+        font-size: 2rem;
         color: #005baa;
-        background: #e5efff;
-        padding: 0.5em 1em;
-        border-radius: 8px;
     }
 
-    .copy-btn {
-        background: #005baa;
-        color: white;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: 0.3s;
-        font-size: 0.9em;
+    .payment-header h5 {
+        font-weight: 600;
+        margin: 0.5rem 0 0.25rem;
     }
 
-    .copy-btn:hover {
-        background: #004080;
+    .payment-header p {
+        font-size: 0.9rem;
+        color: #6c757d;
     }
 
-    .tabs {
-        display: flex;
-        gap: 1em;
-        flex-wrap: wrap;
-        margin-top: 1.5em;
-    }
-
-    .tab-button {
-        padding: 10px 16px;
-        background: #e2e8f0;
-        border: none;
-        border-radius: 8px;
+    .input-group .form-control {
+        border-radius: 8px 0 0 8px;
         font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        font-size: 1rem;
     }
 
-    .tab-button:hover {
-        background: #d0d7e2;
+    .input-group .btn {
+        border-radius: 0 8px 8px 0;
     }
 
-    .tab-button.active {
-        background: #005baa;
-        color: #fff;
+    .info-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 0.4rem;
+        font-weight: 500;
     }
 
-    .steps {
-        margin-top: 1em;
-        animation: fadeIn 0.3s ease-in-out;
+    .steps h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
     }
 
-    .steps ol {
-        padding-left: 1.2em;
-    }
-
-    .steps li {
-        margin-bottom: 12px;
-        line-height: 1.6;
-        font-size: 15px;
-    }
-
-    @@keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @@media (max-width: 600px) {
-        .va-code-container {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .tabs {
-            flex-direction: column;
-        }
+    .steps .list-group-item {
+        border: none;
+        padding: 0.75rem 0;
+        display: flex;
+        align-items: flex-start;
     }
 
     .step-icon {
-        width: 2.2rem;
-        height: 2.2rem;
+        width: 1.8rem;
+        height: 1.8rem;
+        border-radius: 50%;
+        font-size: 0.9rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        background: #005baa;
+        color: #fff;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
     }
+
 </style>
-
 <div class="app-body pb-30">
-    <div class="container mt-30 mb-30">
-        <div class="alert alert-white border rounded-3 shadow-sm p-4 mt-4" id="infobayar">
-        </div>
+    <div class="container mt-4 mb-4">
+        <!-- Info Pembayaran -->
+        <div class="payment-card" id="infobayar"></div>
 
-        <div class="col-12">
-            <div class="home-categories mt-3">
-                <div class="category-group">
-                    <p>Cara Pembayaran</p>
-                    <div class="owl-carousel category-slider" id="listInstruksi">
-                    </div>
-                    <div id="instructions" class="steps">
-                    </div>
-                </div>
-            </div>
+        <!-- Instruksi Pembayaran -->
+        <div class="payment-card">
+            <p class="fw-semibold mb-3">Cara Pembayaran</p>
+            <div class="owl-carousel" id="listInstruksi"></div>
+            <div id="instructions" class="steps mt-3"></div>
         </div>
     </div>
 </div>
-<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+
+<!-- Footer Action -->
+<div class="gobo-custom-footer fixed-bottom px-3 py-2 text-center">
     <div class="container p-0">
-        <div class="row align-items-center">
+        <div class="row g-2">
             <div class="col">
-                <button onclick="backToHome()" class="btn btn-outline-danger btn-hover w-100 fw-4 h_40 br-8">Lihat Invoice</button>
+                <button onclick="backToHome()" class="btn btn-outline-danger w-100">Lihat Invoice</button>
             </div>
             <div class="col">
-                <button onclick="cekStatus()" class="btn btn-success btn-hover w-100 fw-4 h_40 br-8">Cek Status</button>
+                <button onclick="cekStatus()" class="btn btn-success w-100">Cek Status</button>
             </div>
         </div>
     </div>
@@ -405,8 +364,10 @@
     function cekStatus(){
         //console.log("cek status");
         var dt = Storage.get("payment");
-        console.log(dt);
+        var jwt = Storage.get("jwt");
+        console.log(jwt);
         Storage.set("IdPesanan",dt.Id ?? dt.id);
+        
         window.location.href = '@Url.Action("OrderStatus", "Tracking")';
     }
 
