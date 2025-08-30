@@ -519,12 +519,12 @@ function getValidToken() {
 
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp && Date.now() >= payload.exp * 1000) {
-            console.warn('Token expired');
-            Storage.remove('username');
-            Storage.remove('jwt');
-            return null;
-        }
+        // if (payload.exp && Date.now() >= payload.exp * 1000) {
+        //     console.warn('Token expired');
+        //     Storage.remove('username');
+        //     Storage.remove('jwt');
+        //     return null;
+        // }
     } catch (e) {
         console.error('Token tidak valid', e);
         Storage.remove('username');
@@ -534,7 +534,6 @@ function getValidToken() {
 
     return token;
 }
-
 
 function error_getLocation(err) {
     console.error('Error:', err.message);
@@ -591,6 +590,7 @@ function validateField(id, isSelect = false, fieldName = '') {
 }
 
 function showMaps(koordinat) {
+    console.log(koordinat);
     if (!koordinat) {
         Swal.fire({
             icon: 'warning',
@@ -602,33 +602,8 @@ function showMaps(koordinat) {
 
     // pastikan format koordinat: "lat,lng"
     const [lat, lng] = koordinat.split(',');
-    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
 
-    
-
-    Swal.fire({
-        title: '<h2 style="font-size:20px; font-weight:600; display:flex; align-items:center; gap:8px; color:#333;">📍 Lokasi Alamat</h2>',
-        html: `
-            <div style="width:100%; height:380px; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-            <iframe 
-                width="100%" 
-                height="100%" 
-                frameborder="0" 
-                style="border:0;" 
-                src="${mapUrl}">
-            </iframe>
-            </div>
-        `,
-        width: 650,
-        padding: '0rem',
-        background: '#fff',
-        color: '#444',
-        showCloseButton: true,
-        showConfirmButton: false,
-        customClass: {
-            popup: 'rounded-2xl shadow-xl',
-            closeButton: 'text-gray-500 hover:text-gray-700 transition'
-        }
-    });
-
+    // buka di tab baru
+    window.open(mapUrl, '_blank');
 }

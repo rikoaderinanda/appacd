@@ -1,6 +1,6 @@
 {
-  "name": "DIKITA",
-  "short_name": "DIKITA",
+  "name": "AC Dikari",
+  "short_name": "ACD",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -8,12 +8,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/Logo_Dikita.png",
+      "src": "/icons/logo_ACD.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/Logo_Dikita.png",
+      "src": "/icons/logo_ACD.png",
       "sizes": "512x512",
       "type": "image/png"
     }

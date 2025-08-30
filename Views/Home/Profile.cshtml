@@ -4,8 +4,10 @@
     ViewData["Footer"] = "3";
     ViewData["HeaderName"] = "Profil Pengguna";
 }
+
 @await Html.PartialAsync("_formProfile")
 @await Html.PartialAsync("_ModalAddressManage")
+@await Html.PartialAsync("_ModalAbout")
 
 <div class="app-body pb-30">
     <div class="container">
@@ -52,31 +54,31 @@
                     <a href="@Url.Action("Index", "Tracking")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-bag-check fs-5 me-3"></i>Pesanan Saya</a>
-                    <a href="javascript:void(0)" onclick="ShowModalKelolaAlamat()"
+                    <a href="@Url.Action("manageaddress", "Home")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-geo-alt fs-5 me-3"></i>Kelola Alamat</a>
-                    <a href="@Url.Action("Index", "Home")"
+                    @* <a href="@Url.Action("Index", "Home")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-bell fs-5 me-3"></i>Notifikasi</a>
                     <a href="@Url.Action("Index", "Penawaran")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-percent fs-5 me-3"></i>Penawaran
-                    </a>
-                    <a href="https://wa.me/6281617233847?text=Halo%20Mimin"
+                    </a> *@
+                    <a href="https://wa.me/6281617233847?text=Halo%20ACD"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3">
                         <i class="bi bi-chat-dots fs-5 me-3"></i>Dukungan Langsung
                     </a>
                 </div>
                 <div class="profile-link-list light-bg br-10 mt-3">
-                    <a href="@Url.Action("Index", "Home")"
+                    <a href="javascript:void(0)" onclick="ShowModalAbout()"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-info-circle fs-6 me-3"></i>Tentang Aplikasi</a>
-                    <a href="@Url.Action("Index", "Home")"
+                    @* <a href="@Url.Action("Index", "Home")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
                             class="bi bi-life-preserver fs-6 me-3"></i>Pusat Bantuan</a>
                     <a href="@Url.Action("Index", "Home")"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
-                            class="bi bi-lock fs-6 me-3"></i>Privasi Akun</a>
+                            class="bi bi-lock fs-6 me-3"></i>Privasi Akun</a> *@
                     <a href="javascript:void(0)" onclick="Logout();"
                         class="fs-7 fw-5 b-color d-flex align-items-center w-100 p-3">
                         <i class="bi bi-box-arrow-right fs-6 me-3"></i>
@@ -114,11 +116,9 @@
 
     function CloseModalLogin() {
         window.location.href = '@Url.Action("Index", "Home")';
-        //$('#ModalLogin').modal('hide');
     }
 
     function loadUserInfo(user) {
-        //console.log(user);
         $("#userName").text(user.nama_lengkap);
         $("#userEmail").text(user.email);
         if ($("#photoUser").length > 0 && user.photo) {
@@ -167,6 +167,10 @@
 
     function ShowModalKelolaAlamat(){
         $('#addAddressModal').modal('show');
+    }
+
+    function ShowModalAbout(){
+        $('#ModalAbout').modal('show');
     }
 
 </script>

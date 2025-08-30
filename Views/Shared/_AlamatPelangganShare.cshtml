@@ -1,0 +1,538 @@
+<!-- Perbaikan komponen alamat (HTML + JS)
+
+Perubahan utama:
+1) Perbaikan validasi (hindari bitwise &=, tambahkan validasi jenis properti, tampilkan pesan).
+2) Hindari value radio yang sangat panjang — gunakan data-* attributes agar aman.
+3) Cegah double-binding event handler Select2 (off() sebelum on()).
+4) Perbaiki id tombol yang salah di onBeforeSend (btnSimpanAlamat).
+5) Tambah guard/util fallback (validateField, isEmptyObject, formatRupiah) hanya jika belum ada.
+6) Perbaiki toggle tombol Tambah/Batal + reset form saat ditutup.
+7) Perbaiki spinner/tombol "Lokasi Saya" agar selalu reset pada semua jalur.
+8) Robustness: deklarasi variabel global yang dipakai.
+-->
+
+<span class="small mb-2"> <i class="bi bi-geo-alt-fill text-primary me-1"></i> Lokasi saat ini :</span>
+<a href="#"
+    class="d-flex align-items-center text-decoration-none px-3 py-1 rounded-2 bg-light mb-3">
+    <span id="AlamatSekarang" class="fw-thin small text-dark">
+        Memuat lokasi...
+    </span>
+</a>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <label class="form-label fw-bold m-0">Pilih Alamat</label>
+    <button id="btnTambahAlamat" type="button" 
+            class="btn btn-sm btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Tambah Alamat
+    </button>
+</div>
+
+<div class="list-group mb-3" id="ListAlamat"></div>
+
+<!-- Form Tambah Alamat (hidden awalnya) -->
+<div id="formTambahAlamat" class="mb-3" style="display:none;margin-top:30px;">
+    <!-- Title & Subtitle -->
+    <div class="text-center mb-4">
+        <h4 class="fw-bold text-primary">
+            <i class="bi bi-geo-alt-fill me-2"></i> Tambahkan Alamat Baru
+        </h4>
+        <p class="text-muted small mb-0">
+            Lengkapi detail alamat Anda dengan benar agar pengiriman lebih cepat dan akurat.
+        </p>
+    </div>
+
+    <!-- Jenis Properti -->
+    <div class="mb-2">
+        <label for="selectJenisProperti" class="form-label">Pilih Jenis Properti</label>
+        <select id="selectJenisProperti" class="form-control form-select">
+            <option value=""></option>
+        </select>
+        <!-- Info Harga Properti -->
+        <div class="mt-2" id="infoHargaProperti" style="display:none;"></div>
+        <div class="alert alert-warning mt-3" role="alert" id="AlertProperti" style="display:none;">
+            Bagi customer yang melakukan pemesanan untuk unit apartment, mohon
+            mempersiapkan surat izin untuk mitra ACD dari pihak gedung sebelum waktu
+            pengerjaan dilakukan.
+        </div>
+    </div>
+
+    <div class="mb-2">
+        <label for="inputJudul" class="form-label">Judul Alamat</label>
+        <input type="text" class="form-control" id="inputJudul" placeholder="Misal: Alamat Rumah">
+    </div>
+    <div class="mb-2">
+        <label for="selectProvinsi" class="form-label">Provinsi</label>
+        <select id="selectProvinsi" class="form-control form-select select2">
+            <option value="">Pilih Provinsi</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="selectKota" class="form-label">Kota / Kabupaten</label>
+        <select id="selectKota" class="form-control form-select select2" disabled>
+            <option value="">Pilih Kota / Kabupaten</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="selectKecamatan" class="form-label">Kecamatan</label>
+        <select id="selectKecamatan" class="form-control form-select select2" disabled>
+            <option value="">Pilih Kecamatan</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="selectKelurahan" class="form-label">Kelurahan / Desa</label>
+        <select id="selectKelurahan" class="form-control form-select select2" disabled>
+            <option value="">Pilih Kelurahan / Desa</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label for="inputAlamat" class="form-label">Alamat Lengkap</label>
+        <textarea class="form-control" id="inputAlamat" placeholder="Jl. Merdeka No. 10" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="inputMaps" class="form-label fw-bold">📍 Lokasi di Peta</label>
+        <div class="position-relative mb-2 rounded border overflow-hidden" style="height: 400px; width: 100%;" id="googleMapContainer">
+            <div id="googleMap" style="height: 100%; width: 100%;"></div>
+            <button id="btnMyLocation" type="button" 
+                class="position-absolute m-2"
+                style="bottom:0;left:0;z-index:1000;background-color:rgba(255,255,255,0.9);border:1px solid #ccc;border-radius:4px;padding:6px 10px;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;">
+                <span id="spinnerLocation" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display:none;"></span>
+                <span id="btnText">📍 Lokasi Saya</span>
+            </button>
+        </div>
+        <input type="text" id="inputMaps" class="form-control" style="max-width:300px;" readonly placeholder="Koordinat Anda akan muncul di sini">
+    </div>
+</div>
+
+<!-- Tombol Simpan -->
+<div class="d-flex flex-column mb-3">
+  <button id="btnSimpanAlamat" type="button" class="btn btn-success mb-2" style="display:none;">Simpan</button>
+</div>
+
+<script>
+// ====== GLOBALS & FALLBACK UTILS ======
+let map, marker;
+let AlamatPelanggan = window.AlamatPelanggan || {};
+let JenisProperti = window.JenisProperti || {};
+window.AlamatPosisiSaatIni = AlamatPosisiSaatIni; // expose ke global bila dipakai di tempat lain
+
+// Fallback util bila belum ada di project
+if (typeof isEmptyObject !== 'function') {
+  window.isEmptyObject = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+if (typeof formatRupiah !== 'function') {
+  window.formatRupiah = function(n){
+    try { const s = (n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); return 'Rp ' + s; } catch(e){ return 'Rp 0'; }
+  }
+}
+if (typeof validateField !== 'function') {
+  window.validateField = function(id, isSelect=false){
+    const el = document.getElementById(id);
+    if(!el) return true;
+    let v = (el.value||'').trim();
+    const ok = v !== '';
+    el.classList.toggle('is-invalid', !ok);
+    return ok;
+  }
+}
+
+// ====== ELEMENT REFS ======
+const btnTambah = document.getElementById('btnTambahAlamat');
+const formTambah = document.getElementById('formTambahAlamat');
+const btnSimpan = document.getElementById('btnSimpanAlamat');
+const ListAlamat = document.getElementById('ListAlamat');
+const btnMyLocation = document.getElementById('btnMyLocation');
+const spinner = document.getElementById('spinnerLocation');
+const btnText = document.getElementById('btnText');
+
+// ====== TOGGLE FORM TAMBAH ======
+btnTambah.addEventListener('click', () => {
+  const opening = (formTambah.style.display === 'none');
+  if (opening) {
+    CallApiMetaWilayah();
+    $('.select2').select2({
+        width: '100%',
+        placeholder: 'Cari...',
+        allowClear: true,
+        dropdownParent: $('#formTambahAlamat') // atau modal container
+    });
+
+
+    formTambah.style.display = 'block';
+    btnSimpan.style.display = 'inline-block';
+    btnTambah.innerHTML = '<i class="bi bi-x-circle me-1"></i> Batal';
+    ListAlamat.style.display = 'none';
+  } else {
+    // reset form saat ditutup
+    formTambah.reset?.();
+    $('#selectProvinsi, #selectKota, #selectKecamatan, #selectKelurahan').val(null).trigger('change');
+    $('#selectJenisProperti').val('').trigger('change');
+    document.getElementById('input alamat');
+    document.getElementById('infoHargaProperti').style.display='none';
+    document.getElementById('AlertProperti').style.display='none';
+
+    formTambah.style.display = 'none';
+    btnSimpan.style.display = 'none';
+    btnTambah.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Tambah Alamat';
+    ListAlamat.style.display = 'block';
+  }
+});
+
+btnSimpan.addEventListener('click', () => { simpanAlamat(); });
+
+// ====== PILIH ALAMAT (pakai data-* bukan value panjang) ======
+$(document).on('click', 'input[name="pilihAlamat"]', function(){
+  const d = this.dataset;
+  AlamatPelanggan = {
+    id: d.id,
+    judul: d.judul,
+    alamat: d.alamat,
+    kelurahan_nama: d.kelurahan,
+    kecamatan_nama: d.kecamatan,
+    kota_nama: d.kota,
+    provinsi_nama: d.provinsi
+  };
+  JenisProperti = {
+    id: d.propid,
+    nama_jenis: d.propnama,
+    harga: Number((d.propharga||'').replace(/\./g,'')) || 0
+  };
+});
+
+$(document).ready(function(){
+  loadPropertyType();
+  eventSelectJenisProperty();
+  AlamatPosisiSaatIni();
+
+  btnMyLocation.addEventListener('click', () => {
+    if (!navigator.geolocation){
+      alert('Browser tidak mendukung Geolocation');
+      return;
+    }
+    spinner.style.display = 'inline-block';
+    btnText.textContent = 'Mengambil lokasi...';
+    btnMyLocation.disabled = true;
+
+    navigator.geolocation.getCurrentPosition((pos)=>{
+      const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      if (marker) marker.setPosition(userPos);
+      if (map) map.setCenter(userPos);
+      document.getElementById('inputMaps').value = userPos.lat + ', ' + userPos.lng;
+      spinner.style.display = 'none';
+      btnText.textContent = '📍 Lokasi Saya';
+      btnMyLocation.disabled = false;
+    }, (err)=>{
+      console.warn(err);
+      alert('Gagal mengambil lokasi.');
+      spinner.style.display = 'none';
+      btnText.textContent = '📍 Lokasi Saya';
+      btnMyLocation.disabled = false;
+    });
+  });
+});
+
+// ====== META WILAYAH ======
+function CallApiMetaWilayah(){
+  const $provinsi = $('#selectProvinsi');
+  const $kota = $('#selectKota');
+  const $kecamatan = $('#selectKecamatan');
+  const $kelurahan = $('#selectKelurahan');
+
+  // reset UI
+  $provinsi.prop('disabled', true).empty().append('<option value="">Loading...</option>');
+  $kota.prop('disabled', true).empty().append('<option value="">Pilih Kabupaten/Kota</option>');
+  $kecamatan.prop('disabled', true).empty().append('<option value="">Pilih Kecamatan</option>');
+  $kelurahan.prop('disabled', true).empty().append('<option value="">Pilih Kelurahan</option>');
+
+  // Ambil provinsi
+  fetch('/api/Wilayah/provinces')
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        $provinsi.empty().append('<option value="">Pilih Provinsi</option>');
+        (data?.data||[]).forEach(prov => {
+            $provinsi.append(`<option value="${prov.code}">${prov.name}</option>`);
+        });
+        $provinsi.prop('disabled', false);
+        $provinsi.trigger('change');
+    })
+    .catch(err => {
+      console.error('Gagal load provinsi:', err);
+      $provinsi.empty().append('<option value="">Gagal memuat data</option>');
+    });
+
+
+  // Hindari double-binding
+  $provinsi.off('change');
+  $kota.off('change');
+  $kecamatan.off('change');
+
+  $provinsi.on('change', function(){
+    const provCode = $(this).val();
+    $kota.empty().append('<option value="">Pilih Kota / Kabupaten</option>').prop('disabled', !provCode);
+    $kecamatan.empty().append('<option value="">Pilih Kecamatan</option>').prop('disabled', true);
+    $kelurahan.empty().append('<option value="">Pilih Kelurahan / Desa</option>').prop('disabled', true);
+    if (!provCode) return;
+
+    fetch(`/api/Wilayah/regencies/${provCode}`)
+      .then(res=>res.json())
+      .then(data=>{
+        (data?.data||[]).forEach(k => $kota.append(`<option value="${k.code}">${k.name}</option>`));
+        $kota.trigger('change');
+        $kota.select2('open');
+      });
+  });
+
+  $kota.on('change', function(){
+    const kotaCode = $(this).val();
+    $kecamatan.empty().append('<option value="">Pilih Kecamatan</option>').prop('disabled', !kotaCode);
+    $kelurahan.empty().append('<option value="">Pilih Kelurahan / Desa</option>').prop('disabled', true);
+    if (!kotaCode) return;
+
+    fetch(`/api/Wilayah/districts/${kotaCode}`)
+      .then(res=>res.json())
+      .then(data=>{
+        (data?.data||[]).forEach(k => $kecamatan.append(`<option value="${k.code}">${k.name}</option>`));
+        $kecamatan.trigger('change');
+        $kecamatan.select2('open');
+      });
+  });
+
+  $kecamatan.on('change', function(){
+    const kecCode = $(this).val();
+    $kelurahan.empty().append('<option value="">Pilih Kelurahan / Desa</option>').prop('disabled', !kecCode);
+    if (!kecCode) return;
+
+    fetch(`/api/Wilayah/villages/${kecCode}`)
+      .then(res=>res.json())
+      .then(data=>{
+        (data?.data||[]).forEach(k => $kelurahan.append(`<option value="${k.code}">${k.name}</option>`));
+        $kelurahan.trigger('change');
+        $kelurahan.select2('open');
+      });
+  });
+}
+
+// ====== LOAD ALAMAT (pakai data-*) ======
+function loadAlamat(){
+  callApi({
+    url: '/api/Layanan/ListAlamat?Id=' + IdUser,
+    method: 'GET',
+    success: function(data){
+      let html = (data||[]).map(item => {
+        const hasProp = item && item.jenis_properti && !isEmptyObject(item.jenis_properti);
+        const propBadge = hasProp ? `
+          <span class="badge bg-info text-white ms-2">${item.jenis_properti.nama_jenis}</span>
+          <span class="badge bg-success text-white ms-1">${formatRupiah(item.jenis_properti.harga)}</span>
+        ` : '<span class="badge bg-warning text-dark ms-2">Properti belum diset</span>';
+
+        const dataAttr = hasProp ? `
+          data-id="${item.id}"
+          data-judul="${(item.judul||'').replace(/"/g,'&quot;')}"
+          data-alamat="${(item.alamat||'').replace(/"/g,'&quot;')}"
+          data-kelurahan="${(item.kelurahan_nama||'').replace(/"/g,'&quot;')}"
+          data-kecamatan="${(item.kecamatan_nama||'').replace(/"/g,'&quot;')}"
+          data-kota="${(item.kota_nama||'').replace(/"/g,'&quot;')}"
+          data-provinsi="${(item.provinsi_nama||'').replace(/"/g,'&quot;')}"
+          data-propid="${item.jenis_properti.id}"
+          data-propnama="${(item.jenis_properti.nama_jenis||'').replace(/"/g,'&quot;')}"
+          data-propharga="${item.jenis_properti.harga}"
+        ` : '';
+
+        const radio = hasProp ? `<input class="form-check-input me-2 mt-1" type="radio" name="pilihAlamat" value="${item.id}" ${dataAttr}>` : '';
+
+        return `
+          <label class="list-group-item d-flex align-items-start position-relative">
+            ${radio}
+            <div class="d-flex flex-column w-100">
+              <div class="fw-bold mb-1">${item.judul || ''} ${propBadge}</div>
+              <div class="d-flex align-items-center mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" class="bi bi-geo-alt me-2" viewBox="0 0 16 16"><path d="M12.166 8.94c0 1.027-1.074 2.992-4.166 5.06-3.092-2.068-4.166-4.033-4.166-5.06a4.166 4.166 0 1 1 8.332 0z"/><path d="M8 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+                <div class="fw-semibold">${item.alamat || ''}</div>
+              </div>
+              <small class="text-muted mb-1">${item.kelurahan_nama || ''}, ${item.kecamatan_nama || ''}</small>
+              <small class="text-muted">${item.kota_nama || ''}, ${item.provinsi_nama || ''}</small>
+            </div>
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" style="transform:scale(0.7);font-size:0.8rem;" aria-label="Hapus" onclick="deleteAlamat(${item.id})"></button>
+            ${item.koordinat ? `<button type="button" class="btn btn-sm btn-primary position-absolute bottom-0 end-0 m-2" style="border-radius:50%;width:35px;height:35px;display:flex;align-items:center;justify-content:center;" onclick="(window.showMaps||function(c){alert('Koordinat: '+c)})(\'${item.koordinat}\')"><i class="bi bi-map"></i></button>` : ''}
+          </label>`;
+      }).join('');
+
+      if (!data || data.length === 0) {
+        html = '<p class="text-center text-muted py-4">tidak ada alamat yang disimpan...</p>';
+      }
+      $('#ListAlamat').html(html);
+
+      // auto-check bila ada AlamatPelanggan aktif
+      if (!isEmptyObject(AlamatPelanggan) && AlamatPelanggan.id){
+        const el = document.querySelector(`input[name="pilihAlamat"][value="${AlamatPelanggan.id}"]`);
+        if (el) el.checked = true; else AlamatPelanggan = {};
+      } else { AlamatPelanggan = {}; }
+    },
+    error: function(){ $('#ListAlamat').html('<p class="text-center text-muted py-4">oopss.. coba cek koneksi internet kamu.</p>'); },
+    onBeforeSend: function(){ $('#ListAlamat').html('<p class="text-center text-muted py-4">sedang memuat data ...</p>'); },
+    onComplete: function(){}
+  });
+}
+
+function deleteAlamat(id){
+  callApi({
+    url: '/api/Layanan/DeleteAlamat/' + id,
+    method: 'DELETE',
+    success: function(res){
+      if(res.success){ loadAlamat(); }
+      else { Swal.fire('sorry!', res.message || 'Gagal menghapus.', 'warning'); }
+    },
+    error: function(){ Swal.fire('Gagal!', 'data gagal dihapus.', 'warning'); },
+  });
+}
+
+function simpanAlamat(){
+  // Validasi input
+  const propVal = $('#selectJenisProperti').val();
+  let isValid = true;
+  isValid = isValid && !!propVal; // wajib pilih jenis properti
+  isValid = isValid && validateField('inputJudul');
+  isValid = isValid && validateField('inputAlamat');
+  isValid = isValid && validateField('inputMaps');
+  isValid = isValid && validateField('selectProvinsi', true);
+  isValid = isValid && validateField('selectKota', true);
+  isValid = isValid && validateField('selectKecamatan', true);
+  isValid = isValid && validateField('selectKelurahan', true);
+  if (!isValid){
+    if (!propVal) {
+      $('#selectJenisProperti').addClass('is-invalid');
+    }
+    return;
+  }
+
+  const [nama, hargaRaw, id] = propVal.split(':');
+  const Properti = {
+    nama_jenis: nama,
+    harga: Number((hargaRaw||'').replace(/\./g, '')) || 0,
+    id: id
+  };
+
+  const dataAlamat = {
+    id: 0,
+    jenisProperti: Properti,
+    judul: document.getElementById('inputJudul').value.trim(),
+    alamat: document.getElementById('inputAlamat').value.trim(),
+    provinsiCode: document.getElementById('selectProvinsi').value,
+    provinsiNama: document.getElementById('selectProvinsi').selectedOptions[0]?.text || '',
+    kotaCode: document.getElementById('selectKota').value,
+    kotaNama: document.getElementById('selectKota').selectedOptions[0]?.text || '',
+    kecamatanCode: document.getElementById('selectKecamatan').value,
+    kecamatanNama: document.getElementById('selectKecamatan').selectedOptions[0]?.text || '',
+    kelurahanCode: document.getElementById('selectKelurahan').value,
+    kelurahanNama: document.getElementById('selectKelurahan').selectedOptions[0]?.text || '',
+    idUser: IdUser,
+    koordinat: document.getElementById('inputMaps').value
+  };
+
+  callApi({
+    url: '/api/Layanan/SimpanAlamat',
+    method: 'POST',
+    data: dataAlamat,
+    success: function(res){
+      if(!res.success){ Swal.fire('Gagal!', res.message || 'Terjadi kesalahan.', 'warning'); }
+      else {
+        formTambah.style.display = 'none';
+        btnSimpan.style.display = 'none';
+        btnTambah.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Tambah Alamat';
+        ListAlamat.style.display = 'block';
+      }
+    },
+    error: function(err){ Swal.fire('Gagal!', 'data gagal disimpan.' + (err?.message||''), 'warning'); },
+    onBeforeSend: function(){ $('#btnSimpanAlamat').prop('disabled', true).text('Memproses...'); },
+    onComplete: function(){ $('#btnSimpanAlamat').prop('disabled', false).text('Simpan'); loadAlamat(); }
+  });
+}
+
+// ====== JENIS PROPERTI ======
+function loadPropertyType(){
+  callApi({
+    url: '/api/Layanan/JenisProperti?Id=1',
+    method: 'GET',
+    success: function(data){
+      let html = `<option value=""></option>`;
+      html += (data||[]).map(item => `<option value="${item.nama_jenis}:${item.harga}:${item.id}">${item.nama_jenis}</option>`).join('');
+      $('#selectJenisProperti').html(html);
+    },
+    error: function(err){ alert('Error: ' + (err?.message||'Tidak diketahui')); }
+  });
+}
+
+function eventSelectJenisProperty(){
+  $('#selectJenisProperti').on('change', function(){
+    const selectedValue = $(this).val();
+    if (selectedValue){
+      const [nama, harga] = selectedValue.split(':');
+      const hargaC = parseInt((harga||'').trim(), 10) || 0;
+      if ((nama||'').trim().toLowerCase() === 'apartemen') { $('#AlertProperti').show(); } else { $('#AlertProperti').hide(); }
+      if (nama) {
+        $('#infoHargaProperti').html(`
+          <span class="fw-bold text-success">Biaya :</span>
+          <span id="hargaPropertiValue">${formatRupiah(hargaC)}</span>
+        `).show();
+      } else { $('#infoHargaProperti').html('').hide(); }
+      $(this).removeClass('is-invalid');
+    } else {
+      $('#infoHargaProperti').html('').hide();
+      $('#AlertProperti').hide();
+    }
+  });
+}
+
+// ====== GEO & MAPS ======
+async function success_getLocationAlamatSaatIni(pos){
+  const lat = pos.coords.latitude;
+  const lng = pos.coords.longitude;
+  await initMapFromUserLocation(lat, lng);
+  const mapDiv = document.getElementById('googleMap');
+  mapDiv.style.display = 'block';
+  setTimeout(()=>{ if (map){ google.maps.event.trigger(map, 'resize'); map.setCenter(marker.getPosition()); } }, 300);
+  try{
+    const data = await getAddress_api(lat, lng); // asumsi fungsi tersedia di project
+    if (data){
+      $('#AlamatSekarang').text(`${data.fullAddress}`);
+      $('#inputMaps').val(`${lat}, ${lng}`);
+    } else {
+      $('#inputMaps').val(`${lat}, ${lng}`);
+    }
+  }catch(e){
+    $('#inputMaps').val(`${lat}, ${lng}`);
+  }
+}
+
+async function initMapFromUserLocation(lat, lng){
+  try{
+    if (typeof google === 'undefined' || !google.maps){
+      console.warn('Google Maps belum siap, coba lagi...');
+      return setTimeout(()=>initMapFromUserLocation(lat, lng), 1000);
+    }
+    const posisi = { lat: lat, lng: lng };
+    map = new google.maps.Map(document.getElementById('googleMap'), { zoom: 15, center: posisi });
+    marker = new google.maps.Marker({ position: posisi, map: map, draggable: true });
+
+    google.maps.event.addListener(marker, 'dragend', function(evt){ $('#inputMaps').val(`${evt.latLng.lat()}, ${evt.latLng.lng()}`); });
+    map.addListener('click', function(e){ marker.setPosition(e.latLng); $('#inputMaps').val(`${e.latLng.lat()}, ${e.latLng.lng()}`); });
+  }catch(err){
+    console.error('Error in initMap:', err);
+    setTimeout(()=>initMapFromUserLocation(lat, lng), 1000);
+  }
+}
+
+function AlamatPosisiSaatIni(){
+  if (!navigator.geolocation){
+    console.warn('Geolocation tidak didukung');
+    initMapFromUserLocation(-6.2, 106.8); // fallback Jakarta
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(success_getLocationAlamatSaatIni, ()=>initMapFromUserLocation(-6.2, 106.8));
+}
+</script>

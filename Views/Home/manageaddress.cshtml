@@ -1,79 +1,41 @@
+@{
+    ViewData["Title"] = "Status";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Kelola Alamat";
+}
 <!-- App Body Start -->
-<div class="app-body pb-30">
+<div class="app-body pt-30">
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <div class="home-cart mt-0">
-                    <div class="delivery-dts">
-                        <div class="row">
-                            <div class="col-12 px-0">
-                                <div class="address-search p-3 border_bottom">
-                                    <div class="position-relative">
-                                        <input class="form-input input-shadow ps-5 h_40 fs-7 br-8" type="text"
-                                            placeholder="Search for area, landmark or apartment">
-                                        <i class="bi bi-search search-icon-sm"></i>
-                                    </div>
-                                </div>
-                                <div class="p-3">
-                                    <a class="ch-btn p-2 br-8 b-color fs-7 fw-4 text-hover d-block text-center"
-                                        href="#"><i class="bi bi-geo me-2"></i>Choose current location</a>
-                                </div>
-                            </div>
-                            <div class="col-12 px-0">
-                                <div class="total-top-text d-flex align-items-center mb-3">
-                                    <div class="total-cart-items">
-                                        <span class="p-color fs-9 fw-4">Saved Address</span>
-                                    </div>
-                                    <div class="ms-auto">
-                                        <a class="ch-btn py-1 px-2 br-5 b-color fs-9 fw-4 text-hover"
-                                            href="#addAddressModal" data-bs-toggle="modal"><i
-                                                class="bi bi-plus-lg me-1"></i>Add New Address</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="light-bg p-3 br-8">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span class="fs-7 fw-5 b-color"><i class="bi bi-geo-alt me-2"></i>Delivery to :
-                                            Home (Default)</span>
-                                        <div class="form-actions ms-auto">
-                                            <a href="#" class="fs-6 me-2"><i class="bi bi-pencil"></i></a>
-                                            <a href="#" class="fs-6 ms-1"><i class="bi bi-trash3"></i></a>
-                                        </div>
-                                    </div>
-                                    <p class="mb-0 p-color fs-8 fw-4">#000, Street No. 0, SKS Nagar, Ludhiana, Punjab,
-                                        141001</p>
-                                </div>
-                                <div class="light-bg p-3 br-8 mt-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span class="fs-7 fw-5 b-color"><i class="bi bi-geo-alt me-2"></i>Delivery to :
-                                            Office (Default)</span>
-                                        <div class="form-actions ms-auto">
-                                            <a href="#" class="fs-6 me-2"><i class="bi bi-pencil"></i></a>
-                                            <a href="#" class="fs-6 ms-1"><i class="bi bi-trash3"></i></a>
-                                        </div>
-                                    </div>
-                                    <p class="mb-0 p-color fs-8 fw-4">#000, Street No. 0, SKS Nagar, Ludhiana, Punjab,
-                                        141001</p>
-                                </div>
-                                <div class="light-bg p-3 br-8 mt-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span class="fs-7 fw-5 b-color"><i class="bi bi-geo-alt me-2"></i>Delivery to :
-                                            Office 2 (Default)</span>
-                                        <div class="form-actions ms-auto">
-                                            <a href="#" class="fs-6 me-2"><i class="bi bi-pencil"></i></a>
-                                            <a href="#" class="fs-6 ms-1"><i class="bi bi-trash3"></i></a>
-                                        </div>
-                                    </div>
-                                    <p class="mb-0 p-color fs-8 fw-4">#000, Street No. 0, SKS Nagar, Ludhiana, Punjab,
-                                        141001</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @await Html.PartialAsync("_AlamatPelangganShare")
             </div>
         </div>
     </div>
 </div>
 <!-- App Body End -->
+
+<script>
+    var $;
+    let IdUser;
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            IdUser = user.id;
+            loadAlamat();
+        }
+
+    });
+</script>

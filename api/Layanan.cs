@@ -144,7 +144,7 @@ namespace appacd.api
                 var cek = await _accRepo.CheckLogTrxDgnAlamat(id);
                 if(!cek){
                      var res = await _accRepo.DeleteAlanat(id);
-                     return Ok(new { message = "Delete data berhasil", success = cek });
+                     return Ok(new { message = "Delete data berhasil", success = res });
                 }
                 else
                 {

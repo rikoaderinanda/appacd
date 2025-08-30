@@ -1,20 +1,21 @@
-<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+<div class="modal fade" id="ModalAbout" tabindex="-1" aria-labelledby="ModalAboutLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addAddressModalLabel">Kelola Alamat</h5>
+                <h5 class="modal-title" id="ModalAboutLabel">Tentang ACD</h5>
                 <button type="button" class="close-btn" data-bs-dismiss="modal" aria-label="Close"><i
                         class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-body p-3">
                 <!-- App Body Start -->
                 <div class="app-body pb-30">
-                    <div class="container">
-                        @await Html.PartialAsync("_AlamatPelangganShare")    
-                    </div>
+                    @await Html.PartialAsync("_About")    
                 </div>
                 <!-- App Body End -->
             </div>
         </div>
     </div>
 </div>
+
+<script>
+</script>
